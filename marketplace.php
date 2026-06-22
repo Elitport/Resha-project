@@ -1,394 +1,660 @@
 <?php
-// marketplace.php — Resha Art · Buyer Marketplace
-// Drop into your Hostinger public_html folder. No build step needed.
+// marketplace.php — Resha Art · سوق الأعمال الفنية
+// Fully integrated with index.html brand: video bg, frosted nav, RTL Arabic.
 
 $artworks = [
   [
     "id"          => 1,
-    "title"       => "Desert Whispers",
-    "artist"      => "Layla Ibrahim",
-    "location"    => "Riyadh, SA",
+    "title"       => "همسات الصحراء",
+    "title_en"    => "Desert Whispers",
+    "artist"      => "ليلى إبراهيم",
+    "location"    => "الرياض، السعودية",
     "price"       => 1200,
     "art_type"    => "abstract",
+    "art_label"   => "تجريدي",
     "status"      => "available",
+    "status_label"=> "متاح للبيع",
     "image_url"   => "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&q=80",
-    "description" => "Acrylic on canvas. A journey through the golden dunes of the Empty Quarter.",
-    "badge"       => "New",
+    "description" => "أكريليك على قماش. رحلة عبر الكثبان الذهبية في الربع الخالي.",
+    "badge"       => "جديد",
+    "badge_type"  => "new",
   ],
   [
     "id"          => 2,
-    "title"       => "Blue Serenity",
-    "artist"      => "Omar Al-Rashid",
-    "location"    => "Dubai, UAE",
+    "title"       => "الهدوء الأزرق",
+    "title_en"    => "Blue Serenity",
+    "artist"      => "عمر الراشد",
+    "location"    => "دبي، الإمارات",
     "price"       => 850,
     "art_type"    => "landscape",
+    "art_label"   => "مناظر طبيعية",
     "status"      => "available",
+    "status_label"=> "متاح للبيع",
     "image_url"   => "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&q=80",
-    "description" => "Watercolor inspired by the Arabian Gulf at dawn.",
+    "description" => "ألوان مائية مستوحاة من مياه الخليج العربي عند الفجر.",
     "badge"       => "",
+    "badge_type"  => "",
   ],
   [
     "id"          => 3,
-    "title"       => "Silent Portrait",
-    "artist"      => "Nour Khalil",
-    "location"    => "Cairo, EG",
+    "title"       => "البورتريه الصامت",
+    "title_en"    => "Silent Portrait",
+    "artist"      => "نور خليل",
+    "location"    => "القاهرة، مصر",
     "price"       => 2400,
     "art_type"    => "portrait",
+    "art_label"   => "بورتريه",
     "status"      => "auction",
+    "status_label"=> "مزاد مباشر",
     "image_url"   => "https://images.unsplash.com/photo-1578301978069-55e07489cfe1?w=600&q=80",
-    "description" => "Oil on linen. A study of light and shadow in the modern Arab face.",
-    "badge"       => "Auction",
+    "description" => "زيت على الكتان. دراسة في الضوء والظل في الوجه العربي المعاصر.",
+    "badge"       => "مزاد",
+    "badge_type"  => "auction",
   ],
   [
     "id"          => 4,
-    "title"       => "Neon Medina",
-    "artist"      => "Sara Al-Dosari",
-    "location"    => "Doha, QA",
+    "title"       => "المدينة النيونية",
+    "title_en"    => "Neon Medina",
+    "artist"      => "سارة الدوسري",
+    "location"    => "الدوحة، قطر",
     "price"       => 600,
     "art_type"    => "digital",
+    "art_label"   => "فن رقمي",
     "status"      => "available",
+    "status_label"=> "متاح للبيع",
     "image_url"   => "https://images.unsplash.com/photo-1637858868799-7f26a0640eb6?w=600&q=80",
-    "description" => "Digital art fusing Arabesque patterns with cyberpunk aesthetics.",
-    "badge"       => "New",
+    "description" => "فن رقمي يدمج الزخارف العربية التقليدية مع جماليات السايبربانك.",
+    "badge"       => "جديد",
+    "badge_type"  => "new",
   ],
   [
     "id"          => 5,
-    "title"       => "Golden Hour",
-    "artist"      => "Yusuf Al-Amin",
-    "location"    => "Amman, JO",
+    "title"       => "ساعة الذهب",
+    "title_en"    => "Golden Hour",
+    "artist"      => "يوسف الأمين",
+    "location"    => "عمّان، الأردن",
     "price"       => 1750,
     "art_type"    => "landscape",
+    "art_label"   => "مناظر طبيعية",
     "status"      => "available",
+    "status_label"=> "متاح للبيع",
     "image_url"   => "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80",
-    "description" => "Oil painting capturing the warm light of a Jordanian sunset.",
+    "description" => "لوحة زيتية تجسّد دفء أشعة الغروب في ربوع الأردن.",
     "badge"       => "",
+    "badge_type"  => "",
   ],
   [
     "id"          => 6,
-    "title"       => "Fractured Mind",
-    "artist"      => "Layla Ibrahim",
-    "location"    => "Riyadh, SA",
+    "title"       => "العقل المتشظي",
+    "title_en"    => "Fractured Mind",
+    "artist"      => "ليلى إبراهيم",
+    "location"    => "الرياض، السعودية",
     "price"       => 980,
     "art_type"    => "abstract",
+    "art_label"   => "تجريدي",
     "status"      => "available",
+    "status_label"=> "متاح للبيع",
     "image_url"   => "https://images.unsplash.com/photo-1541512416146-3cf58d6b27cc?w=600&q=80",
-    "description" => "Mixed media on board exploring identity and duality.",
+    "description" => "وسائط مختلطة على لوح خشبي تستكشف الهوية والازدواجية.",
     "badge"       => "",
+    "badge_type"  => "",
   ],
   [
     "id"          => 7,
-    "title"       => "The Elder",
-    "artist"      => "Fatima Al-Zahra",
-    "location"    => "Marrakech, MA",
+    "title"       => "الشيخ",
+    "title_en"    => "The Elder",
+    "artist"      => "فاطمة الزهراء",
+    "location"    => "مراكش، المغرب",
     "price"       => 3200,
     "art_type"    => "portrait",
+    "art_label"   => "بورتريه",
     "status"      => "available",
+    "status_label"=> "متاح للبيع",
     "image_url"   => "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
-    "description" => "Hyperrealist charcoal portrait of a Moroccan elder.",
-    "badge"       => "Featured",
+    "description" => "بورتريه فحم فائق الواقعية لشيخ مغربي في ضوء الشمس.",
+    "badge"       => "مميز",
+    "badge_type"  => "featured",
   ],
   [
     "id"          => 8,
-    "title"       => "Cyber Souk",
-    "artist"      => "Khalid Nasser",
-    "location"    => "Beirut, LB",
+    "title"       => "السوق الرقمي",
+    "title_en"    => "Cyber Souk",
+    "artist"      => "خالد ناصر",
+    "location"    => "بيروت، لبنان",
     "price"       => 450,
     "art_type"    => "digital",
+    "art_label"   => "فن رقمي",
     "status"      => "available",
+    "status_label"=> "متاح للبيع",
     "image_url"   => "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
-    "description" => "A digital reimagining of a traditional Middle Eastern market.",
+    "description" => "إعادة تخيّل رقمية للسوق الشرقي التقليدي بلمسة مستقبلية.",
     "badge"       => "",
+    "badge_type"  => "",
   ],
 ];
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Marketplace — Resha Art</title>
+  <title>سوق ريشة فن · Resha Art Marketplace</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            violet: { 50:'#f5f3ff',100:'#ede9fe',200:'#ddd6fe',400:'#a78bfa',600:'#7c3aed',700:'#6d28d9' }
-          },
-          fontFamily: { sans: ['Inter','system-ui','sans-serif'] }
-        }
-      }
-    }
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .card-img { transition: transform 0.6s cubic-bezier(.25,.46,.45,.94); }
-    .art-card:hover .card-img { transform: scale(1.07); }
-    .art-card { transition: box-shadow .25s, transform .25s; }
-    .art-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -8px rgba(0,0,0,.13); }
-    /* Hero gradient */
-    .hero-gradient {
-      background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 40%, #7c3aed 70%, #a855f7 100%);
+    /* ── RESET ── */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html,body{width:100%;min-height:100vh;background:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+
+    /* ── BACKGROUND (exact from index.html) ── */
+    .bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;}
+    .bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 2s ease;z-index:2;}
+    .bg-video.on{opacity:0.92;}
+    .overlay{position:fixed;inset:0;z-index:3;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,0.22) 0%,rgba(255,255,255,0) 50%,rgba(255,255,255,0.38) 100%);}
+    .overlay2{position:fixed;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at 20% 50%,rgba(0,100,255,0.06) 0%,transparent 60%);}
+
+    /* ── TOP NAV (exact from index.html) ── */
+    .topnav{
+      position:fixed;top:0;left:0;right:0;z-index:200;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 24px;height:56px;
+      background:rgba(255,255,255,0.6);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(0,0,0,0.05);
     }
-    /* Floating badge */
-    .badge-new      { background:#dbeafe; color:#1d4ed8; }
-    .badge-auction  { background:#fef3c7; color:#b45309; }
-    .badge-featured { background:#fce7f3; color:#be185d; }
-    /* Nav scroll */
-    .navbar { backdrop-filter: blur(12px); background: rgba(255,255,255,0.85); }
-    /* Search focus ring */
-    #search-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(124,58,237,.25); }
-    /* Filter tab active */
-    .filter-tab.active { background:#7c3aed; color:#fff; box-shadow: 0 4px 12px rgba(124,58,237,.35); }
-    /* Detail modal */
-    #detail-modal { display:none; }
-    #detail-modal.open { display:flex; }
-    #modal-overlay { backdrop-filter: blur(4px); }
-    /* Animate cards in */
-    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .art-card { animation: fadeUp .4s ease both; }
-    /* Stagger */
-    .art-card:nth-child(1){animation-delay:.05s}
-    .art-card:nth-child(2){animation-delay:.10s}
-    .art-card:nth-child(3){animation-delay:.15s}
-    .art-card:nth-child(4){animation-delay:.20s}
-    .art-card:nth-child(5){animation-delay:.25s}
-    .art-card:nth-child(6){animation-delay:.30s}
-    .art-card:nth-child(7){animation-delay:.35s}
-    .art-card:nth-child(8){animation-delay:.40s}
+    [dir=rtl] .topnav{flex-direction:row-reverse;}
+    [dir=rtl] .nav-right{flex-direction:row-reverse;}
+    [dir=rtl] .nav-center{flex-direction:row-reverse;}
+    [dir=rtl] .dropdown{left:auto;right:0;text-align:right;}
+    [dir=rtl] .dropdown a{flex-direction:row-reverse;}
+
+    .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:#111111;flex-shrink:0;}
+    .nav-logo svg{color:#ff0055;}
+    .nav-logo span{font-size:13px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;}
+
+    /* ── NAV CENTER ── */
+    .nav-center{display:flex;align-items:stretch;gap:0;height:100%;}
+    .nav-item{position:relative;display:flex;align-items:center;}
+    .nav-item > a{
+      display:flex;align-items:center;gap:5px;
+      padding:0 16px;height:100%;
+      font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;
+      color:rgba(0,0,0,0.65);text-decoration:none;
+      transition:color 0.2s;white-space:nowrap;
+      border-bottom:2px solid transparent;
+    }
+    .nav-item > a:hover{color:#000;}
+    .nav-item:hover > a{color:#0055ff;border-bottom-color:#0055ff;}
+    .nav-item.active-page > a{color:#ff0055;border-bottom-color:#ff0055;}
+
+    .nav-item > a .chevron{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform 0.2s;flex-shrink:0;}
+    .nav-item:hover > a .chevron{transform:rotate(180deg);}
+
+    /* dropdown */
+    .dropdown{
+      position:absolute;top:100%;left:0;min-width:200px;
+      background:rgba(255,255,255,0.96);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border:1px solid rgba(0,0,0,0.07);
+      border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,0.1);
+      padding:8px;
+      opacity:0;visibility:hidden;transform:translateY(8px);
+      transition:opacity 0.2s,transform 0.2s,visibility 0.2s;
+      pointer-events:none;
+    }
+    [dir=rtl] .dropdown{left:auto;right:0;}
+    .nav-item:hover .dropdown{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;}
+    .dropdown a{
+      display:flex;align-items:center;gap:10px;
+      padding:9px 12px;border-radius:9px;
+      font-size:12px;color:rgba(0,0,0,0.7);text-decoration:none;
+      transition:background 0.15s,color 0.15s;
+    }
+    .dropdown a:hover{background:rgba(0,100,255,0.07);color:#0055ff;}
+    .dropdown a .d-icon{width:14px;height:14px;fill:currentColor;opacity:0.6;flex-shrink:0;}
+
+    /* ── NAV RIGHT ── */
+    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+    .nav-btn{
+      padding:6px 14px;border-radius:999px;font-size:11px;font-weight:600;
+      letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;
+      text-decoration:none;display:inline-flex;align-items:center;gap:5px;
+      transition:all 0.22s;border:1px solid rgba(0,0,0,0.1);
+      background:rgba(0,0,0,0.04);color:rgba(0,0,0,0.8);
+    }
+    .nav-btn:hover{background:rgba(0,0,0,0.08);color:#000;}
+    .nav-btn.primary{background:rgba(0,100,255,0.1);border-color:rgba(0,100,255,0.2);color:#0066ff;}
+    .nav-btn.primary:hover{background:rgba(0,100,255,0.18);}
+    .lang-btn{
+      padding:5px 11px;border-radius:999px;font-size:10px;font-weight:600;
+      letter-spacing:0.06em;cursor:pointer;
+      border:1px solid rgba(0,0,0,0.1);
+      background:rgba(255,255,255,0.7);color:rgba(0,0,0,0.7);
+      backdrop-filter:blur(8px);transition:all 0.22s;
+    }
+    .lang-btn:hover{background:#111111;color:#fff;}
+
+    /* ── PAGE WRAPPER ── */
+    .page{position:relative;z-index:10;width:100%;max-width:1280px;margin:0 auto;padding:80px 32px 64px;min-height:100vh;}
+
+    /* ── HERO ── */
+    .mkt-hero{
+      text-align:center;padding:48px 24px 40px;
+      animation:riseUp 1s cubic-bezier(0.22,1,0.36,1) forwards;opacity:0;
+    }
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:8px;padding:5px 14px;
+      border-radius:999px;margin-bottom:20px;
+      background:rgba(255,0,85,0.06);border:1px solid rgba(255,0,85,0.18);
+      font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#ff0055;
+    }
+    .pulse-dot{width:6px;height:6px;border-radius:50%;background:#ff0055;box-shadow:0 0 10px rgba(255,0,85,0.5);animation:pulse 2s infinite;}
+    .mkt-hero h1{font-size:clamp(26px,4vw,48px);font-weight:300;line-height:1.18;color:#111111;margin-bottom:14px;letter-spacing:-0.02em;}
+    .mkt-hero h1 em{font-style:normal;font-weight:700;background:linear-gradient(90deg,#ff0055,#0066ff,#aa00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .mkt-hero p{font-size:14px;line-height:1.82;color:rgba(15,15,15,0.72);max-width:560px;margin:0 auto 28px;}
+
+    /* ── GLASS PANEL ── */
+    .glass-panel{
+      background:rgba(255,255,255,0.72);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,0.9);
+      border-radius:20px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    /* ── SEARCH BAR ── */
+    .search-wrap{max-width:560px;margin:0 auto;}
+    .search-inner{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,0.1);box-shadow:0 4px 20px rgba(0,0,0,0.07);}
+    .search-inner input{flex:1;border:none;background:transparent;font-size:13px;color:#111;outline:none;font-family:inherit;direction:rtl;}
+    .search-inner input::placeholder{color:rgba(0,0,0,0.38);}
+    .search-inner svg{flex-shrink:0;color:rgba(0,0,0,0.38);}
+
+    /* ── FILTER TABS ── */
+    .filter-row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:24px 0;}
+    .ftab{
+      padding:7px 18px;border-radius:999px;font-size:11px;font-weight:600;
+      letter-spacing:0.05em;cursor:pointer;
+      border:1px solid rgba(0,0,0,0.1);
+      background:rgba(255,255,255,0.7);color:rgba(0,0,0,0.65);
+      backdrop-filter:blur(8px);transition:all 0.22s;
+      display:inline-flex;align-items:center;gap:6px;
+    }
+    .ftab:hover{background:rgba(255,255,255,0.95);color:#000;border-color:rgba(0,0,0,0.2);}
+    .ftab.active{background:#111111;color:#ffffff;border-color:#111111;box-shadow:0 4px 14px rgba(0,0,0,0.18);}
+
+    /* ── SORT BAR ── */
+    .sort-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+    .sort-bar select{
+      padding:6px 14px;border-radius:999px;font-size:11px;font-weight:600;
+      border:1px solid rgba(0,0,0,0.1);background:rgba(255,255,255,0.8);
+      color:rgba(0,0,0,0.7);outline:none;cursor:pointer;font-family:inherit;
+      backdrop-filter:blur(8px);
+    }
+    .results-count{font-size:12px;color:rgba(0,0,0,0.45);font-weight:500;letter-spacing:0.04em;}
+
+    /* ── ARTWORK CARDS ── */
+    .art-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+    @media(max-width:1100px){.art-grid{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:768px){.art-grid{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:480px){.art-grid{grid-template-columns:1fr;}}
+
+    .art-card{
+      border-radius:18px;overflow:hidden;cursor:pointer;
+      background:rgba(255,255,255,0.75);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,0.95);
+      box-shadow:0 4px 20px rgba(0,0,0,0.08);
+      transition:transform 0.28s cubic-bezier(.25,.46,.45,.94),box-shadow 0.28s;
+      animation:riseUp 0.45s ease both;
+    }
+    .art-card:hover{transform:translateY(-5px);box-shadow:0 20px 48px rgba(0,0,0,0.14);}
+    .art-card:nth-child(1){animation-delay:.05s} .art-card:nth-child(2){animation-delay:.10s}
+    .art-card:nth-child(3){animation-delay:.15s} .art-card:nth-child(4){animation-delay:.20s}
+    .art-card:nth-child(5){animation-delay:.25s} .art-card:nth-child(6){animation-delay:.30s}
+    .art-card:nth-child(7){animation-delay:.35s} .art-card:nth-child(8){animation-delay:.40s}
+
+    .card-img-wrap{position:relative;aspect-ratio:4/3;overflow:hidden;background:#f0f0f0;}
+    .card-img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s cubic-bezier(.25,.46,.45,.94);}
+    .art-card:hover .card-img{transform:scale(1.07);}
+
+    /* hover overlay */
+    .card-hover-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.55),transparent);
+      opacity:0;transition:opacity 0.3s;
+      display:flex;align-items:flex-end;padding:14px;
+    }
+    .art-card:hover .card-hover-overlay{opacity:1;}
+    .card-hover-label{font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.18);backdrop-filter:blur(6px);padding:6px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.3);}
+
+    /* badges */
+    .card-badge{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+    .badge-new{background:rgba(0,100,255,0.12);color:#0055ff;border:1px solid rgba(0,100,255,0.2);}
+    .badge-auction{background:rgba(255,0,85,0.1);color:#ff0055;border:1px solid rgba(255,0,85,0.2);}
+    .badge-featured{background:rgba(170,0,255,0.1);color:#aa00ff;border:1px solid rgba(170,0,255,0.2);}
+
+    /* wishlist */
+    .card-wish{position:absolute;top:10px;left:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.8);backdrop-filter:blur(6px);border:1px solid rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all 0.2s;color:rgba(0,0,0,0.4);}
+    .card-wish:hover{color:#ff0055;background:#fff;}
+    .card-wish.loved{color:#ff0055;}
+
+    /* card body */
+    .card-body{padding:14px 16px 16px;}
+    .card-type-pill{display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.55);margin-bottom:8px;}
+    .card-title{font-size:14px;font-weight:700;color:#111111;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .card-artist{display:flex;align-items:center;gap:6px;margin-bottom:12px;}
+    .artist-avatar{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#ff0055,#aa00ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;flex-shrink:0;}
+    .artist-name{font-size:12px;color:rgba(0,0,0,0.55);}
+    .artist-loc{font-size:10px;color:rgba(0,0,0,0.35);}
+
+    .card-footer{display:flex;align-items:center;justify-content:space-between;}
+    .card-price-area{}
+    .card-status{font-size:10px;color:rgba(0,0,0,0.4);display:flex;align-items:center;gap:4px;margin-bottom:2px;}
+    .status-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+    .dot-available{background:#00c853;}
+    .dot-auction{background:#ff0055;}
+    .card-price{font-size:18px;font-weight:800;color:#111111;letter-spacing:-0.02em;}
+
+    .btn-details{
+      padding:7px 16px;border-radius:999px;
+      background:#111111;color:#ffffff;
+      font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
+      border:none;cursor:pointer;transition:all 0.22s;
+      white-space:nowrap;
+    }
+    .btn-details:hover{background:#333;transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,0.15);}
+
+    /* ── EMPTY STATE ── */
+    #empty-state{display:none;text-align:center;padding:80px 20px;}
+    .empty-icon{font-size:48px;margin-bottom:16px;}
+    .empty-title{font-size:18px;font-weight:700;color:#111;margin-bottom:8px;}
+    .empty-sub{font-size:13px;color:rgba(0,0,0,0.45);}
+    .btn-reset{margin-top:20px;padding:10px 24px;border-radius:999px;background:#111;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;border:none;cursor:pointer;transition:all 0.22s;}
+    .btn-reset:hover{background:#333;}
+
+    /* ── ARTIST CTA BANNER ── */
+    .artist-cta{
+      margin-top:64px;border-radius:24px;overflow:hidden;position:relative;
+      background:rgba(255,255,255,0.78);backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,0.95);
+      box-shadow:0 8px 32px rgba(0,0,0,0.08);
+      padding:40px 48px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
+    }
+    .cta-accent{position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,rgba(255,0,85,0.07),rgba(0,100,255,0.07));pointer-events:none;}
+    .cta-title{font-size:22px;font-weight:700;color:#111;margin-bottom:8px;}
+    .cta-sub{font-size:13px;color:rgba(0,0,0,0.55);line-height:1.7;max-width:400px;}
+    .btn-cta-p{padding:11px 26px;border-radius:999px;background:#111111;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.22s;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+    .btn-cta-p:hover{background:#333;transform:translateY(-2px);}
+
+    /* ── DETAIL MODAL ── */
+    .modal-bg{position:fixed;inset:0;z-index:500;background:rgba(255,255,255,0.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-bg.open{display:flex;}
+    .modal-box{background:#ffffff;border:1px solid rgba(0,100,255,0.08);border-radius:24px;max-width:720px;width:100%;overflow:hidden;position:relative;animation:riseUp 0.38s ease;box-shadow:0 30px 70px rgba(0,0,0,0.12);max-height:90vh;overflow-y:auto;}
+    .modal-close{position:absolute;top:14px;left:14px;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid rgba(0,0,0,0.1);color:#111;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:10;}
+    .modal-close:hover{background:rgba(255,0,0,0.08);color:red;}
+
+    /* ── FOOTER ── */
+    .mkt-footer{margin-top:64px;border-top:1px solid rgba(0,0,0,0.07);padding:32px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+    .footer-brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:#111;}
+    .footer-brand span{font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;}
+    .footer-links{display:flex;gap:20px;flex-wrap:wrap;}
+    .footer-links a{font-size:11px;color:rgba(0,0,0,0.45);text-decoration:none;transition:color 0.2s;}
+    .footer-links a:hover{color:#0055ff;}
+    .footer-copy{font-size:11px;color:rgba(0,0,0,0.3);}
+
+    /* ── ANIMATIONS ── */
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+    @keyframes riseUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── MOBILE ── */
+    @media(max-width:1024px){.nav-center{display:none;}}
+    @media(max-width:768px){.topnav{padding:0 14px;}.page{padding:70px 16px 40px;}.artist-cta{padding:28px 24px;}.mkt-hero{padding:32px 16px 28px;}}
+    @media(max-width:560px){.nav-logo span{display:none;}}
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 antialiased">
+<body>
 
 <!-- ══════════════════════════════════════════
-     NAVBAR
+     BACKGROUND (exact match index.html)
 ══════════════════════════════════════════ -->
-<header class="navbar sticky top-0 z-50 border-b border-white/60 shadow-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<div class="bg-wrap">
+  <video class="bg-video" id="vid" autoplay loop muted playsinline src="bg.mp4"></video>
+</div>
+<div class="overlay"></div>
+<div class="overlay2"></div>
 
-    <!-- Brand -->
-    <a href="#" class="flex items-center gap-2.5 no-underline">
-      <div class="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">R</div>
-      <span class="font-extrabold text-gray-900 text-lg tracking-tight">Resha Art</span>
-    </a>
+<!-- ══════════════════════════════════════════
+     TOP NAV (exact match index.html)
+══════════════════════════════════════════ -->
+<nav class="topnav" id="topnav" dir="rtl">
 
-    <!-- Desktop Nav -->
-    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-      <a href="#" class="hover:text-violet-600 transition">Home</a>
-      <a href="#" class="text-violet-600 font-semibold">Marketplace</a>
-      <a href="#" class="hover:text-violet-600 transition">Auctions</a>
-      <a href="#" class="hover:text-violet-600 transition">Artists</a>
-      <a href="#" class="hover:text-violet-600 transition">About</a>
-    </nav>
+  <!-- LOGO -->
+  <a class="nav-logo" href="index.html">
+    <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor">
+      <path d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/>
+    </svg>
+    <span>RESHA ART</span>
+  </a>
 
-    <!-- CTA -->
-    <div class="flex items-center gap-3">
-      <a href="artist_dashboard.php"
-         class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-violet-600 hover:text-violet-700 transition">
-        Artist Login
+  <!-- CENTER DROPDOWN NAV -->
+  <div class="nav-center" id="nav-center" dir="rtl">
+
+    <!-- الاستوديو -->
+    <div class="nav-item">
+      <a href="studio.php">
+        <span>الاستوديو</span>
+        <svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg>
       </a>
-      <button class="px-4 py-2 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition shadow-sm">
-        Sign Up
-      </button>
-    </div>
-  </div>
-</header>
-
-
-<!-- ══════════════════════════════════════════
-     HERO
-══════════════════════════════════════════ -->
-<section class="hero-gradient relative overflow-hidden">
-  <!-- Decorative circles -->
-  <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5 pointer-events-none"></div>
-  <div class="absolute top-10 -left-16 w-64 h-64 rounded-full bg-white/5 pointer-events-none"></div>
-  <div class="absolute bottom-0 right-1/3 w-48 h-48 rounded-full bg-fuchsia-500/20 pointer-events-none"></div>
-
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 relative z-10">
-    <div class="max-w-2xl">
-      <!-- Tag -->
-      <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 text-white/90 text-xs font-semibold tracking-wide uppercase mb-5 border border-white/20">
-        🎨 Discover Exceptional Art
-      </span>
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-5">
-        Where Art Finds<br />Its True Home
-      </h1>
-      <p class="text-white/75 text-lg md:text-xl leading-relaxed mb-8 max-w-xl">
-        Explore original paintings, portraits, digital art, and more — directly from talented artists across the Arab world.
-      </p>
-      <div class="flex flex-wrap gap-3">
-        <a href="#browse"
-           class="px-6 py-3 rounded-xl bg-white text-violet-700 font-bold text-sm hover:bg-violet-50 transition shadow-lg">
-          Browse Artworks
+      <div class="dropdown">
+        <a href="studio.php#watercolor">
+          <svg class="d-icon" viewBox="0 0 24 24"><path d="M12 2C8 2 4 6 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4-4-8-8-8z"/></svg>
+          <span>ورشة الألوان المائية</span>
         </a>
-        <a href="#"
-           class="px-6 py-3 rounded-xl bg-white/15 text-white font-semibold text-sm border border-white/30 hover:bg-white/25 transition">
-          Meet the Artists →
+        <a href="studio.php#oil">
+          <svg class="d-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+          <span>استوديو الرسم الزيتي</span>
+        </a>
+        <a href="studio.php#digital">
+          <svg class="d-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span>مختبر الفن الرقمي</span>
+        </a>
+        <a href="studio.php#charcoal">
+          <svg class="d-icon" viewBox="0 0 24 24"><path d="M3 17l4-8 4 4 4-6 4 10"/></svg>
+          <span>الفحم والحبر</span>
         </a>
       </div>
     </div>
-  </div>
 
-  <!-- Stats bar -->
-  <div class="bg-black/20 border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div class="flex flex-wrap gap-6 md:gap-12">
-        <?php foreach ([['500+','Original artworks'],['120+','Verified artists'],['40+','Countries reached'],['$2M+','In artist sales']] as [$num,$label]): ?>
-        <div class="flex items-baseline gap-2">
-          <span class="text-white font-extrabold text-xl"><?= $num ?></span>
-          <span class="text-white/60 text-sm"><?= $label ?></span>
-        </div>
-        <?php endforeach; ?>
+    <!-- المجتمع -->
+    <div class="nav-item">
+      <a href="community.php">
+        <span>المجتمع</span>
+        <svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg>
+      </a>
+      <div class="dropdown">
+        <a href="chat.php">
+          <svg class="d-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>غرفة محادثة الفنانين</span>
+        </a>
+        <a href="community.php#meet">
+          <svg class="d-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>تعرّف على فنانين</span>
+        </a>
+        <a href="community.php#share">
+          <svg class="d-icon" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          <span>شارك أعمالك</span>
+        </a>
+        <a href="community.php#learn">
+          <svg class="d-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <span>تعلّم معاً</span>
+        </a>
       </div>
     </div>
+
+    <!-- السوق — active page -->
+    <div class="nav-item active-page">
+      <a href="marketplace.php"><span>السوق</span></a>
+    </div>
+
+    <!-- استكشف أساليب الرسم -->
+    <div class="nav-item">
+      <a href="explore.php"><span>استكشف أساليب الرسم</span></a>
+    </div>
+
+    <!-- الدعم -->
+    <div class="nav-item">
+      <a href="support.php">
+        <span>الدعم</span>
+        <svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg>
+      </a>
+      <div class="dropdown">
+        <a href="mailto:contact@reshaart.com">
+          <svg class="d-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>تواصل معنا</span>
+        </a>
+        <a href="support.php#how">
+          <svg class="d-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>كيف يعمل الموقع</span>
+        </a>
+        <a href="support.php#terms">
+          <svg class="d-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>شروط الاستخدام</span>
+        </a>
+      </div>
+    </div>
+
   </div>
-</section>
+
+  <!-- RIGHT BUTTONS -->
+  <div class="nav-right" dir="rtl">
+    <a class="nav-btn primary" href="chat.php">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      <span>محادثة الفنانين</span>
+    </a>
+    <a class="nav-btn" href="login.php"><span>تسجيل الدخول</span></a>
+    <a class="nav-btn" href="register.php"><span>انضم مجاناً</span></a>
+    <button class="lang-btn" onclick="window.location.href='marketplace.php?lang=en'">English</button>
+  </div>
+
+</nav>
 
 
 <!-- ══════════════════════════════════════════
-     BROWSE SECTION
+     PAGE CONTENT
 ══════════════════════════════════════════ -->
-<section id="browse" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+<div class="page" id="pg" dir="rtl">
 
-  <!-- Section header -->
-  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-    <div>
-      <p class="text-xs font-semibold text-violet-600 uppercase tracking-widest mb-1">Explore</p>
-      <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Browse the Collection</h2>
+  <!-- ── HERO ── -->
+  <div class="mkt-hero">
+    <div class="hero-badge">
+      <div class="pulse-dot"></div>
+      <span>سوق الأعمال الفنية</span>
     </div>
-    <p class="text-sm text-gray-500" id="results-count"><?= count($artworks) ?> artworks</p>
-  </div>
-
-  <!-- Search + Filters -->
-  <div class="flex flex-col md:flex-row gap-4 mb-8">
+    <h1>اكتشف الفن الذي <em>يلمس روحك</em></h1>
+    <p>أعمال فنية أصيلة من فنانين موهوبين عبر العالم العربي — لوحات، بورتريهات، فن رقمي، ومزادات حية.</p>
 
     <!-- Search -->
-    <div class="relative flex-1">
-      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
-      </svg>
-      <input id="search-input" type="text" placeholder="Search by title or artist…"
-        oninput="applyFilters()"
-        class="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 transition shadow-sm" />
+    <div class="search-wrap">
+      <div class="search-inner">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="search-input" type="text" placeholder="ابحث بالعنوان أو اسم الفنان…" oninput="applyFilters()" />
+      </div>
     </div>
 
-    <!-- Sort -->
-    <select id="sort-select" onchange="applyFilters()"
-      class="px-4 py-3 rounded-2xl border border-gray-200 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-violet-400 shadow-sm cursor-pointer min-w-[160px]">
-      <option value="default">Sort: Featured</option>
-      <option value="price-asc">Price: Low → High</option>
-      <option value="price-desc">Price: High → Low</option>
-      <option value="title">Title A–Z</option>
+    <!-- Filter Tabs -->
+    <div class="filter-row">
+      <?php
+      $filters = [
+        ['all',       'الكل',               '🖼️'],
+        ['abstract',  'تجريدي',             '🎨'],
+        ['portrait',  'بورتريه',            '👤'],
+        ['landscape', 'مناظر طبيعية',       '🏔️'],
+        ['digital',   'فن رقمي',            '💻'],
+      ];
+      foreach ($filters as [$val, $label, $icon]):
+      ?>
+      <button
+        onclick="setFilter('<?= $val ?>')"
+        data-filter="<?= $val ?>"
+        class="ftab <?= $val === 'all' ? 'active' : '' ?>">
+        <span><?= $icon ?></span> <?= $label ?>
+      </button>
+      <?php endforeach; ?>
+    </div>
+  </div>
+
+  <!-- ── SORT BAR ── -->
+  <div class="sort-bar">
+    <span class="results-count" id="results-count"><?= count($artworks) ?> عمل فني</span>
+    <select id="sort-select" onchange="applyFilters()">
+      <option value="default">الترتيب: مميز</option>
+      <option value="price-asc">السعر: الأقل أولاً</option>
+      <option value="price-desc">السعر: الأعلى أولاً</option>
+      <option value="title">العنوان: أ–ي</option>
     </select>
   </div>
 
-  <!-- Filter Tabs -->
-  <div class="flex flex-wrap gap-2 mb-10">
-    <?php
-    $types = [
-      ['all',       'All',       '🖼️'],
-      ['abstract',  'Abstract',  '🎨'],
-      ['portrait',  'Portrait',  '👤'],
-      ['landscape', 'Landscape', '🏔️'],
-      ['digital',   'Digital',   '💻'],
-    ];
-    foreach ($types as [$val, $label, $icon]):
-      $active = $val === 'all' ? 'active' : '';
-    ?>
-    <button
-      onclick="setFilter('<?= $val ?>')"
-      data-filter="<?= $val ?>"
-      class="filter-tab <?= $active ?> flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border border-gray-200 bg-white text-gray-600 hover:border-violet-300 hover:text-violet-700 transition cursor-pointer">
-      <span><?= $icon ?></span> <?= $label ?>
-    </button>
-    <?php endforeach; ?>
-  </div>
-
-  <!-- Artwork Grid -->
-  <div id="artwork-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <!-- ── ARTWORK GRID ── -->
+  <div class="art-grid" id="artwork-grid">
 
     <?php foreach ($artworks as $aw):
-      $badge_cls = match(strtolower($aw['badge'])) {
+      $badge_cls = match($aw['badge_type']) {
         'new'      => 'badge-new',
         'auction'  => 'badge-auction',
         'featured' => 'badge-featured',
         default    => '',
       };
-      $status_dot = $aw['status'] === 'auction'
-        ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block mr-1"></span>'
-        : '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>';
+      $dot_cls = $aw['status'] === 'auction' ? 'dot-auction' : 'dot-available';
+      $placeholder = 'https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=600&q=80';
     ?>
-    <div class="art-card group bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer"
+    <div class="art-card"
          data-type="<?= htmlspecialchars($aw['art_type']) ?>"
-         data-title="<?= htmlspecialchars(strtolower($aw['title'])) ?>"
-         data-artist="<?= htmlspecialchars(strtolower($aw['artist'])) ?>"
+         data-title="<?= htmlspecialchars($aw['title']) ?>"
+         data-artist="<?= htmlspecialchars($aw['artist']) ?>"
          data-price="<?= $aw['price'] ?>"
-         onclick="openModal(<?= $aw['id'] ?>)">
+         onclick="openDetail(<?= $aw['id'] ?>)">
 
-      <!-- Image -->
-      <div class="relative aspect-[4/3] overflow-hidden bg-gray-100">
-        <img src="<?= htmlspecialchars($aw['image_url']) ?>"
+      <div class="card-img-wrap">
+        <img class="card-img"
+             src="<?= htmlspecialchars($aw['image_url']) ?>"
              alt="<?= htmlspecialchars($aw['title']) ?>"
-             class="card-img w-full h-full object-cover"
-             onerror="this.src='https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=600&q=80'" />
+             onerror="this.src='<?= $placeholder ?>'" />
 
-        <!-- Overlay on hover -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-          <span class="text-white text-xs font-semibold bg-white/20 backdrop-blur px-3 py-1.5 rounded-full border border-white/30">
-            View Details →
-          </span>
+        <!-- Hover overlay -->
+        <div class="card-hover-overlay">
+          <span class="card-hover-label">عرض التفاصيل ←</span>
         </div>
 
         <!-- Badge -->
         <?php if ($aw['badge']): ?>
-        <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full <?= $badge_cls ?>">
-          <?= htmlspecialchars($aw['badge']) ?>
-        </span>
+        <span class="card-badge <?= $badge_cls ?>"><?= htmlspecialchars($aw['badge']) ?></span>
         <?php endif; ?>
 
         <!-- Wishlist -->
-        <button onclick="event.stopPropagation(); toggleWishlist(this)"
-          class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-gray-400 hover:text-rose-500 transition shadow-sm wishlist-btn">
-          ♡
-        </button>
+        <button class="card-wish" onclick="event.stopPropagation(); toggleWish(this)" title="أضف للمفضلة">♡</button>
       </div>
 
-      <!-- Card body -->
-      <div class="p-4">
-        <!-- Art type pill -->
-        <span class="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full capitalize">
-          <?= htmlspecialchars($aw['art_type']) ?>
-        </span>
-
-        <h3 class="font-bold text-gray-900 mt-2 truncate text-[15px]">
-          <?= htmlspecialchars($aw['title']) ?>
-        </h3>
-
-        <div class="flex items-center gap-1.5 mt-1">
-          <div class="w-5 h-5 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-500 flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0">
-            <?= mb_strtoupper(mb_substr($aw['artist'], 0, 1)) ?>
-          </div>
-          <span class="text-sm text-gray-500 truncate"><?= htmlspecialchars($aw['artist']) ?></span>
-          <span class="text-gray-300 text-xs">·</span>
-          <span class="text-xs text-gray-400"><?= htmlspecialchars($aw['location']) ?></span>
-        </div>
-
-        <div class="flex items-center justify-between mt-4">
+      <div class="card-body">
+        <span class="card-type-pill"><?= htmlspecialchars($aw['art_label']) ?></span>
+        <div class="card-title"><?= htmlspecialchars($aw['title']) ?></div>
+        <div class="card-artist">
+          <div class="artist-avatar"><?= mb_substr($aw['artist'], 0, 1) ?></div>
           <div>
-            <p class="text-xs text-gray-400 flex items-center">
-              <?= $status_dot ?>
-              <?= $aw['status'] === 'auction' ? 'Live auction' : 'For sale' ?>
-            </p>
-            <p class="text-xl font-extrabold text-gray-900 leading-tight">
-              $<?= number_format($aw['price']) ?>
-            </p>
+            <div class="artist-name"><?= htmlspecialchars($aw['artist']) ?></div>
+            <div class="artist-loc"><?= htmlspecialchars($aw['location']) ?></div>
           </div>
-          <button onclick="event.stopPropagation(); openModal(<?= $aw['id'] ?>)"
-            class="px-4 py-2 rounded-xl bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700 transition shadow-sm active:scale-95">
-            View Details
+        </div>
+        <div class="card-footer">
+          <div class="card-price-area">
+            <div class="card-status">
+              <span class="status-dot <?= $dot_cls ?>"></span>
+              <?= htmlspecialchars($aw['status_label']) ?>
+            </div>
+            <div class="card-price">$<?= number_format($aw['price']) ?></div>
+          </div>
+          <button class="btn-details" onclick="event.stopPropagation(); openDetail(<?= $aw['id'] ?>)">
+            التفاصيل
           </button>
         </div>
       </div>
@@ -396,136 +662,103 @@ $artworks = [
     </div>
     <?php endforeach; ?>
 
-  </div><!-- /grid -->
+  </div><!-- /art-grid -->
 
   <!-- Empty state -->
-  <div id="empty-state" class="hidden text-center py-24">
-    <p class="text-5xl mb-4">🔍</p>
-    <p class="text-gray-700 font-semibold text-lg">No artworks found</p>
-    <p class="text-gray-400 text-sm mt-1">Try a different search term or filter.</p>
-    <button onclick="resetFilters()" class="mt-5 px-5 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition">
-      Clear Filters
-    </button>
+  <div id="empty-state">
+    <div class="empty-icon">🔍</div>
+    <div class="empty-title">لا توجد نتائج</div>
+    <div class="empty-sub">جرّب بحثاً مختلفاً أو تصفية أخرى.</div>
+    <button class="btn-reset" onclick="resetFilters()">إعادة تعيين الفلاتر</button>
   </div>
 
-</section>
-
-
-<!-- ══════════════════════════════════════════
-     BANNER — Become an Artist
-══════════════════════════════════════════ -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-  <div class="rounded-3xl hero-gradient p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-    <div class="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/5 pointer-events-none"></div>
-    <div class="relative z-10">
-      <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">Are you an artist?</h2>
-      <p class="text-white/70 max-w-md text-sm md:text-base">
-        Join hundreds of artists already selling on Resha Art. Upload your work, set your price, and reach collectors across the world.
-      </p>
+  <!-- ── ARTIST CTA BANNER ── -->
+  <div class="artist-cta">
+    <div class="cta-accent"></div>
+    <div style="position:relative;z-index:1;">
+      <div class="cta-title">هل أنت فنان؟</div>
+      <div class="cta-sub">انضم إلى مئات الفنانين الذين يبيعون أعمالهم على ريشة فن. ارفع أعمالك، حدّد سعرك، وتواصل مع هواة الفن حول العالم.</div>
     </div>
-    <div class="flex gap-3 flex-shrink-0 relative z-10">
-      <a href="artist_dashboard.php"
-         class="px-6 py-3 rounded-xl bg-white text-violet-700 font-bold text-sm hover:bg-violet-50 transition shadow-lg">
-        Open Your Studio →
-      </a>
-    </div>
+    <a href="artist_dashboard.php" class="btn-cta-p">
+      افتح الاستوديو الخاص بك
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
   </div>
-</section>
+
+  <!-- ── FOOTER ── -->
+  <div class="mkt-footer">
+    <a class="footer-brand" href="index.html">
+      <svg width="16" height="16" viewBox="0 0 256 256" fill="#ff0055">
+        <path d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/>
+      </svg>
+      <span>RESHA ART</span>
+    </a>
+    <div class="footer-links">
+      <a href="index.html">الرئيسية</a>
+      <a href="studio.php">الاستوديو</a>
+      <a href="community.php">المجتمع</a>
+      <a href="explore.php">استكشاف</a>
+      <a href="support.php">الدعم</a>
+      <a href="mailto:contact@reshaart.com">تواصل معنا</a>
+    </div>
+    <div class="footer-copy">© <?= date('Y') ?> Resha Art · جميع الحقوق محفوظة</div>
+  </div>
+
+</div><!-- /page -->
 
 
 <!-- ══════════════════════════════════════════
      DETAIL MODAL
 ══════════════════════════════════════════ -->
-<div id="detail-modal" class="fixed inset-0 z-50 items-center justify-center p-4">
-  <div id="modal-overlay" class="absolute inset-0 bg-black/60" onclick="closeModal()"></div>
-  <div class="relative bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto z-10">
-
-    <!-- Close -->
-    <button onclick="closeModal()"
-      class="absolute top-4 right-4 w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition z-20 text-lg font-bold">
-      &times;
-    </button>
-
-    <!-- Content filled by JS -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal-box" id="modal-box">
+    <button class="modal-close" onclick="closeDetail()">✕</button>
     <div id="modal-content"></div>
-
   </div>
 </div>
-
-
-<!-- ══════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════ -->
-<footer class="bg-gray-900 text-white mt-4">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-    <div>
-      <div class="flex items-center gap-2 mb-4">
-        <div class="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center font-bold text-lg">R</div>
-        <span class="font-extrabold text-lg">Resha Art</span>
-      </div>
-      <p class="text-gray-400 text-sm leading-relaxed">A marketplace celebrating original art from artists across the Arab world and beyond.</p>
-    </div>
-    <div>
-      <p class="font-semibold text-sm uppercase tracking-widest text-gray-500 mb-4">Explore</p>
-      <ul class="space-y-2 text-sm text-gray-400">
-        <li><a href="#" class="hover:text-white transition">All Artworks</a></li>
-        <li><a href="#" class="hover:text-white transition">Auctions</a></li>
-        <li><a href="#" class="hover:text-white transition">Featured Artists</a></li>
-        <li><a href="#" class="hover:text-white transition">Commissions</a></li>
-      </ul>
-    </div>
-    <div>
-      <p class="font-semibold text-sm uppercase tracking-widest text-gray-500 mb-4">Contact</p>
-      <ul class="space-y-2 text-sm text-gray-400">
-        <li>✉️ hello@reshaart.com</li>
-        <li>🐦 @ReshaArt</li>
-        <li>📸 @resha.art</li>
-      </ul>
-    </div>
-  </div>
-  <div class="border-t border-gray-800 py-4 text-center text-xs text-gray-600">
-    © <?= date('Y') ?> Resha Art. All rights reserved.
-  </div>
-</footer>
 
 
 <!-- ══════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════ -->
 <script>
-// ── Artwork data (mirrors PHP) ───────────────
-const ARTWORKS = <?= json_encode(array_values($artworks)) ?>;
+// ── Artwork data (mirrors PHP array) ────────
+const ARTWORKS = <?= json_encode(array_values($artworks), JSON_UNESCAPED_UNICODE) ?>;
+
+// ── Video background (exact from index.html) ─
+const v = document.getElementById('vid');
+if (v) {
+  v.addEventListener('canplay', () => v.classList.add('on'), { once: true });
+  v.play().catch(() => {});
+}
 
 // ── State ────────────────────────────────────
 let currentFilter = 'all';
-let currentSearch = '';
 let currentSort   = 'default';
 
-// ── Filter tabs ──────────────────────────────
+// ── Filter ───────────────────────────────────
 function setFilter(type) {
   currentFilter = type;
-  document.querySelectorAll('.filter-tab').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.filter === type);
+  document.querySelectorAll('.ftab').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === type);
   });
   applyFilters();
 }
 
 function applyFilters() {
-  currentSearch = document.getElementById('search-input').value.toLowerCase().trim();
-  currentSort   = document.getElementById('sort-select').value;
+  const search = document.getElementById('search-input').value.trim();
+  currentSort  = document.getElementById('sort-select').value;
 
   const cards = Array.from(document.querySelectorAll('#artwork-grid .art-card'));
 
-  // Gather matching cards
-  let matched = cards.filter(card => {
-    const typeOk   = currentFilter === 'all' || card.dataset.type === currentFilter;
-    const searchOk = !currentSearch ||
-      card.dataset.title.includes(currentSearch) ||
-      card.dataset.artist.includes(currentSearch);
+  let matched = cards.filter(c => {
+    const typeOk   = currentFilter === 'all' || c.dataset.type === currentFilter;
+    const searchOk = !search ||
+      c.dataset.title.includes(search) ||
+      c.dataset.artist.includes(search);
     return typeOk && searchOk;
   });
 
-  // Sort matched
   matched.sort((a, b) => {
     if (currentSort === 'price-asc')  return +a.dataset.price - +b.dataset.price;
     if (currentSort === 'price-desc') return +b.dataset.price - +a.dataset.price;
@@ -533,111 +766,97 @@ function applyFilters() {
     return 0;
   });
 
-  // Hide all, then show matched in sorted order
-  cards.forEach(c => c.style.display = 'none');
   const grid = document.getElementById('artwork-grid');
-  matched.forEach(c => {
-    c.style.display = '';
-    grid.appendChild(c); // re-order in DOM
-  });
+  cards.forEach(c => c.style.display = 'none');
+  matched.forEach(c => { c.style.display = ''; grid.appendChild(c); });
 
-  // Empty state
   const empty = document.getElementById('empty-state');
-  empty.classList.toggle('hidden', matched.length > 0);
+  empty.style.display = matched.length === 0 ? 'block' : 'none';
 
-  // Count
-  document.getElementById('results-count').textContent =
-    matched.length + (matched.length === 1 ? ' artwork' : ' artworks');
+  const n = matched.length;
+  document.getElementById('results-count').textContent = n + ' عمل فني';
 }
 
 function resetFilters() {
   setFilter('all');
   document.getElementById('search-input').value = '';
   document.getElementById('sort-select').value = 'default';
-  currentSearch = '';
-  currentSort = 'default';
   applyFilters();
 }
 
-// ── Wishlist toggle ──────────────────────────
-function toggleWishlist(btn) {
-  const active = btn.classList.toggle('active');
-  btn.textContent = active ? '♥' : '♡';
-  btn.classList.toggle('text-rose-500', active);
-  btn.classList.toggle('text-gray-400', !active);
+// ── Wishlist ─────────────────────────────────
+function toggleWish(btn) {
+  btn.classList.toggle('loved');
+  btn.textContent = btn.classList.contains('loved') ? '♥' : '♡';
 }
 
 // ── Detail Modal ─────────────────────────────
-function openModal(id) {
+function openDetail(id) {
   const aw = ARTWORKS.find(a => a.id === id);
   if (!aw) return;
 
-  const statusLabel = aw.status === 'auction' ? '🔨 Live Auction' : '✅ Available for Sale';
-  const statusCls   = aw.status === 'auction'
-    ? 'bg-amber-100 text-amber-700'
-    : 'bg-emerald-100 text-emerald-700';
+  const isAuction = aw.status === 'auction';
+  const dotCls    = isAuction ? '#ff0055' : '#00c853';
+  const placeholder = 'https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=600&q=80';
 
   document.getElementById('modal-content').innerHTML = `
-    <div class="grid md:grid-cols-2 gap-0">
-      <!-- Image -->
-      <div class="aspect-square md:aspect-auto md:min-h-[360px] overflow-hidden rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none bg-gray-100">
-        <img src="${esc(aw.image_url)}" alt="${esc(aw.title)}"
-          class="w-full h-full object-cover"
-          onerror="this.src='https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=600&q=80'" />
+    <div style="display:grid;grid-template-columns:1fr 1fr;">
+      <div style="aspect-ratio:1;overflow:hidden;background:#f0f0f0;border-radius:24px 0 0 24px;">
+        <img src="${e(aw.image_url)}" alt="${e(aw.title)}"
+          style="width:100%;height:100%;object-fit:cover;"
+          onerror="this.src='${placeholder}'" />
       </div>
-      <!-- Info -->
-      <div class="p-7 flex flex-col justify-between">
+      <div style="padding:28px 28px 28px 28px;display:flex;flex-direction:column;justify-content:space-between;direction:rtl;">
         <div>
-          <span class="text-xs font-semibold text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full capitalize">${esc(aw.art_type)}</span>
-          <h2 class="text-2xl font-extrabold text-gray-900 mt-3 mb-1">${esc(aw.title)}</h2>
-          <div class="flex items-center gap-2 mb-4">
-            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold">
-              ${esc(aw.artist[0].toUpperCase())}
-            </div>
+          <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.5);">${e(aw.art_label)}</span>
+          <h2 style="font-size:20px;font-weight:700;color:#111;margin:10px 0 4px;">${e(aw.title)}</h2>
+          <div style="font-size:11px;color:rgba(0,0,0,0.4);margin-bottom:4px;">${e(aw.title_en)}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin:12px 0;">
+            <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#ff0055,#aa00ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">${e(aw.artist.charAt ? aw.artist.charAt(0) : aw.artist[0])}</div>
             <div>
-              <p class="text-sm font-semibold text-gray-800">${esc(aw.artist)}</p>
-              <p class="text-xs text-gray-400">${esc(aw.location)}</p>
+              <div style="font-size:13px;font-weight:600;color:#111;">${e(aw.artist)}</div>
+              <div style="font-size:11px;color:rgba(0,0,0,0.4);">${e(aw.location)}</div>
             </div>
           </div>
-          <p class="text-gray-500 text-sm leading-relaxed mb-5">${esc(aw.description)}</p>
-          <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${statusCls}">
-            ${statusLabel}
-          </span>
+          <p style="font-size:13px;color:rgba(0,0,0,0.6);line-height:1.8;margin-bottom:16px;">${e(aw.description)}</p>
+          <div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:6px 14px;border-radius:999px;background:${isAuction ? 'rgba(255,0,85,0.08)' : 'rgba(0,200,83,0.08)'};color:${isAuction ? '#ff0055' : '#009624'};border:1px solid ${isAuction ? 'rgba(255,0,85,0.18)' : 'rgba(0,200,83,0.18)'};">
+            <span style="width:6px;height:6px;border-radius:50%;background:${dotCls};display:inline-block;"></span>
+            ${e(aw.status_label)}
+          </div>
         </div>
-        <div class="mt-6 pt-6 border-t border-gray-100">
-          <div class="flex items-end justify-between mb-5">
-            <div>
-              <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Price</p>
-              <p class="text-3xl font-extrabold text-gray-900">$${Number(aw.price).toLocaleString()}</p>
-            </div>
-          </div>
-          <div class="flex gap-3">
-            <button onclick="alert('🛒 Purchase flow coming soon!')"
-              class="flex-1 py-3 rounded-xl bg-violet-600 text-white font-bold text-sm hover:bg-violet-700 transition active:scale-95 shadow-sm">
-              ${aw.status === 'auction' ? '🔨 Place Bid' : '🛒 Buy Now'}
+        <div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:20px;margin-top:20px;">
+          <div style="font-size:10px;color:rgba(0,0,0,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">السعر</div>
+          <div style="font-size:28px;font-weight:800;color:#111;letter-spacing:-0.02em;margin-bottom:16px;">$${Number(aw.price).toLocaleString()}</div>
+          <div style="display:flex;gap:10px;">
+            <button onclick="alert('🛒 قريباً — ميزة الشراء قيد التطوير')"
+              style="flex:1;padding:11px;border-radius:999px;background:#111;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.2s;"
+              onmouseover="this.style.background='#333'" onmouseout="this.style.background='#111'">
+              ${isAuction ? '🔨 المزايدة' : '🛒 اشتر الآن'}
             </button>
-            <button onclick="alert('💬 Messaging coming soon!')"
-              class="px-4 py-3 rounded-xl border border-gray-200 text-gray-600 text-sm font-semibold hover:bg-gray-50 transition">
-              Message Artist
+            <button onclick="alert('💬 قريباً — ميزة المراسلة قيد التطوير')"
+              style="padding:11px 18px;border-radius:999px;border:1px solid rgba(0,0,0,0.12);background:transparent;color:#111;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">
+              تواصل مع الفنان
             </button>
           </div>
         </div>
       </div>
     </div>`;
 
-  document.getElementById('detail-modal').classList.add('open');
+  document.getElementById('modal-bg').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function closeModal() {
-  document.getElementById('detail-modal').classList.remove('open');
+function closeDetail() {
+  document.getElementById('modal-bg').classList.remove('open');
   document.body.style.overflow = '';
 }
 
-// Close modal on Escape key
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.getElementById('modal-bg').addEventListener('click', function(ev) {
+  if (ev.target === this) closeDetail();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
 
-function esc(str) {
+function e(str) {
   return String(str ?? '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
