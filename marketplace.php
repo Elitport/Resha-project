@@ -1,140 +1,190 @@
 <?php
 // marketplace.php — Resha Art · سوق الأعمال الفنية
-// Fully integrated with index.html brand: video bg, frosted nav, RTL Arabic.
+// Dynamic bilingual language switching (AR/EN) matching index.html pattern.
+
+$initialLang = in_array($_GET['lang'] ?? '', ['en','ar']) ? $_GET['lang'] : 'ar';
 
 $artworks = [
   [
-    "id"          => 1,
-    "title"       => "همسات الصحراء",
-    "title_en"    => "Desert Whispers",
-    "artist"      => "ليلى إبراهيم",
-    "location"    => "الرياض، السعودية",
-    "price"       => 1200,
-    "art_type"    => "abstract",
-    "art_label"   => "تجريدي",
-    "status"      => "available",
-    "status_label"=> "متاح للبيع",
-    "image_url"   => "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&q=80",
-    "description" => "أكريليك على قماش. رحلة عبر الكثبان الذهبية في الربع الخالي.",
-    "badge"       => "جديد",
-    "badge_type"  => "new",
+    "id"             => 1,
+    "title"          => "همسات الصحراء",
+    "title_en"       => "Desert Whispers",
+    "artist"         => "ليلى إبراهيم",
+    "artist_en"      => "Layla Ibrahim",
+    "location"       => "الرياض، السعودية",
+    "location_en"    => "Riyadh, Saudi Arabia",
+    "price"          => 1200,
+    "art_type"       => "abstract",
+    "art_label"      => "تجريدي",
+    "art_label_en"   => "Abstract",
+    "status"         => "available",
+    "status_label"   => "متاح للبيع",
+    "status_label_en"=> "Available",
+    "image_url"      => "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&q=80",
+    "description"    => "أكريليك على قماش. رحلة عبر الكثبان الذهبية في الربع الخالي.",
+    "description_en" => "Acrylic on canvas. A journey through the golden dunes of the Empty Quarter.",
+    "badge"          => "جديد",
+    "badge_en"       => "New",
+    "badge_type"     => "new",
   ],
   [
-    "id"          => 2,
-    "title"       => "الهدوء الأزرق",
-    "title_en"    => "Blue Serenity",
-    "artist"      => "عمر الراشد",
-    "location"    => "دبي، الإمارات",
-    "price"       => 850,
-    "art_type"    => "landscape",
-    "art_label"   => "مناظر طبيعية",
-    "status"      => "available",
-    "status_label"=> "متاح للبيع",
-    "image_url"   => "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&q=80",
-    "description" => "ألوان مائية مستوحاة من مياه الخليج العربي عند الفجر.",
-    "badge"       => "",
-    "badge_type"  => "",
+    "id"             => 2,
+    "title"          => "الهدوء الأزرق",
+    "title_en"       => "Blue Serenity",
+    "artist"         => "عمر الراشد",
+    "artist_en"      => "Omar Al-Rashid",
+    "location"       => "دبي، الإمارات",
+    "location_en"    => "Dubai, UAE",
+    "price"          => 850,
+    "art_type"       => "landscape",
+    "art_label"      => "مناظر طبيعية",
+    "art_label_en"   => "Landscape",
+    "status"         => "available",
+    "status_label"   => "متاح للبيع",
+    "status_label_en"=> "Available",
+    "image_url"      => "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&q=80",
+    "description"    => "ألوان مائية مستوحاة من مياه الخليج العربي عند الفجر.",
+    "description_en" => "Watercolors inspired by the Arabian Gulf at dawn.",
+    "badge"          => "",
+    "badge_en"       => "",
+    "badge_type"     => "",
   ],
   [
-    "id"          => 3,
-    "title"       => "البورتريه الصامت",
-    "title_en"    => "Silent Portrait",
-    "artist"      => "نور خليل",
-    "location"    => "القاهرة، مصر",
-    "price"       => 2400,
-    "art_type"    => "portrait",
-    "art_label"   => "بورتريه",
-    "status"      => "auction",
-    "status_label"=> "مزاد مباشر",
-    "image_url"   => "https://images.unsplash.com/photo-1578301978069-55e07489cfe1?w=600&q=80",
-    "description" => "زيت على الكتان. دراسة في الضوء والظل في الوجه العربي المعاصر.",
-    "badge"       => "مزاد",
-    "badge_type"  => "auction",
+    "id"             => 3,
+    "title"          => "البورتريه الصامت",
+    "title_en"       => "Silent Portrait",
+    "artist"         => "نور خليل",
+    "artist_en"      => "Nour Khalil",
+    "location"       => "القاهرة، مصر",
+    "location_en"    => "Cairo, Egypt",
+    "price"          => 2400,
+    "art_type"       => "portrait",
+    "art_label"      => "بورتريه",
+    "art_label_en"   => "Portrait",
+    "status"         => "auction",
+    "status_label"   => "مزاد مباشر",
+    "status_label_en"=> "Live Auction",
+    "image_url"      => "https://images.unsplash.com/photo-1578301978069-55e07489cfe1?w=600&q=80",
+    "description"    => "زيت على الكتان. دراسة في الضوء والظل في الوجه العربي المعاصر.",
+    "description_en" => "Oil on linen. A study of light and shadow in the modern Arab face.",
+    "badge"          => "مزاد",
+    "badge_en"       => "Auction",
+    "badge_type"     => "auction",
   ],
   [
-    "id"          => 4,
-    "title"       => "المدينة النيونية",
-    "title_en"    => "Neon Medina",
-    "artist"      => "سارة الدوسري",
-    "location"    => "الدوحة، قطر",
-    "price"       => 600,
-    "art_type"    => "digital",
-    "art_label"   => "فن رقمي",
-    "status"      => "available",
-    "status_label"=> "متاح للبيع",
-    "image_url"   => "https://images.unsplash.com/photo-1637858868799-7f26a0640eb6?w=600&q=80",
-    "description" => "فن رقمي يدمج الزخارف العربية التقليدية مع جماليات السايبربانك.",
-    "badge"       => "جديد",
-    "badge_type"  => "new",
+    "id"             => 4,
+    "title"          => "المدينة النيونية",
+    "title_en"       => "Neon Medina",
+    "artist"         => "سارة الدوسري",
+    "artist_en"      => "Sara Al-Dosari",
+    "location"       => "الدوحة، قطر",
+    "location_en"    => "Doha, Qatar",
+    "price"          => 600,
+    "art_type"       => "digital",
+    "art_label"      => "فن رقمي",
+    "art_label_en"   => "Digital Art",
+    "status"         => "available",
+    "status_label"   => "متاح للبيع",
+    "status_label_en"=> "Available",
+    "image_url"      => "https://images.unsplash.com/photo-1637858868799-7f26a0640eb6?w=600&q=80",
+    "description"    => "فن رقمي يدمج الزخارف العربية التقليدية مع جماليات السايبربانك.",
+    "description_en" => "Digital art fusing traditional Arabesque patterns with cyberpunk aesthetics.",
+    "badge"          => "جديد",
+    "badge_en"       => "New",
+    "badge_type"     => "new",
   ],
   [
-    "id"          => 5,
-    "title"       => "ساعة الذهب",
-    "title_en"    => "Golden Hour",
-    "artist"      => "يوسف الأمين",
-    "location"    => "عمّان، الأردن",
-    "price"       => 1750,
-    "art_type"    => "landscape",
-    "art_label"   => "مناظر طبيعية",
-    "status"      => "available",
-    "status_label"=> "متاح للبيع",
-    "image_url"   => "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80",
-    "description" => "لوحة زيتية تجسّد دفء أشعة الغروب في ربوع الأردن.",
-    "badge"       => "",
-    "badge_type"  => "",
+    "id"             => 5,
+    "title"          => "ساعة الذهب",
+    "title_en"       => "Golden Hour",
+    "artist"         => "يوسف الأمين",
+    "artist_en"      => "Yusuf Al-Amin",
+    "location"       => "عمّان، الأردن",
+    "location_en"    => "Amman, Jordan",
+    "price"          => 1750,
+    "art_type"       => "landscape",
+    "art_label"      => "مناظر طبيعية",
+    "art_label_en"   => "Landscape",
+    "status"         => "available",
+    "status_label"   => "متاح للبيع",
+    "status_label_en"=> "Available",
+    "image_url"      => "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80",
+    "description"    => "لوحة زيتية تجسّد دفء أشعة الغروب في ربوع الأردن.",
+    "description_en" => "An oil painting capturing the warm sunset rays across the hills of Jordan.",
+    "badge"          => "",
+    "badge_en"       => "",
+    "badge_type"     => "",
   ],
   [
-    "id"          => 6,
-    "title"       => "العقل المتشظي",
-    "title_en"    => "Fractured Mind",
-    "artist"      => "ليلى إبراهيم",
-    "location"    => "الرياض، السعودية",
-    "price"       => 980,
-    "art_type"    => "abstract",
-    "art_label"   => "تجريدي",
-    "status"      => "available",
-    "status_label"=> "متاح للبيع",
-    "image_url"   => "https://images.unsplash.com/photo-1541512416146-3cf58d6b27cc?w=600&q=80",
-    "description" => "وسائط مختلطة على لوح خشبي تستكشف الهوية والازدواجية.",
-    "badge"       => "",
-    "badge_type"  => "",
+    "id"             => 6,
+    "title"          => "العقل المتشظي",
+    "title_en"       => "Fractured Mind",
+    "artist"         => "ليلى إبراهيم",
+    "artist_en"      => "Layla Ibrahim",
+    "location"       => "الرياض، السعودية",
+    "location_en"    => "Riyadh, Saudi Arabia",
+    "price"          => 980,
+    "art_type"       => "abstract",
+    "art_label"      => "تجريدي",
+    "art_label_en"   => "Abstract",
+    "status"         => "available",
+    "status_label"   => "متاح للبيع",
+    "status_label_en"=> "Available",
+    "image_url"      => "https://images.unsplash.com/photo-1541512416146-3cf58d6b27cc?w=600&q=80",
+    "description"    => "وسائط مختلطة على لوح خشبي تستكشف الهوية والازدواجية.",
+    "description_en" => "Mixed media on wood panel exploring identity and duality.",
+    "badge"          => "",
+    "badge_en"       => "",
+    "badge_type"     => "",
   ],
   [
-    "id"          => 7,
-    "title"       => "الشيخ",
-    "title_en"    => "The Elder",
-    "artist"      => "فاطمة الزهراء",
-    "location"    => "مراكش، المغرب",
-    "price"       => 3200,
-    "art_type"    => "portrait",
-    "art_label"   => "بورتريه",
-    "status"      => "available",
-    "status_label"=> "متاح للبيع",
-    "image_url"   => "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
-    "description" => "بورتريه فحم فائق الواقعية لشيخ مغربي في ضوء الشمس.",
-    "badge"       => "مميز",
-    "badge_type"  => "featured",
+    "id"             => 7,
+    "title"          => "الشيخ",
+    "title_en"       => "The Elder",
+    "artist"         => "فاطمة الزهراء",
+    "artist_en"      => "Fatima Al-Zahra",
+    "location"       => "مراكش، المغرب",
+    "location_en"    => "Marrakech, Morocco",
+    "price"          => 3200,
+    "art_type"       => "portrait",
+    "art_label"      => "بورتريه",
+    "art_label_en"   => "Portrait",
+    "status"         => "available",
+    "status_label"   => "متاح للبيع",
+    "status_label_en"=> "Available",
+    "image_url"      => "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
+    "description"    => "بورتريه فحم فائق الواقعية لشيخ مغربي في ضوء الشمس.",
+    "description_en" => "Hyper-realistic charcoal portrait of a Moroccan elder in sunlight.",
+    "badge"          => "مميز",
+    "badge_en"       => "Featured",
+    "badge_type"     => "featured",
   ],
   [
-    "id"          => 8,
-    "title"       => "السوق الرقمي",
-    "title_en"    => "Cyber Souk",
-    "artist"      => "خالد ناصر",
-    "location"    => "بيروت، لبنان",
-    "price"       => 450,
-    "art_type"    => "digital",
-    "art_label"   => "فن رقمي",
-    "status"      => "available",
-    "status_label"=> "متاح للبيع",
-    "image_url"   => "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
-    "description" => "إعادة تخيّل رقمية للسوق الشرقي التقليدي بلمسة مستقبلية.",
-    "badge"       => "",
-    "badge_type"  => "",
+    "id"             => 8,
+    "title"          => "السوق الرقمي",
+    "title_en"       => "Cyber Souk",
+    "artist"         => "خالد ناصر",
+    "artist_en"      => "Khaled Nasser",
+    "location"       => "بيروت، لبنان",
+    "location_en"    => "Beirut, Lebanon",
+    "price"          => 450,
+    "art_type"       => "digital",
+    "art_label"      => "فن رقمي",
+    "art_label_en"   => "Digital Art",
+    "status"         => "available",
+    "status_label"   => "متاح للبيع",
+    "status_label_en"=> "Available",
+    "image_url"      => "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    "description"    => "إعادة تخيّل رقمية للسوق الشرقي التقليدي بلمسة مستقبلية.",
+    "description_en" => "A digital reimagining of the traditional Eastern bazaar with a futuristic twist.",
+    "badge"          => "",
+    "badge_en"       => "",
+    "badge_type"     => "",
   ],
 ];
 ?>
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<?= $initialLang ?>" dir="<?= $initialLang === 'ar' ? 'rtl' : 'ltr' ?>">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -264,7 +314,7 @@ $artworks = [
     /* ── SEARCH BAR ── */
     .search-wrap{max-width:560px;margin:0 auto;}
     .search-inner{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,0.1);box-shadow:0 4px 20px rgba(0,0,0,0.07);}
-    .search-inner input{flex:1;border:none;background:transparent;font-size:13px;color:#111;outline:none;font-family:inherit;direction:rtl;}
+    .search-inner input{flex:1;border:none;background:transparent;font-size:13px;color:#111;outline:none;font-family:inherit;}
     .search-inner input::placeholder{color:rgba(0,0,0,0.38);}
     .search-inner svg{flex-shrink:0;color:rgba(0,0,0,0.38);}
 
@@ -425,7 +475,7 @@ $artworks = [
 <!-- ══════════════════════════════════════════
      TOP NAV (exact match index.html)
 ══════════════════════════════════════════ -->
-<nav class="topnav" id="topnav" dir="rtl">
+<nav class="topnav" id="topnav">
 
   <!-- LOGO -->
   <a class="nav-logo" href="index.html">
@@ -436,88 +486,88 @@ $artworks = [
   </a>
 
   <!-- CENTER DROPDOWN NAV -->
-  <div class="nav-center" id="nav-center" dir="rtl">
+  <div class="nav-center" id="nav-center">
 
-    <!-- الاستوديو -->
+    <!-- Studio -->
     <div class="nav-item">
       <a href="studio.php">
-        <span>الاستوديو</span>
+        <span data-t="nav-studio"></span>
         <svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg>
       </a>
       <div class="dropdown">
         <a href="studio.php#watercolor">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M12 2C8 2 4 6 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4-4-8-8-8z"/></svg>
-          <span>ورشة الألوان المائية</span>
+          <span data-t="nav-watercolor"></span>
         </a>
         <a href="studio.php#oil">
           <svg class="d-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-          <span>استوديو الرسم الزيتي</span>
+          <span data-t="nav-oil"></span>
         </a>
         <a href="studio.php#digital">
           <svg class="d-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          <span>مختبر الفن الرقمي</span>
+          <span data-t="nav-digital-lab"></span>
         </a>
         <a href="studio.php#charcoal">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M3 17l4-8 4 4 4-6 4 10"/></svg>
-          <span>الفحم والحبر</span>
+          <span data-t="nav-charcoal"></span>
         </a>
       </div>
     </div>
 
-    <!-- المجتمع -->
+    <!-- Community -->
     <div class="nav-item">
       <a href="community.php">
-        <span>المجتمع</span>
+        <span data-t="nav-community"></span>
         <svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg>
       </a>
       <div class="dropdown">
         <a href="chat.php">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span>غرفة محادثة الفنانين</span>
+          <span data-t="nav-chat"></span>
         </a>
         <a href="community.php#meet">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>تعرّف على فنانين</span>
+          <span data-t="nav-meet"></span>
         </a>
         <a href="community.php#share">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-          <span>شارك أعمالك</span>
+          <span data-t="nav-share"></span>
         </a>
         <a href="community.php#learn">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          <span>تعلّم معاً</span>
+          <span data-t="nav-learn"></span>
         </a>
       </div>
     </div>
 
-    <!-- السوق — active page -->
+    <!-- Marketplace — active page -->
     <div class="nav-item active-page">
-      <a href="marketplace.php"><span>السوق</span></a>
+      <a href="marketplace.php"><span data-t="nav-market"></span></a>
     </div>
 
-    <!-- استكشف أساليب الرسم -->
+    <!-- Explore -->
     <div class="nav-item">
-      <a href="explore.php"><span>استكشف أساليب الرسم</span></a>
+      <a href="explore.php"><span data-t="nav-explore"></span></a>
     </div>
 
-    <!-- الدعم -->
+    <!-- Support -->
     <div class="nav-item">
       <a href="support.php">
-        <span>الدعم</span>
+        <span data-t="nav-support"></span>
         <svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg>
       </a>
       <div class="dropdown">
         <a href="mailto:contact@reshaart.com">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          <span>تواصل معنا</span>
+          <span data-t="nav-contact"></span>
         </a>
         <a href="support.php#how">
           <svg class="d-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span>كيف يعمل الموقع</span>
+          <span data-t="nav-how"></span>
         </a>
         <a href="support.php#terms">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <span>شروط الاستخدام</span>
+          <span data-t="nav-terms"></span>
         </a>
       </div>
     </div>
@@ -525,14 +575,14 @@ $artworks = [
   </div>
 
   <!-- RIGHT BUTTONS -->
-  <div class="nav-right" dir="rtl">
+  <div class="nav-right" id="nav-right">
     <a class="nav-btn primary" href="chat.php">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-      <span>محادثة الفنانين</span>
+      <span data-t="nav-chat-btn"></span>
     </a>
-    <a class="nav-btn" href="login.php"><span>تسجيل الدخول</span></a>
-    <a class="nav-btn" href="register.php"><span>انضم مجاناً</span></a>
-    <button class="lang-btn" onclick="window.location.href='marketplace.php?lang=en'">English</button>
+    <a class="nav-btn" href="login.php"><span data-t="nav-login"></span></a>
+    <a class="nav-btn" href="register.php"><span data-t="nav-register"></span></a>
+    <button class="lang-btn" id="lb" onclick="tgl()"></button>
   </div>
 
 </nav>
@@ -541,16 +591,16 @@ $artworks = [
 <!-- ══════════════════════════════════════════
      PAGE CONTENT
 ══════════════════════════════════════════ -->
-<div class="page" id="pg" dir="rtl">
+<div class="page" id="pg">
 
   <!-- ── HERO ── -->
   <div class="mkt-hero">
     <div class="hero-badge">
       <div class="pulse-dot"></div>
-      <span>سوق الأعمال الفنية</span>
+      <span data-t="hero-badge"></span>
     </div>
-    <h1>اكتشف الفن الذي <em>يلمس روحك</em></h1>
-    <p>أعمال فنية أصيلة من فنانين موهوبين عبر العالم العربي — لوحات، بورتريهات، فن رقمي، ومزادات حية.</p>
+    <h1><span data-t="hero-h1-pre"></span> <em data-t="hero-h1-em"></em></h1>
+    <p data-t="hero-p"></p>
 
     <!-- Search -->
     <div class="search-wrap">
@@ -558,40 +608,28 @@ $artworks = [
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input id="search-input" type="text" placeholder="ابحث بالعنوان أو اسم الفنان…" oninput="applyFilters()" />
+        <input id="search-input" type="text" oninput="applyFilters()" />
       </div>
     </div>
 
     <!-- Filter Tabs -->
     <div class="filter-row">
-      <?php
-      $filters = [
-        ['all',       'الكل',               '🖼️'],
-        ['abstract',  'تجريدي',             '🎨'],
-        ['portrait',  'بورتريه',            '👤'],
-        ['landscape', 'مناظر طبيعية',       '🏔️'],
-        ['digital',   'فن رقمي',            '💻'],
-      ];
-      foreach ($filters as [$val, $label, $icon]):
-      ?>
-      <button
-        onclick="setFilter('<?= $val ?>')"
-        data-filter="<?= $val ?>"
-        class="ftab <?= $val === 'all' ? 'active' : '' ?>">
-        <span><?= $icon ?></span> <?= $label ?>
-      </button>
-      <?php endforeach; ?>
+      <button onclick="setFilter('all')"       data-filter="all"       class="ftab active"><span>🖼️</span> <span data-t="f-all"></span></button>
+      <button onclick="setFilter('abstract')"  data-filter="abstract"  class="ftab"><span>🎨</span> <span data-t="f-abstract"></span></button>
+      <button onclick="setFilter('portrait')"  data-filter="portrait"  class="ftab"><span>👤</span> <span data-t="f-portrait"></span></button>
+      <button onclick="setFilter('landscape')" data-filter="landscape" class="ftab"><span>🏔️</span> <span data-t="f-landscape"></span></button>
+      <button onclick="setFilter('digital')"   data-filter="digital"   class="ftab"><span>💻</span> <span data-t="f-digital"></span></button>
     </div>
   </div>
 
   <!-- ── SORT BAR ── -->
   <div class="sort-bar">
-    <span class="results-count" id="results-count"><?= count($artworks) ?> عمل فني</span>
+    <span class="results-count" id="results-count"></span>
     <select id="sort-select" onchange="applyFilters()">
-      <option value="default">الترتيب: مميز</option>
-      <option value="price-asc">السعر: الأقل أولاً</option>
-      <option value="price-desc">السعر: الأعلى أولاً</option>
-      <option value="title">العنوان: أ–ي</option>
+      <option value="default"    data-t="sort-default"></option>
+      <option value="price-asc"  data-t="sort-asc"></option>
+      <option value="price-desc" data-t="sort-desc"></option>
+      <option value="title"      data-t="sort-title"></option>
     </select>
   </div>
 
@@ -611,7 +649,9 @@ $artworks = [
     <div class="art-card"
          data-type="<?= htmlspecialchars($aw['art_type']) ?>"
          data-title="<?= htmlspecialchars($aw['title']) ?>"
+         data-title-en="<?= htmlspecialchars($aw['title_en']) ?>"
          data-artist="<?= htmlspecialchars($aw['artist']) ?>"
+         data-artist-en="<?= htmlspecialchars($aw['artist_en']) ?>"
          data-price="<?= $aw['price'] ?>"
          onclick="openDetail(<?= $aw['id'] ?>)">
 
@@ -623,37 +663,60 @@ $artworks = [
 
         <!-- Hover overlay -->
         <div class="card-hover-overlay">
-          <span class="card-hover-label">عرض التفاصيل ←</span>
+          <span class="card-hover-label" data-t="card-hover"></span>
         </div>
 
         <!-- Badge -->
         <?php if ($aw['badge']): ?>
-        <span class="card-badge <?= $badge_cls ?>"><?= htmlspecialchars($aw['badge']) ?></span>
+        <span class="card-badge <?= $badge_cls ?>"
+              data-badge-ar="<?= htmlspecialchars($aw['badge']) ?>"
+              data-badge-en="<?= htmlspecialchars($aw['badge_en']) ?>">
+          <?= htmlspecialchars($aw['badge']) ?>
+        </span>
         <?php endif; ?>
 
         <!-- Wishlist -->
-        <button class="card-wish" onclick="event.stopPropagation(); toggleWish(this)" title="أضف للمفضلة">♡</button>
+        <button class="card-wish" onclick="event.stopPropagation(); toggleWish(this)" data-t-title="wish-title">♡</button>
       </div>
 
       <div class="card-body">
-        <span class="card-type-pill"><?= htmlspecialchars($aw['art_label']) ?></span>
-        <div class="card-title"><?= htmlspecialchars($aw['title']) ?></div>
+        <span class="card-type-pill"
+              data-label-ar="<?= htmlspecialchars($aw['art_label']) ?>"
+              data-label-en="<?= htmlspecialchars($aw['art_label_en']) ?>">
+          <?= htmlspecialchars($aw['art_label']) ?>
+        </span>
+        <div class="card-title"
+             data-title-ar="<?= htmlspecialchars($aw['title']) ?>"
+             data-title-en="<?= htmlspecialchars($aw['title_en']) ?>">
+          <?= htmlspecialchars($aw['title']) ?>
+        </div>
         <div class="card-artist">
           <div class="artist-avatar"><?= mb_substr($aw['artist'], 0, 1) ?></div>
           <div>
-            <div class="artist-name"><?= htmlspecialchars($aw['artist']) ?></div>
-            <div class="artist-loc"><?= htmlspecialchars($aw['location']) ?></div>
+            <div class="artist-name"
+                 data-name-ar="<?= htmlspecialchars($aw['artist']) ?>"
+                 data-name-en="<?= htmlspecialchars($aw['artist_en']) ?>">
+              <?= htmlspecialchars($aw['artist']) ?>
+            </div>
+            <div class="artist-loc"
+                 data-loc-ar="<?= htmlspecialchars($aw['location']) ?>"
+                 data-loc-en="<?= htmlspecialchars($aw['location_en']) ?>">
+              <?= htmlspecialchars($aw['location']) ?>
+            </div>
           </div>
         </div>
         <div class="card-footer">
           <div class="card-price-area">
             <div class="card-status">
               <span class="status-dot <?= $dot_cls ?>"></span>
-              <?= htmlspecialchars($aw['status_label']) ?>
+              <span data-status-ar="<?= htmlspecialchars($aw['status_label']) ?>"
+                    data-status-en="<?= htmlspecialchars($aw['status_label_en']) ?>">
+                <?= htmlspecialchars($aw['status_label']) ?>
+              </span>
             </div>
             <div class="card-price">$<?= number_format($aw['price']) ?></div>
           </div>
-          <button class="btn-details" onclick="event.stopPropagation(); openDetail(<?= $aw['id'] ?>)">
+          <button class="btn-details" data-t="card-btn" onclick="event.stopPropagation(); openDetail(<?= $aw['id'] ?>)">
             التفاصيل
           </button>
         </div>
@@ -667,20 +730,20 @@ $artworks = [
   <!-- Empty state -->
   <div id="empty-state">
     <div class="empty-icon">🔍</div>
-    <div class="empty-title">لا توجد نتائج</div>
-    <div class="empty-sub">جرّب بحثاً مختلفاً أو تصفية أخرى.</div>
-    <button class="btn-reset" onclick="resetFilters()">إعادة تعيين الفلاتر</button>
+    <div class="empty-title" data-t="empty-title"></div>
+    <div class="empty-sub" data-t="empty-sub"></div>
+    <button class="btn-reset" onclick="resetFilters()" data-t="empty-reset"></button>
   </div>
 
   <!-- ── ARTIST CTA BANNER ── -->
   <div class="artist-cta">
     <div class="cta-accent"></div>
     <div style="position:relative;z-index:1;">
-      <div class="cta-title">هل أنت فنان؟</div>
-      <div class="cta-sub">انضم إلى مئات الفنانين الذين يبيعون أعمالهم على ريشة فن. ارفع أعمالك، حدّد سعرك، وتواصل مع هواة الفن حول العالم.</div>
+      <div class="cta-title" data-t="cta-title"></div>
+      <div class="cta-sub" data-t="cta-sub"></div>
     </div>
     <a href="artist_dashboard.php" class="btn-cta-p">
-      افتح الاستوديو الخاص بك
+      <span data-t="cta-btn"></span>
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
   </div>
@@ -694,14 +757,14 @@ $artworks = [
       <span>RESHA ART</span>
     </a>
     <div class="footer-links">
-      <a href="index.html">الرئيسية</a>
-      <a href="studio.php">الاستوديو</a>
-      <a href="community.php">المجتمع</a>
-      <a href="explore.php">استكشاف</a>
-      <a href="support.php">الدعم</a>
-      <a href="mailto:contact@reshaart.com">تواصل معنا</a>
+      <a href="index.html"      data-t="footer-home"></a>
+      <a href="studio.php"      data-t="footer-studio"></a>
+      <a href="community.php"   data-t="footer-community"></a>
+      <a href="explore.php"     data-t="footer-explore"></a>
+      <a href="support.php"     data-t="footer-support"></a>
+      <a href="mailto:contact@reshaart.com" data-t="footer-contact"></a>
     </div>
-    <div class="footer-copy">© <?= date('Y') ?> Resha Art · جميع الحقوق محفوظة</div>
+    <div class="footer-copy">© <?= date('Y') ?> Resha Art · <span data-t="footer-rights"></span></div>
   </div>
 
 </div><!-- /page -->
@@ -722,21 +785,245 @@ $artworks = [
      JAVASCRIPT
 ══════════════════════════════════════════ -->
 <script>
-// ── Artwork data (mirrors PHP array) ────────
+// ── Artwork data ─────────────────────────────
 const ARTWORKS = <?= json_encode(array_values($artworks), JSON_UNESCAPED_UNICODE) ?>;
 
-// ── Video background (exact from index.html) ─
+// ── Translations (T object — same pattern as index.html) ──
+const T = {
+  ar: {
+    dir: 'rtl',
+    lb: 'English',
+    // nav
+    'nav-studio':      'الاستوديو',
+    'nav-watercolor':  'ورشة الألوان المائية',
+    'nav-oil':         'استوديو الرسم الزيتي',
+    'nav-digital-lab': 'مختبر الفن الرقمي',
+    'nav-charcoal':    'الفحم والحبر',
+    'nav-community':   'المجتمع',
+    'nav-chat':        'غرفة محادثة الفنانين',
+    'nav-meet':        'تعرّف على فنانين',
+    'nav-share':       'شارك أعمالك',
+    'nav-learn':       'تعلّم معاً',
+    'nav-market':      'السوق',
+    'nav-explore':     'استكشف أساليب الرسم',
+    'nav-support':     'الدعم',
+    'nav-contact':     'تواصل معنا',
+    'nav-how':         'كيف يعمل الموقع',
+    'nav-terms':       'شروط الاستخدام',
+    'nav-chat-btn':    'محادثة الفنانين',
+    'nav-login':       'تسجيل الدخول',
+    'nav-register':    'انضم مجاناً',
+    // hero
+    'hero-badge':   'سوق الأعمال الفنية',
+    'hero-h1-pre':  'اكتشف الفن الذي',
+    'hero-h1-em':   'يلمس روحك',
+    'hero-p':       'أعمال فنية أصيلة من فنانين موهوبين عبر العالم العربي — لوحات، بورتريهات، فن رقمي، ومزادات حية.',
+    'search-ph':    'ابحث بالعنوان أو اسم الفنان…',
+    // filters
+    'f-all':       'الكل',
+    'f-abstract':  'تجريدي',
+    'f-portrait':  'بورتريه',
+    'f-landscape': 'مناظر طبيعية',
+    'f-digital':   'فن رقمي',
+    // sort
+    'sort-default': 'الترتيب: مميز',
+    'sort-asc':     'السعر: الأقل أولاً',
+    'sort-desc':    'السعر: الأعلى أولاً',
+    'sort-title':   'العنوان: أ–ي',
+    // cards
+    'card-hover':  'عرض التفاصيل ←',
+    'card-btn':    'التفاصيل',
+    'wish-title':  'أضف للمفضلة',
+    // results
+    'results':     'عمل فني',
+    // empty
+    'empty-title': 'لا توجد نتائج',
+    'empty-sub':   'جرّب بحثاً مختلفاً أو تصفية أخرى.',
+    'empty-reset': 'إعادة تعيين الفلاتر',
+    // cta
+    'cta-title': 'هل أنت فنان؟',
+    'cta-sub':   'انضم إلى مئات الفنانين الذين يبيعون أعمالهم على ريشة فن. ارفع أعمالك، حدّد سعرك، وتواصل مع هواة الفن حول العالم.',
+    'cta-btn':   'افتح الاستوديو الخاص بك',
+    // footer
+    'footer-home':      'الرئيسية',
+    'footer-studio':    'الاستوديو',
+    'footer-community': 'المجتمع',
+    'footer-explore':   'استكشاف',
+    'footer-support':   'الدعم',
+    'footer-contact':   'تواصل معنا',
+    'footer-rights':    'جميع الحقوق محفوظة',
+    // modal
+    'modal-price':       'السعر',
+    'modal-bid':         '🔨 المزايدة',
+    'modal-buy':         '🛒 اشتر الآن',
+    'modal-msg':         'تواصل مع الفنان',
+    'modal-soon-buy':    '🛒 قريباً — ميزة الشراء قيد التطوير',
+    'modal-soon-msg':    '💬 قريباً — ميزة المراسلة قيد التطوير',
+  },
+  en: {
+    dir: 'ltr',
+    lb: 'العربية',
+    // nav
+    'nav-studio':      'The Studio',
+    'nav-watercolor':  'Watercolor Workshop',
+    'nav-oil':         'Oil Painting Studio',
+    'nav-digital-lab': 'Digital Art Lab',
+    'nav-charcoal':    'Charcoal & Ink',
+    'nav-community':   'Community',
+    'nav-chat':        'Artist Chat Room',
+    'nav-meet':        'Meet Artists',
+    'nav-share':       'Share Your Work',
+    'nav-learn':       'Learn Together',
+    'nav-market':      'Marketplace',
+    'nav-explore':     'Explore Styles',
+    'nav-support':     'Support',
+    'nav-contact':     'Contact Us',
+    'nav-how':         'How It Works',
+    'nav-terms':       'Terms of Use',
+    'nav-chat-btn':    'Artist Chat',
+    'nav-login':       'Sign In',
+    'nav-register':    'Join Free',
+    // hero
+    'hero-badge':   'Art Marketplace',
+    'hero-h1-pre':  'Discover Art That',
+    'hero-h1-em':   'Moves Your Soul',
+    'hero-p':       'Authentic artworks from talented artists across the Arab world — paintings, portraits, digital art, and live auctions.',
+    'search-ph':    'Search by title or artist name…',
+    // filters
+    'f-all':       'All',
+    'f-abstract':  'Abstract',
+    'f-portrait':  'Portrait',
+    'f-landscape': 'Landscape',
+    'f-digital':   'Digital',
+    // sort
+    'sort-default': 'Sort: Featured',
+    'sort-asc':     'Price: Low to High',
+    'sort-desc':    'Price: High to Low',
+    'sort-title':   'Title: A–Z',
+    // cards
+    'card-hover':  'View Details →',
+    'card-btn':    'Details',
+    'wish-title':  'Add to Wishlist',
+    // results
+    'results':     'artworks',
+    // empty
+    'empty-title': 'No Results',
+    'empty-sub':   'Try a different search or filter.',
+    'empty-reset': 'Reset Filters',
+    // cta
+    'cta-title': 'Are You an Artist?',
+    'cta-sub':   'Join hundreds of artists selling their work on Resha Art. Upload your pieces, set your price, and connect with art lovers around the world.',
+    'cta-btn':   'Open Your Studio',
+    // footer
+    'footer-home':      'Home',
+    'footer-studio':    'Studio',
+    'footer-community': 'Community',
+    'footer-explore':   'Explore',
+    'footer-support':   'Support',
+    'footer-contact':   'Contact',
+    'footer-rights':    'All rights reserved',
+    // modal
+    'modal-price':       'Price',
+    'modal-bid':         '🔨 Place Bid',
+    'modal-buy':         '🛒 Buy Now',
+    'modal-msg':         'Message Artist',
+    'modal-soon-buy':    '🛒 Coming soon — purchase feature in development',
+    'modal-soon-msg':    '💬 Coming soon — messaging feature in development',
+  }
+};
+
+// ── Language state ────────────────────────────
+let L = '<?= $initialLang ?>';
+
+// ── apply(lang) — live DOM update ────────────
+function apply(l) {
+  const t = T[l];
+  document.documentElement.setAttribute('dir', t.dir);
+  document.documentElement.setAttribute('lang', l);
+
+  // language button label
+  document.getElementById('lb').textContent = t.lb;
+
+  // search input direction + placeholder
+  const si = document.getElementById('search-input');
+  si.setAttribute('placeholder', t['search-ph']);
+  si.style.direction = t.dir;
+
+  // all [data-t] text nodes
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.dataset.t;
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+
+  // sort <option> labels
+  document.querySelectorAll('#sort-select option[data-t]').forEach(op => {
+    const key = op.dataset.t;
+    if (t[key] !== undefined) op.textContent = t[key];
+  });
+
+  // wishlist button titles
+  document.querySelectorAll('[data-t-title="wish-title"]').forEach(el => {
+    el.title = t['wish-title'];
+  });
+
+  // artwork cards — bilingual fields
+  document.querySelectorAll('.art-card').forEach(card => {
+    const isEn = l === 'en';
+
+    // data-title used for search
+    card.dataset.title  = isEn ? card.dataset.titleEn  : card.dataset.title;
+    card.dataset.artist = isEn ? card.dataset.artistEn : card.dataset.artist;
+
+    // card-title display
+    const titleEl = card.querySelector('.card-title');
+    if (titleEl) titleEl.textContent = isEn ? titleEl.dataset.titleEn : titleEl.dataset.titleAr;
+
+    // artist-name
+    const nameEl = card.querySelector('.artist-name');
+    if (nameEl) nameEl.textContent = isEn ? nameEl.dataset.nameEn : nameEl.dataset.nameAr;
+
+    // location
+    const locEl = card.querySelector('.artist-loc');
+    if (locEl) locEl.textContent = isEn ? locEl.dataset.locEn : locEl.dataset.locAr;
+
+    // art type pill
+    const pillEl = card.querySelector('.card-type-pill');
+    if (pillEl) pillEl.textContent = isEn ? pillEl.dataset.labelEn : pillEl.dataset.labelAr;
+
+    // status label
+    const statusEl = card.querySelector('[data-status-ar]');
+    if (statusEl) statusEl.textContent = isEn ? statusEl.dataset.statusEn : statusEl.dataset.statusAr;
+
+    // badge
+    const badgeEl = card.querySelector('.card-badge');
+    if (badgeEl) badgeEl.textContent = isEn ? badgeEl.dataset.badgeEn : badgeEl.dataset.badgeAr;
+  });
+
+  // update results count text
+  updateCount();
+}
+
+// ── tgl() — toggle and update URL ────────────
+function tgl() {
+  L = L === 'ar' ? 'en' : 'ar';
+  apply(L);
+  const url = new URL(window.location.href);
+  url.searchParams.set('lang', L);
+  history.replaceState(null, '', url.toString());
+}
+
+// ── Video background ──────────────────────────
 const v = document.getElementById('vid');
 if (v) {
   v.addEventListener('canplay', () => v.classList.add('on'), { once: true });
   v.play().catch(() => {});
 }
 
-// ── State ────────────────────────────────────
+// ── State ─────────────────────────────────────
 let currentFilter = 'all';
 let currentSort   = 'default';
 
-// ── Filter ───────────────────────────────────
+// ── Filter ────────────────────────────────────
 function setFilter(type) {
   currentFilter = type;
   document.querySelectorAll('.ftab').forEach(b => {
@@ -746,16 +1033,16 @@ function setFilter(type) {
 }
 
 function applyFilters() {
-  const search = document.getElementById('search-input').value.trim();
+  const search = document.getElementById('search-input').value.trim().toLowerCase();
   currentSort  = document.getElementById('sort-select').value;
 
   const cards = Array.from(document.querySelectorAll('#artwork-grid .art-card'));
 
   let matched = cards.filter(c => {
     const typeOk   = currentFilter === 'all' || c.dataset.type === currentFilter;
-    const searchOk = !search ||
-      c.dataset.title.includes(search) ||
-      c.dataset.artist.includes(search);
+    const title    = c.dataset.title.toLowerCase();
+    const artist   = c.dataset.artist.toLowerCase();
+    const searchOk = !search || title.includes(search) || artist.includes(search);
     return typeOk && searchOk;
   });
 
@@ -773,8 +1060,15 @@ function applyFilters() {
   const empty = document.getElementById('empty-state');
   empty.style.display = matched.length === 0 ? 'block' : 'none';
 
-  const n = matched.length;
-  document.getElementById('results-count').textContent = n + ' عمل فني';
+  updateCount(matched.length);
+}
+
+function updateCount(n) {
+  if (n === undefined) {
+    n = Array.from(document.querySelectorAll('#artwork-grid .art-card'))
+             .filter(c => c.style.display !== 'none').length;
+  }
+  document.getElementById('results-count').textContent = n + ' ' + T[L]['results'];
 }
 
 function resetFilters() {
@@ -784,13 +1078,13 @@ function resetFilters() {
   applyFilters();
 }
 
-// ── Wishlist ─────────────────────────────────
+// ── Wishlist ──────────────────────────────────
 function toggleWish(btn) {
   btn.classList.toggle('loved');
   btn.textContent = btn.classList.contains('loved') ? '♥' : '♡';
 }
 
-// ── Detail Modal ─────────────────────────────
+// ── Detail Modal ──────────────────────────────
 function openDetail(id) {
   const aw = ARTWORKS.find(a => a.id === id);
   if (!aw) return;
@@ -798,44 +1092,54 @@ function openDetail(id) {
   const isAuction = aw.status === 'auction';
   const dotCls    = isAuction ? '#ff0055' : '#00c853';
   const placeholder = 'https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=600&q=80';
+  const t = T[L];
+
+  const displayTitle  = L === 'en' ? aw.title_en       : aw.title;
+  const displayArtist = L === 'en' ? aw.artist_en      : aw.artist;
+  const displayLoc    = L === 'en' ? aw.location_en    : aw.location;
+  const displayDesc   = L === 'en' ? aw.description_en : aw.description;
+  const displayLabel  = L === 'en' ? aw.art_label_en   : aw.art_label;
+  const displayStatus = L === 'en' ? aw.status_label_en: aw.status_label;
+  const titleSub      = L === 'en' ? aw.title          : aw.title_en;
+  const modalDir      = t.dir;
 
   document.getElementById('modal-content').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;">
       <div style="aspect-ratio:1;overflow:hidden;background:#f0f0f0;border-radius:24px 0 0 24px;">
-        <img src="${e(aw.image_url)}" alt="${e(aw.title)}"
+        <img src="${e(aw.image_url)}" alt="${e(displayTitle)}"
           style="width:100%;height:100%;object-fit:cover;"
           onerror="this.src='${placeholder}'" />
       </div>
-      <div style="padding:28px 28px 28px 28px;display:flex;flex-direction:column;justify-content:space-between;direction:rtl;">
+      <div style="padding:28px;display:flex;flex-direction:column;justify-content:space-between;direction:${modalDir};">
         <div>
-          <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.5);">${e(aw.art_label)}</span>
-          <h2 style="font-size:20px;font-weight:700;color:#111;margin:10px 0 4px;">${e(aw.title)}</h2>
-          <div style="font-size:11px;color:rgba(0,0,0,0.4);margin-bottom:4px;">${e(aw.title_en)}</div>
+          <span style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.5);">${e(displayLabel)}</span>
+          <h2 style="font-size:20px;font-weight:700;color:#111;margin:10px 0 4px;">${e(displayTitle)}</h2>
+          <div style="font-size:11px;color:rgba(0,0,0,0.4);margin-bottom:4px;">${e(titleSub)}</div>
           <div style="display:flex;align-items:center;gap:8px;margin:12px 0;">
-            <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#ff0055,#aa00ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">${e(aw.artist.charAt ? aw.artist.charAt(0) : aw.artist[0])}</div>
+            <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#ff0055,#aa00ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">${e(displayArtist.charAt(0))}</div>
             <div>
-              <div style="font-size:13px;font-weight:600;color:#111;">${e(aw.artist)}</div>
-              <div style="font-size:11px;color:rgba(0,0,0,0.4);">${e(aw.location)}</div>
+              <div style="font-size:13px;font-weight:600;color:#111;">${e(displayArtist)}</div>
+              <div style="font-size:11px;color:rgba(0,0,0,0.4);">${e(displayLoc)}</div>
             </div>
           </div>
-          <p style="font-size:13px;color:rgba(0,0,0,0.6);line-height:1.8;margin-bottom:16px;">${e(aw.description)}</p>
+          <p style="font-size:13px;color:rgba(0,0,0,0.6);line-height:1.8;margin-bottom:16px;">${e(displayDesc)}</p>
           <div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:6px 14px;border-radius:999px;background:${isAuction ? 'rgba(255,0,85,0.08)' : 'rgba(0,200,83,0.08)'};color:${isAuction ? '#ff0055' : '#009624'};border:1px solid ${isAuction ? 'rgba(255,0,85,0.18)' : 'rgba(0,200,83,0.18)'};">
             <span style="width:6px;height:6px;border-radius:50%;background:${dotCls};display:inline-block;"></span>
-            ${e(aw.status_label)}
+            ${e(displayStatus)}
           </div>
         </div>
         <div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:20px;margin-top:20px;">
-          <div style="font-size:10px;color:rgba(0,0,0,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">السعر</div>
+          <div style="font-size:10px;color:rgba(0,0,0,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">${e(t['modal-price'])}</div>
           <div style="font-size:28px;font-weight:800;color:#111;letter-spacing:-0.02em;margin-bottom:16px;">$${Number(aw.price).toLocaleString()}</div>
           <div style="display:flex;gap:10px;">
-            <button onclick="alert('🛒 قريباً — ميزة الشراء قيد التطوير')"
+            <button onclick="alert('${e(t['modal-soon-buy'])}')"
               style="flex:1;padding:11px;border-radius:999px;background:#111;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.2s;"
               onmouseover="this.style.background='#333'" onmouseout="this.style.background='#111'">
-              ${isAuction ? '🔨 المزايدة' : '🛒 اشتر الآن'}
+              ${isAuction ? e(t['modal-bid']) : e(t['modal-buy'])}
             </button>
-            <button onclick="alert('💬 قريباً — ميزة المراسلة قيد التطوير')"
+            <button onclick="alert('${e(t['modal-soon-msg'])}')"
               style="padding:11px 18px;border-radius:999px;border:1px solid rgba(0,0,0,0.12);background:transparent;color:#111;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">
-              تواصل مع الفنان
+              ${e(t['modal-msg'])}
             </button>
           </div>
         </div>
@@ -854,13 +1158,16 @@ function closeDetail() {
 document.getElementById('modal-bg').addEventListener('click', function(ev) {
   if (ev.target === this) closeDetail();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeDetail(); });
 
 function e(str) {
   return String(str ?? '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+// ── Boot ──────────────────────────────────────
+apply(L);
 </script>
 
 </body>
