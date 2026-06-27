@@ -15,11 +15,11 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Resha Art Marketplace</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body, html { margin:0; padding:0; font-family: sans-serif; height: 100%; }
-    .bg-wrap { position: fixed; inset: 0; z-index: 0; }
-    .bg-video { width: 100%; height: 100%; object-fit: cover; }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body, html { width:100%; min-height:100vh; background:#fff; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; overflow-x:hidden; }
+    .bg-wrap { position: fixed; inset: 0; z-index: 0; overflow:hidden; }
+    .bg-video { position:absolute; inset:0; width: 100%; height: 100%; object-fit: cover; }
     
     /* ── TOP NAV (shared brand navbar) ── */
     .topnav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.05);}
@@ -50,9 +50,47 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
     .lang-btn:hover{background:#111111;color:#fff;}
     @media(max-width:1024px){.nav-center{display:none;}}
 
-    .main-content { position: relative; z-index: 10; padding-top: 80px; max-width: 1200px; margin: auto; }
-    .art-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
-    .card { background: rgba(255,255,255,0.8); border-radius: 15px; overflow: hidden; backdrop-filter: blur(10px); }
+    .main-content { position: relative; z-index: 10; width:100%; max-width: 1200px; margin: 0 auto; padding: 100px 24px 48px; }
+
+    /* PAGE HEADER */
+    .page-header{margin-bottom:28px;}
+    .page-header h1{font-size:clamp(26px,4vw,42px);font-weight:300;color:#111111;letter-spacing:-0.02em;margin-bottom:10px;}
+    .page-header h1 em{font-style:normal;font-weight:700;background:linear-gradient(90deg,#ff0055,#0066ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .page-header p{font-size:14px;color:rgba(0,0,0,0.6);line-height:1.8;max-width:560px;}
+    [dir="rtl"] .page-header p{text-align:right;}
+
+    /* FILTER BAR */
+    .filter-bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
+    [dir="rtl"] .filter-bar{flex-direction:row-reverse;}
+    .filter-btn{padding:8px 20px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);color:rgba(0,0,0,0.7);transition:all 0.22s;}
+    .filter-btn:hover{background:rgba(255,255,255,0.9);color:#111111;}
+    .filter-btn.active{background:#111111;color:#fff;border-color:#111111;}
+
+    /* ART GRID */
+    .art-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+
+    /* GLASS CARD */
+    .card { background: rgba(255,255,255,0.6); border:1px solid rgba(0,0,0,0.07); border-radius: 20px; overflow: hidden; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: transform 0.3s ease, box-shadow 0.3s ease; display:flex; flex-direction:column; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+    .card-img-wrap { position:relative; height: 200px; overflow:hidden; }
+    .card-img { width:100%; height:100%; object-fit:cover; transition: transform 0.5s ease; }
+    .card:hover .card-img { transform: scale(1.05); }
+    .status-badge { position:absolute; top:12px; left:12px; padding:4px 12px; border-radius:999px; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; backdrop-filter:blur(8px); }
+    [dir="rtl"] .status-badge { left:auto; right:12px; }
+    .status-available { background:rgba(0,180,100,0.15); color:#00a050; border:1px solid rgba(0,180,100,0.3); }
+    .status-sold { background:rgba(255,0,85,0.12); color:#ff0055; border:1px solid rgba(255,0,85,0.25); }
+    .card-body { padding:18px; display:flex; flex-direction:column; gap:4px; flex:1; }
+    [dir="rtl"] .card-body { text-align:right; }
+    .card-title { font-size:16px; font-weight:700; color:#111111; }
+    .card-title-ar { font-size:13px; font-weight:600; color:rgba(0,0,0,0.55); }
+    .card-artist { font-size:12px; color:rgba(0,0,0,0.6); margin-top:6px; }
+    .card-artist-ar { font-size:11px; color:rgba(0,0,0,0.45); }
+    .card-price { font-size:18px; font-weight:700; color:#0066ff; margin-top:10px; }
+    .card-btn { margin-top:14px; display:inline-block; text-align:center; padding:10px 18px; border-radius:999px; background:#111111; color:#fff; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; text-decoration:none; border:none; cursor:pointer; transition:all 0.25s ease; }
+    .card-btn:hover { background:#ff0055; transform:translateY(-2px); }
+    .card.hidden { display:none; }
+
+    @media(max-width:768px){ .main-content{padding:90px 16px 32px;} }
   </style>
 </head>
 <body>
@@ -106,18 +144,54 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
 </nav>
 
 <main class="main-content">
+
+  <div class="page-header">
+    <h1><?= $ar ? 'فن <em>السوق</em>' : 'The <em>Marketplace</em>' ?></h1>
+    <p><?= $ar
+        ? 'اكتشف واقتنِ أعمالاً فنية أصلية من فنانين سعوديين موهوبين. كل قطعة فريدة من نوعها.'
+        : 'Discover and collect original artworks from talented Saudi artists. Every piece is one of a kind.' ?></p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all" onclick="filterCards('all', this)"><?= $ar?'الكل':'All' ?></button>
+    <button class="filter-btn" data-filter="abstract" onclick="filterCards('abstract', this)"><?= $ar?'تجريدي':'Abstract' ?></button>
+    <button class="filter-btn" data-filter="landscape" onclick="filterCards('landscape', this)"><?= $ar?'طبيعي':'Landscape' ?></button>
+  </div>
+
   <div class="art-grid">
     <?php foreach ($artworks as $aw): ?>
-      <div class="card">
-        <img src="<?= $aw['image_url'] ?>" style="width:100%; height:200px; object-fit:cover;">
-        <div style="padding:15px;">
-          <h3 class="font-bold"><?= $lang==='ar' ? $aw['title_ar'] : $aw['title_en'] ?></h3>
-          <p><?= number_format($aw['price']) ?> $</p>
+      <div class="card" data-type="<?= htmlspecialchars($aw['type']) ?>">
+        <div class="card-img-wrap">
+          <img class="card-img" src="<?= htmlspecialchars($aw['image_url']) ?>" alt="<?= htmlspecialchars($ar ? $aw['title_ar'] : $aw['title_en']) ?>">
+          <?php $sold = $aw['status'] === 'sold'; ?>
+          <span class="status-badge <?= $sold ? 'status-sold' : 'status-available' ?>">
+            <?= $sold ? ($ar?'مُباع':'Sold') : ($ar?'متاح':'Available') ?>
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="card-title"><?= htmlspecialchars($aw['title_en']) ?></div>
+          <div class="card-title-ar"><?= htmlspecialchars($aw['title_ar']) ?></div>
+          <div class="card-artist"><?= $ar?'بواسطة':'by' ?> <?= htmlspecialchars($aw['artist_en']) ?></div>
+          <div class="card-artist-ar"><?= htmlspecialchars($aw['artist_ar']) ?></div>
+          <div class="card-price"><?= number_format($aw['price']) ?> <?= $ar?'ر.س':'SAR' ?></div>
+          <a class="card-btn" href="artwork.php?id=<?= (int)$aw['id'] ?>&lang=<?= $lang ?>"><?= $ar?'عرض التفاصيل':'View Details' ?></a>
         </div>
       </div>
     <?php endforeach; ?>
   </div>
+
 </main>
+
+<script>
+function filterCards(type, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.art-grid .card').forEach(card=>{
+    const show = (type === 'all' || card.dataset.type === type);
+    card.classList.toggle('hidden', !show);
+  });
+}
+</script>
 
 </body>
 </html>
