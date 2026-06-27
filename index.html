@@ -141,7 +141,29 @@ html,body{width:100%;min-height:100vh;background:#ffffff;font-family:"Helvetica 
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
 @keyframes riseUp{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
 
+/* ── FEATURES ── */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;width:100%;animation:riseUp 1.1s cubic-bezier(0.22,1,0.36,1) forwards;opacity:0;}
+[dir="rtl"] .features{direction:rtl;}
+.feat-card{
+  display:flex;flex-direction:column;align-items:flex-start;gap:14px;
+  padding:28px 24px;border-radius:20px;text-decoration:none;
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(0,0,0,0.08);
+  box-shadow:0 10px 30px rgba(0,0,0,0.06);
+  transition:transform 0.28s ease,box-shadow 0.28s ease,background 0.28s ease;
+}
+[dir="rtl"] .feat-card{align-items:flex-end;text-align:right;}
+.feat-card:hover{transform:translateY(-6px);background:rgba(255,255,255,0.8);box-shadow:0 20px 44px rgba(0,0,0,0.12);}
+.feat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(0,100,255,0.08);border:1px solid rgba(0,100,255,0.14);}
+.feat-icon svg{width:24px;height:24px;fill:none;stroke:#0066ff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.feat-card h3{font-size:17px;font-weight:700;color:#111111;}
+.feat-card p{font-size:13px;line-height:1.7;color:rgba(15,15,15,0.7);}
+.feat-link{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#0066ff;display:inline-flex;align-items:center;gap:6px;}
+.feat-card:hover .feat-link{gap:10px;}
+
 /* ── MOBILE ── */
+@media(max-width:768px){.features{grid-template-columns:1fr;}}
 @media(max-width:1024px){.nav-center{display:none;}}
 @media(max-width:768px){.gallery-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:560px){.gallery-grid{grid-template-columns:1fr 1fr;}.page{padding:75px 16px 24px;}.topnav{padding:0 14px;}.nav-logo span{display:none;}}
@@ -269,6 +291,35 @@ html,body{width:100%;min-height:100vh;background:#ffffff;font-family:"Helvetica 
       <button class="btn-g" onclick="location.href='/explore.php'" id="t-b2">Explore Art Styles</button>
     </div>
   </div>
+
+  <div class="features" id="features">
+    <a class="feat-card" href="/studio.php">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+      </div>
+      <h3 id="feat-studio-t">The Studio</h3>
+      <p id="feat-studio-d">Hands-on workshops and creative labs — watercolor, oil, digital, charcoal and more, guided step by step.</p>
+      <span class="feat-link" id="feat-studio-l">Enter the Studio →</span>
+    </a>
+
+    <a class="feat-card" href="/community.php">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3 id="feat-community-t">Community</h3>
+      <p id="feat-community-d">Connect with fellow artists, share your work, join the chat room and grow together as one creative family.</p>
+      <span class="feat-link" id="feat-community-l">Join the Community →</span>
+    </a>
+
+    <a class="feat-card" href="/marketplace.php">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17"/><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg>
+      </div>
+      <h3 id="feat-marketplace-t">Marketplace</h3>
+      <p id="feat-marketplace-d">Buy and sell original artwork. Discover unique pieces from Saudi artists and reach collectors worldwide.</p>
+      <span class="feat-link" id="feat-marketplace-l">Visit the Marketplace →</span>
+    </a>
+  </div>
 </div>
 
 <div class="modal-bg" id="modal" onclick="closeModal(event)">
@@ -296,6 +347,17 @@ const T = {
     galleryTitle:'Explore Art Styles',
     'n-chat':'Artist Chat','n-login':'Sign In','n-reg':'Join Free',
     modalCta:'Start This Style',
+    features:{
+      studioT:'The Studio',
+      studioD:'Hands-on workshops and creative labs — watercolor, oil, digital, charcoal and more, guided step by step.',
+      studioL:'Enter the Studio →',
+      communityT:'Community',
+      communityD:'Connect with fellow artists, share your work, join the chat room and grow together as one creative family.',
+      communityL:'Join the Community →',
+      marketplaceT:'Marketplace',
+      marketplaceD:'Buy and sell original artwork. Discover unique pieces from Saudi artists and reach collectors worldwide.',
+      marketplaceL:'Visit the Marketplace →'
+    },
     nav:{
       studio:'The Studio', community:'Community', marketplace:'Marketplace', explore:'Explore Art Styles', support:'Support',
       's1':'Watercolor Workshop','s2':'Oil Painting Studio','s3':'Digital Art Lab','s4':'Charcoal & Ink',
@@ -311,6 +373,17 @@ const T = {
     galleryTitle:'استكشف أساليب الرسم',
     'n-chat':'محادثة الفنانين','n-login':'تسجيل الدخول','n-reg':'انضم مجاناً',
     modalCta:'ابدأ هذا الأسلوب',
+    features:{
+      studioT:'الاستوديو',
+      studioD:'ورش عملية ومختبرات إبداعية — ألوان مائية وزيتية ورقمية وفحم وأكثر، بإرشاد خطوة بخطوة.',
+      studioL:'ادخل الاستوديو ←',
+      communityT:'المجتمع',
+      communityD:'تواصل مع فنانين آخرين، وشارك أعمالك، وانضم إلى غرفة المحادثة لتنمو معاً كعائلة إبداعية واحدة.',
+      communityL:'انضم إلى المجتمع ←',
+      marketplaceT:'السوق',
+      marketplaceD:'اشترِ وبِع الأعمال الفنية الأصلية. اكتشف قطعاً فريدة من فنانين سعوديين وتواصل مع المقتنين حول العالم.',
+      marketplaceL:'زر السوق ←'
+    },
     nav:{
       studio:'الاستوديو', community:'المجتمع', marketplace:'السوق', explore:'استكشف أساليب الرسم', support:'الدعم',
       's1':'ورشة الألوان المائية','s2':'استوديو الرسم الزيتي','s3':'مختبر الفن الرقمي','s4':'الفحم والحبر',
@@ -360,6 +433,18 @@ function apply(l) {
     const el = document.getElementById('dd-'+k);
     if(el) el.textContent = n[k];
   });
+
+  const f = t.features;
+  document.getElementById('features').setAttribute('dir', t.dir);
+  document.getElementById('feat-studio-t').textContent = f.studioT;
+  document.getElementById('feat-studio-d').textContent = f.studioD;
+  document.getElementById('feat-studio-l').textContent = f.studioL;
+  document.getElementById('feat-community-t').textContent = f.communityT;
+  document.getElementById('feat-community-d').textContent = f.communityD;
+  document.getElementById('feat-community-l').textContent = f.communityL;
+  document.getElementById('feat-marketplace-t').textContent = f.marketplaceT;
+  document.getElementById('feat-marketplace-d').textContent = f.marketplaceD;
+  document.getElementById('feat-marketplace-l').textContent = f.marketplaceL;
 }
 
 function tgl() { L = L==='en'?'ar':'en'; apply(L); }
