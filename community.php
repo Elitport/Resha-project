@@ -261,11 +261,20 @@ function applyNav(l){
 function apply(l){
   const t=T[l];
   document.getElementById('html').lang=l;
+  document.getElementById('html').setAttribute('dir',t.dir);
+  document.documentElement.setAttribute('dir',t.dir);
   document.getElementById('pg').setAttribute('dir',t.dir);
   document.getElementById('topnav').setAttribute('dir',t.dir);
   applyNav(l);
-  const keys=['badge','h1','s1','s2','s3','s4','ctaH','ctaP','live','ctaBtn','commTitle','c1','c1d','c1l','c2','c2d','c2l','c3','c3d','c3l','c4','c4d','c4l','inspoTitle','i1','i1d','i2','i2d','i3','i3d'];
+  const keys=['badge','h1','desc','s1','s2','s3','s4','live','c1','c1d','c1l','c2','c2d','c2l','c3','c3d','c3l','c4','c4d','c4l','i1','i1d','i2','i2d','i3','i3d'];
   keys.forEach(k=>{const el=document.getElementById('t-'+k);if(el)el.innerHTML=t[k];});
+  // elements whose ids differ from their T keys
+  const setH=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  setH('t-cta-h',t.ctaH);
+  setH('t-cta-p',t.ctaP);
+  setH('t-cta-btn',t.ctaBtn);
+  setH('t-comm-title',t.commTitle);
+  setH('t-inspo-title',t.inspoTitle);
 }
 function tgl(){L=L==='en'?'ar':'en';apply(L);}
 apply('en');
