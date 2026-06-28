@@ -386,6 +386,8 @@ function applyNav(l){
 function apply(l){
   const t=T[l];
   document.getElementById('html').lang=l;
+  document.getElementById('html').setAttribute('dir',t.dir);
+  document.documentElement.setAttribute('dir',t.dir);
   document.getElementById('pg').setAttribute('dir',t.dir);
   document.getElementById('topnav').setAttribute('dir',t.dir);
   applyNav(l);
