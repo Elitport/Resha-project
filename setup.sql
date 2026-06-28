@@ -23,6 +23,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `bio_en`           TEXT NULL,
   `bio_ar`           TEXT NULL,
   `city`             VARCHAR(100) NOT NULL DEFAULT '',
+  `instagram`        VARCHAR(255) NOT NULL DEFAULT '',
+  `twitter`          VARCHAR(255) NOT NULL DEFAULT '',
+  `website`          VARCHAR(255) NOT NULL DEFAULT '',
   `is_verified`           TINYINT(1) NOT NULL DEFAULT 0,    -- email verified
   `is_approved`           TINYINT(1) NOT NULL DEFAULT 0,    -- approved by admin
   `verification_token`    VARCHAR(128) NULL DEFAULT NULL,   -- email-verify token
