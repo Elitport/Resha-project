@@ -23,14 +23,17 @@ CREATE TABLE IF NOT EXISTS `users` (
   `bio_en`           TEXT NULL,
   `bio_ar`           TEXT NULL,
   `city`             VARCHAR(100) NOT NULL DEFAULT '',
-  `is_verified`      TINYINT(1) NOT NULL DEFAULT 0,    -- email verified
-  `is_approved`      TINYINT(1) NOT NULL DEFAULT 0,    -- approved by admin
-  `created_at`       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_login_at`    TIMESTAMP NULL DEFAULT NULL,
+  `is_verified`           TINYINT(1) NOT NULL DEFAULT 0,    -- email verified
+  `is_approved`           TINYINT(1) NOT NULL DEFAULT 0,    -- approved by admin
+  `verification_token`    VARCHAR(128) NULL DEFAULT NULL,   -- email-verify token
+  `verification_expires`  TIMESTAMP NULL DEFAULT NULL,
+  `created_at`            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_login_at`         TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email` (`email`),
   KEY `idx_users_role` (`role`),
-  KEY `idx_users_approved` (`is_approved`)
+  KEY `idx_users_approved` (`is_approved`),
+  KEY `idx_users_vtoken` (`verification_token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
