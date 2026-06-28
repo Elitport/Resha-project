@@ -268,11 +268,18 @@ function toggleFaq(i){
 function apply(l){
   const t=T[l];
   document.getElementById('html').lang=l;
+  document.getElementById('html').setAttribute('dir',t.dir);
+  document.documentElement.setAttribute('dir',t.dir);
   document.getElementById('pg').setAttribute('dir',t.dir);
   document.getElementById('topnav').setAttribute('dir',t.dir);
   applyNav(l);
-  const keys=['badge','h1','desc','ctTitle','c1','c1d','c2','c2d','c2l','c3','c3d','c3l','faqTitle','legalTitle','l1','l1d','l2','l2d','l3','l3d','l4','l4d'];
+  const keys=['badge','h1','desc','c1','c1d','c2','c2d','c2l','c3','c3d','c3l','l1','l1d','l2','l2d','l3','l3d','l4','l4d'];
   keys.forEach(k=>{const el=document.getElementById('t-'+k);if(el)el.innerHTML=t[k];});
+  // section titles whose ids differ from their T keys
+  const setH=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  setH('t-ct-title',t.ctTitle);
+  setH('t-faq-title',t.faqTitle);
+  setH('t-legal-title',t.legalTitle);
   buildFAQ(l);
 }
 function tgl(){L=L==='en'?'ar':'en';apply(L);}
