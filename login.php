@@ -11,7 +11,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     } else {
         $email = sanitize($_POST['email'] ?? '');
         $pass  = (string) ($_POST['password'] ?? '');
-        $stmt  = db()->prepare('SELECT * FROM users WHERE email = :e LIMIT 1');
+        $stmt  = getDB()->prepare('SELECT * FROM users WHERE email = :e LIMIT 1');
         $stmt->execute([':e' => $email]);
         $u = $stmt->fetch();
 

@@ -37,11 +37,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     /* ---- Delete an artwork (must own it — verified on backend) ---- */
     if ($action === 'delete') {
         $artId = (int) ($_POST['artwork_id'] ?? 0);
-        $stmt = db()->prepare('SELECT image_url FROM artworks WHERE id = :id AND artist_id = :uid LIMIT 1');
+        $stmt = getDB()->prepare('SELECT image_url FROM artworks WHERE id = :id AND artist_id = :uid LIMIT 1');
         $stmt->execute([':id' => $artId, ':uid' => $viewerId]);
         $row = $stmt->fetch();
         if ($row) {
-            db()->prepare('DELETE FROM artworks WHERE id = :id AND artist_id = :uid')
+            getDB()->prepare('DELETE FROM artworks WHERE id = :id AND artist_id = :uid')
                 ->execute([':id' => $artId, ':uid' => $viewerId]);
             // best-effort remove the file
             $path = __DIR__ . '/' . ltrim((string) $row['image_url'], '/');
@@ -78,7 +78,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 $dest  = $dir . $fname;
                 if (move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
                     $rel = 'uploads/artworks/' . $fname;
-                    $ins = db()->prepare(
+                    $ins = getDB()->prepare(
                         'INSERT INTO artworks
                            (artist_id, title_en, title_ar, description_en, description_ar,
                             price, type, status, image_url, is_approved)
@@ -106,7 +106,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 /* ---------------------------------------------------------------------
  *  Load profile + artworks.
  * ------------------------------------------------------------------- */
-$stmt = db()->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
+$stmt = getDB()->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
 $stmt->execute([':id' => $profileId]);
 $artist = $stmt->fetch();
 
@@ -123,7 +123,7 @@ if (!$artist) {
 $artworks = [];
 $soldCount = 0;
 if ($artist) {
-    $stmt = db()->prepare('SELECT * FROM artworks WHERE artist_id = :id ORDER BY created_at DESC');
+    $stmt = getDB()->prepare('SELECT * FROM artworks WHERE artist_id = :id ORDER BY created_at DESC');
     $stmt->execute([':id' => $profileId]);
     $artworks = $stmt->fetchAll();
     foreach ($artworks as $a) {

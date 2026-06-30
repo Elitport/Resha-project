@@ -36,14 +36,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $errCode = 'terms';
     } else {
         // Email already exists?
-        $stmt = db()->prepare('SELECT 1 FROM users WHERE email = :e LIMIT 1');
+        $stmt = getDB()->prepare('SELECT 1 FROM users WHERE email = :e LIMIT 1');
         $stmt->execute([':e' => $old['email']]);
         if ($stmt->fetchColumn()) {
             $errCode = 'exists';
         } else {
             $token   = bin2hex(random_bytes(32));
             $expires = date('Y-m-d H:i:s', time() + 24 * 60 * 60); // 24h
-            $ins = db()->prepare(
+            $ins = getDB()->prepare(
                 'INSERT INTO users
                    (email, password, full_name_en, full_name_ar, role, city,
                     is_verified, is_approved, verification_token, verification_expires)

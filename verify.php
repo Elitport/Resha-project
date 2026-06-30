@@ -6,7 +6,7 @@ $token = sanitize($_GET['token'] ?? '');
 $state = 'invalid';   // 'success' | 'invalid'
 
 if ($token !== '' && ctype_xdigit($token) && strlen($token) <= 128) {
-    $stmt = db()->prepare(
+    $stmt = getDB()->prepare(
         'SELECT id FROM users
          WHERE verification_token = :t
            AND (verification_expires IS NULL OR verification_expires > NOW())
@@ -15,7 +15,7 @@ if ($token !== '' && ctype_xdigit($token) && strlen($token) <= 128) {
     $stmt->execute([':t' => $token]);
     $row = $stmt->fetch();
     if ($row) {
-        $upd = db()->prepare(
+        $upd = getDB()->prepare(
             'UPDATE users
              SET is_verified = 1, verification_token = NULL, verification_expires = NULL
              WHERE id = :id'
