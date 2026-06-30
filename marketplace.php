@@ -11,7 +11,7 @@ $page    = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
 $offset  = ($page - 1) * $perPage;
 
 /* ---- Count (for Prev/Next) — PDO prepared ---- */
-$countStmt = db()->prepare(
+$countStmt = getDB()->prepare(
     "SELECT COUNT(*) FROM artworks
      WHERE is_approved = 1 AND status IN ('available','auction')"
 );
@@ -21,7 +21,7 @@ $totalPages = max(1, (int) ceil($total / $perPage));
 if ($page > $totalPages) { $page = $totalPages; $offset = ($page - 1) * $perPage; }
 
 /* ---- Fetch this page of artworks, joined with the artist — PDO prepared ---- */
-$stmt = db()->prepare(
+$stmt = getDB()->prepare(
     "SELECT a.id, a.title_en, a.title_ar, a.description_en, a.description_ar,
             a.price, a.type, a.status, a.image_url, a.artist_id,
             u.full_name_en AS artist_en, u.full_name_ar AS artist_ar
