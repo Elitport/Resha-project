@@ -8,6 +8,12 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Compatibility: this page calls getDB(); some config.php versions name the
+// PDO accessor db() instead. Bridge them so either name works.
+if (!function_exists('getDB') && function_exists('db')) {
+    function getDB(): PDO { return db(); }
+}
+
 $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
 $ar   = $lang === 'ar';
 
