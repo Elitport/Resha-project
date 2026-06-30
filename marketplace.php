@@ -2,18 +2,6 @@
 // marketplace.php — Resha Art · Marketplace (live, database-driven)
 require_once 'config.php';
 
-// TEMPORARY debug — surface any PHP error instead of a blank page.
-// Remove these 4 lines once the page is confirmed working.
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Compatibility: this page calls getDB(); some config.php versions name the
-// PDO accessor db() instead. Bridge them so either name works.
-if (!function_exists('getDB') && function_exists('db')) {
-    function getDB(): PDO { return db(); }
-}
-
 $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
 $ar   = $lang === 'ar';
 

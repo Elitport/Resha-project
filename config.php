@@ -96,6 +96,9 @@ function db(): PDO {
     return $pdo;
 }
 
+/** Alias for db() — lets pages use getDB() consistently. */
+function getDB(): PDO { return db(); }
+
 /* ---------------------------------------------------------------------
  *  5. INPUT SANITISATION & SAFE OUTPUT
  * ------------------------------------------------------------------- */
