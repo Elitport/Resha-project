@@ -91,7 +91,13 @@ function db(): PDO {
         // Never leak DB details to the client.
         error_log('DB connection failed: ' . $e->getMessage());
         http_response_code(500);
-        exit('A server error occurred. Please try again later.');
+        // ===== TEMPORARY DEBUG — REMOVE BEFORE GOING LIVE =====
+        // Shows the real DB error (credentials/host/db name) so we can fix it.
+        // Restore the generic line below once the connection works.
+        exit('DB ERROR: ' . $e->getMessage()
+            . ' | in ' . $e->getFile() . ' on line ' . $e->getLine());
+        // exit('A server error occurred. Please try again later.');
+        // ======================================================
     }
     return $pdo;
 }
