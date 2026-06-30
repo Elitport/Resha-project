@@ -1,16 +1,60 @@
 <?php
-// marketplace.php — Resha Art · Marketplace
-// Production-ready, fully integrated bilingual dashboard with responsive toolbar.
-
-$artworks = [
-  ["id"=>1, "title_ar"=>"همسات الصحراء", "title_en"=>"Desert Whispers", "artist_ar"=>"ليلى إبراهيم", "artist_en"=>"Layla Ibrahim", "price"=>1200, "type"=>"abstract", "status"=>"available", "image_url"=>"https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&q=80"],
-  ["id"=>2, "title_ar"=>"الهدوء الأزرق", "title_en"=>"Blue Serenity", "artist_ar"=>"عمر الراشد", "artist_en"=>"Omar Al-Rashid", "price"=>850, "type"=>"landscape", "status"=>"available", "image_url"=>"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=600&q=80"]
-];
+// marketplace.php — Resha Art · Marketplace (live, database-driven)
+require_once 'config.php';
 
 $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
+$ar   = $lang === 'ar';
+
+/* ---- Pagination ---- */
+$perPage = 12;
+$page    = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+$offset  = ($page - 1) * $perPage;
+
+/* ---- Count (for Prev/Next) — PDO prepared ---- */
+$countStmt = db()->prepare(
+    "SELECT COUNT(*) FROM artworks
+     WHERE is_approved = 1 AND status IN ('available','auction')"
+);
+$countStmt->execute();
+$total      = (int) $countStmt->fetchColumn();
+$totalPages = max(1, (int) ceil($total / $perPage));
+if ($page > $totalPages) { $page = $totalPages; $offset = ($page - 1) * $perPage; }
+
+/* ---- Fetch this page of artworks, joined with the artist — PDO prepared ---- */
+$stmt = db()->prepare(
+    "SELECT a.id, a.title_en, a.title_ar, a.description_en, a.description_ar,
+            a.price, a.type, a.status, a.image_url, a.artist_id,
+            u.full_name_en AS artist_en, u.full_name_ar AS artist_ar
+     FROM artworks a
+     JOIN users u ON u.id = a.artist_id
+     WHERE a.is_approved = 1 AND a.status IN ('available','auction')
+     ORDER BY a.created_at DESC
+     LIMIT :lim OFFSET :off"
+);
+$stmt->bindValue(':lim', $perPage, PDO::PARAM_INT);
+$stmt->bindValue(':off', $offset, PDO::PARAM_INT);
+$stmt->execute();
+$artworks = $stmt->fetchAll();
+
+/* Data for the details modal (escaped on output via JSON flags) */
+$modalData = [];
+foreach ($artworks as $aw) {
+    $modalData[(int) $aw['id']] = [
+        'title_en'  => $aw['title_en'],
+        'title_ar'  => $aw['title_ar'],
+        'desc_en'   => $aw['description_en'] ?? '',
+        'desc_ar'   => $aw['description_ar'] ?? '',
+        'artist_en' => $aw['artist_en'],
+        'artist_ar' => $aw['artist_ar'],
+        'artist_id' => (int) $aw['artist_id'],
+        'price'     => (float) $aw['price'],
+        'image'     => $aw['image_url'],
+        'status'    => $aw['status'],
+    ];
+}
 ?>
 <!DOCTYPE html>
-<html lang="<?= $lang ?>" dir="<?= $lang === 'ar' ? 'rtl' : 'ltr' ?>">
+<html lang="<?= $lang ?>" dir="<?= $ar ? 'rtl' : 'ltr' ?>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +64,7 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
     body, html { width:100%; min-height:100vh; background:#fff; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; overflow-x:hidden; }
     .bg-wrap { position: fixed; inset: 0; z-index: 0; overflow:hidden; }
     .bg-video { position:absolute; inset:0; width: 100%; height: 100%; object-fit: cover; }
-    
+
     /* ── TOP NAV (shared brand navbar) ── */
     .topnav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.05);}
     [dir="rtl"] .nav-center{flex-direction:row-reverse;}
@@ -53,21 +97,26 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
     .main-content { position: relative; z-index: 10; width:100%; max-width: 1200px; margin: 0 auto; padding: 100px 24px 48px; }
 
     /* PAGE HEADER */
-    .page-header{margin-bottom:28px;}
+    .page-header{margin-bottom:24px;}
     .page-header h1{font-size:clamp(26px,4vw,42px);font-weight:300;color:#111111;letter-spacing:-0.02em;margin-bottom:10px;}
     .page-header h1 em{font-style:normal;font-weight:700;background:linear-gradient(90deg,#ff0055,#0066ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
     .page-header p{font-size:14px;color:rgba(0,0,0,0.6);line-height:1.8;max-width:560px;}
     [dir="rtl"] .page-header p{text-align:right;}
 
+    /* SEARCH */
+    .search-box{width:100%;max-width:420px;padding:11px 16px;border-radius:999px;border:1px solid rgba(0,0,0,0.1);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);font-size:14px;color:#111111;margin-bottom:18px;font-family:inherit;}
+    .search-box:focus{outline:none;border-color:#0066ff;box-shadow:0 0 0 3px rgba(0,100,255,0.12);}
+
     /* FILTER BAR */
-    .filter-bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;}
-    [dir="rtl"] .filter-bar{flex-direction:row-reverse;}
-    .filter-btn{padding:8px 20px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);color:rgba(0,0,0,0.7);transition:all 0.22s;}
+    .filter-group{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center;}
+    [dir="rtl"] .filter-group{flex-direction:row-reverse;}
+    .filter-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.4);margin-inline-end:4px;}
+    .filter-btn{padding:8px 18px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);color:rgba(0,0,0,0.7);transition:all 0.22s;}
     .filter-btn:hover{background:rgba(255,255,255,0.9);color:#111111;}
     .filter-btn.active{background:#111111;color:#fff;border-color:#111111;}
 
     /* ART GRID */
-    .art-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .art-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top:8px; }
 
     /* GLASS CARD */
     .card { background: rgba(255,255,255,0.6); border:1px solid rgba(0,0,0,0.07); border-radius: 20px; overflow: hidden; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: transform 0.3s ease, box-shadow 0.3s ease; display:flex; flex-direction:column; }
@@ -78,17 +127,45 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
     .status-badge { position:absolute; top:12px; left:12px; padding:4px 12px; border-radius:999px; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; backdrop-filter:blur(8px); }
     [dir="rtl"] .status-badge { left:auto; right:12px; }
     .status-available { background:rgba(0,180,100,0.15); color:#00a050; border:1px solid rgba(0,180,100,0.3); }
-    .status-sold { background:rgba(255,0,85,0.12); color:#ff0055; border:1px solid rgba(255,0,85,0.25); }
+    .status-sold { background:rgba(120,120,120,0.15); color:#666; border:1px solid rgba(120,120,120,0.3); }
+    .status-auction { background:rgba(255,140,0,0.15); color:#ff8c00; border:1px solid rgba(255,140,0,0.35); }
     .card-body { padding:18px; display:flex; flex-direction:column; gap:4px; flex:1; }
     [dir="rtl"] .card-body { text-align:right; }
     .card-title { font-size:16px; font-weight:700; color:#111111; }
     .card-title-ar { font-size:13px; font-weight:600; color:rgba(0,0,0,0.55); }
     .card-artist { font-size:12px; color:rgba(0,0,0,0.6); margin-top:6px; }
-    .card-artist-ar { font-size:11px; color:rgba(0,0,0,0.45); }
+    .card-artist a { color:#0066ff; text-decoration:none; font-weight:600; }
+    .card-artist a:hover { text-decoration:underline; }
     .card-price { font-size:18px; font-weight:700; color:#0066ff; margin-top:10px; }
     .card-btn { margin-top:14px; display:inline-block; text-align:center; padding:10px 18px; border-radius:999px; background:#111111; color:#fff; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; text-decoration:none; border:none; cursor:pointer; transition:all 0.25s ease; }
     .card-btn:hover { background:#ff0055; transform:translateY(-2px); }
     .card.hidden { display:none; }
+
+    /* EMPTY STATE */
+    .empty-state{display:none;padding:48px;text-align:center;font-size:15px;color:rgba(0,0,0,0.5);background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.07);border-radius:20px;backdrop-filter:blur(16px);margin-top:8px;}
+
+    /* PAGINATION */
+    .pagination{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:36px;}
+    .page-btn{padding:10px 22px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(0,0,0,0.12);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);color:#111111;transition:all 0.22s;}
+    .page-btn:hover{background:#111111;color:#fff;}
+    .page-btn.disabled{opacity:0.4;pointer-events:none;}
+    .page-info{font-size:12px;color:rgba(0,0,0,0.55);font-weight:600;}
+
+    /* MODAL */
+    .modal-bg{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-bg.open{display:flex;}
+    .modal{background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);border:1px solid rgba(0,0,0,0.08);border-radius:20px;max-width:560px;width:100%;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;}
+    .modal img{width:100%;height:260px;object-fit:cover;}
+    .modal-body{padding:26px;}
+    [dir="rtl"] .modal-body{text-align:right;}
+    .modal-body h2{font-size:22px;font-weight:700;color:#111111;margin-bottom:2px;}
+    .modal-body .m-title-ar{font-size:15px;color:rgba(0,0,0,0.55);margin-bottom:10px;}
+    .modal-body .m-artist{font-size:13px;color:#0066ff;font-weight:600;margin-bottom:14px;text-decoration:none;display:inline-block;}
+    .modal-body .m-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.4);margin:14px 0 4px;}
+    .modal-body p{font-size:13px;color:rgba(0,0,0,0.7);line-height:1.8;}
+    .modal-body .m-price{font-size:22px;font-weight:700;color:#0066ff;margin-top:16px;}
+    .modal-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:rgba(0,0,0,0.4);line-height:1;}
+    [dir="rtl"] .modal-close{float:left;}
 
     @media(max-width:768px){ .main-content{padding:90px 16px 32px;} }
   </style>
@@ -99,7 +176,6 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
   <video class="bg-video" autoplay loop muted playsinline src="bg.mp4"></video>
 </div>
 
-<?php $ar = $lang === 'ar'; ?>
 <nav class="topnav">
   <a class="nav-logo" href="index.html">
     <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor"><path d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/></svg>
@@ -152,45 +228,157 @@ $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
         : 'Discover and collect original artworks from talented Saudi artists. Every piece is one of a kind.' ?></p>
   </div>
 
-  <div class="filter-bar">
-    <button class="filter-btn active" data-filter="all" onclick="filterCards('all', this)"><?= $ar?'الكل':'All' ?></button>
-    <button class="filter-btn" data-filter="abstract" onclick="filterCards('abstract', this)"><?= $ar?'تجريدي':'Abstract' ?></button>
-    <button class="filter-btn" data-filter="landscape" onclick="filterCards('landscape', this)"><?= $ar?'طبيعي':'Landscape' ?></button>
+  <input type="search" class="search-box" id="searchBox"
+         placeholder="<?= $ar ? 'ابحث عن عمل فني…' : 'Search artworks by title…' ?>"
+         oninput="onSearch(this.value)">
+
+  <!-- TYPE FILTER -->
+  <div class="filter-group">
+    <span class="filter-label"><?= $ar?'النوع':'Type' ?></span>
+    <button class="filter-btn active" data-type="all" onclick="setType('all',this)"><?= $ar?'الكل':'All' ?></button>
+    <button class="filter-btn" data-type="abstract" onclick="setType('abstract',this)"><?= $ar?'تجريدي':'Abstract' ?></button>
+    <button class="filter-btn" data-type="landscape" onclick="setType('landscape',this)"><?= $ar?'طبيعي':'Landscape' ?></button>
+    <button class="filter-btn" data-type="portrait" onclick="setType('portrait',this)"><?= $ar?'بورتريه':'Portrait' ?></button>
+    <button class="filter-btn" data-type="other" onclick="setType('other',this)"><?= $ar?'أخرى':'Other' ?></button>
   </div>
 
-  <div class="art-grid">
-    <?php foreach ($artworks as $aw): ?>
-      <div class="card" data-type="<?= htmlspecialchars($aw['type']) ?>">
+  <!-- STATUS FILTER -->
+  <div class="filter-group">
+    <span class="filter-label"><?= $ar?'الحالة':'Status' ?></span>
+    <button class="filter-btn active" data-status="all" onclick="setStatus('all',this)"><?= $ar?'الكل':'All' ?></button>
+    <button class="filter-btn" data-status="available" onclick="setStatus('available',this)"><?= $ar?'متاح':'Available' ?></button>
+    <button class="filter-btn" data-status="auction" onclick="setStatus('auction',this)"><?= $ar?'مزاد':'Auction' ?></button>
+  </div>
+
+  <div class="art-grid" id="artGrid">
+    <?php foreach ($artworks as $aw):
+      $st = $aw['status']; // available | auction (sold excluded by query)
+      $badge = $st === 'auction' ? 'status-auction' : ($st === 'sold' ? 'status-sold' : 'status-available');
+      $badgeLabel = $st === 'auction' ? ($ar?'مزاد':'Auction') : ($st === 'sold' ? ($ar?'مباع':'Sold') : ($ar?'متاح':'Available'));
+    ?>
+      <div class="card" data-type="<?= e($aw['type']) ?>" data-status="<?= e($st) ?>"
+           data-title-en="<?= e($aw['title_en']) ?>" data-title-ar="<?= e($aw['title_ar']) ?>">
         <div class="card-img-wrap">
-          <img class="card-img" src="<?= htmlspecialchars($aw['image_url']) ?>" alt="<?= htmlspecialchars($ar ? $aw['title_ar'] : $aw['title_en']) ?>">
-          <?php $sold = $aw['status'] === 'sold'; ?>
-          <span class="status-badge <?= $sold ? 'status-sold' : 'status-available' ?>">
-            <?= $sold ? ($ar?'مُباع':'Sold') : ($ar?'متاح':'Available') ?>
-          </span>
+          <img class="card-img" src="<?= e($aw['image_url']) ?>" alt="<?= e($ar ? $aw['title_ar'] : $aw['title_en']) ?>">
+          <span class="status-badge <?= $badge ?>"><?= e($badgeLabel) ?></span>
         </div>
         <div class="card-body">
-          <div class="card-title"><?= htmlspecialchars($aw['title_en']) ?></div>
-          <div class="card-title-ar"><?= htmlspecialchars($aw['title_ar']) ?></div>
-          <div class="card-artist"><?= $ar?'بواسطة':'by' ?> <?= htmlspecialchars($aw['artist_en']) ?></div>
-          <div class="card-artist-ar"><?= htmlspecialchars($aw['artist_ar']) ?></div>
-          <div class="card-price"><?= number_format($aw['price']) ?> <?= $ar?'ر.س':'SAR' ?></div>
-          <a class="card-btn" href="artwork.php?id=<?= (int)$aw['id'] ?>&lang=<?= $lang ?>"><?= $ar?'عرض التفاصيل':'View Details' ?></a>
+          <div class="card-title"><?= e($aw['title_en']) ?></div>
+          <div class="card-title-ar" dir="rtl"><?= e($aw['title_ar']) ?></div>
+          <div class="card-artist"><?= $ar?'بواسطة':'by' ?>
+            <a href="artist_dashboard.php?id=<?= (int) $aw['artist_id'] ?>&lang=<?= $lang ?>"><?= e($ar ? $aw['artist_ar'] : $aw['artist_en']) ?></a>
+          </div>
+          <div class="card-price"><?= number_format((float) $aw['price']) ?> <?= $ar?'ر.س':'SAR' ?></div>
+          <button type="button" class="card-btn" onclick="openModal(<?= (int) $aw['id'] ?>)"><?= $ar?'عرض التفاصيل':'View Details' ?></button>
         </div>
       </div>
     <?php endforeach; ?>
   </div>
 
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="emptyState"
+       data-en="No artworks found" data-ar="لم يتم العثور على أعمال">
+    <?php if ($total === 0): ?>
+      <?= $ar ? 'لم يتم العثور على أعمال' : 'No artworks found' ?>
+    <?php else: ?>
+      <?= $ar ? 'لم يتم العثور على أعمال' : 'No artworks found' ?>
+    <?php endif; ?>
+  </div>
+  <?php if ($total === 0): ?>
+    <script>document.getElementById('emptyState').style.display='block';</script>
+  <?php endif; ?>
+
+  <!-- PAGINATION -->
+  <?php if ($totalPages > 1): ?>
+  <div class="pagination">
+    <a class="page-btn <?= $page <= 1 ? 'disabled' : '' ?>"
+       href="?lang=<?= $lang ?>&page=<?= max(1, $page - 1) ?>"><?= $ar?'السابق':'Previous' ?></a>
+    <span class="page-info"><?= $ar ? "صفحة $page من $totalPages" : "Page $page of $totalPages" ?></span>
+    <a class="page-btn <?= $page >= $totalPages ? 'disabled' : '' ?>"
+       href="?lang=<?= $lang ?>&page=<?= min($totalPages, $page + 1) ?>"><?= $ar?'التالي':'Next' ?></a>
+  </div>
+  <?php endif; ?>
+
 </main>
 
+<!-- DETAILS MODAL -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-body">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <img id="m-img" src="" alt="" style="border-radius:14px;margin-bottom:16px;">
+      <h2 id="m-title-en"></h2>
+      <div class="m-title-ar" id="m-title-ar" dir="rtl"></div>
+      <a class="m-artist" id="m-artist" href="#"></a>
+      <div class="m-label" id="m-label-en-h"><?= $ar?'الوصف (إنجليزي)':'Description (English)' ?></div>
+      <p id="m-desc-en"></p>
+      <div class="m-label" id="m-label-ar-h"><?= $ar?'الوصف (عربي)':'Description (Arabic)' ?></div>
+      <p id="m-desc-ar" dir="rtl"></p>
+      <div class="m-price" id="m-price"></div>
+    </div>
+  </div>
+</div>
+
 <script>
-function filterCards(type, btn){
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.art-grid .card').forEach(card=>{
-    const show = (type === 'all' || card.dataset.type === type);
-    card.classList.toggle('hidden', !show);
-  });
+const LANG = <?= json_encode($lang) ?>;
+const ARTWORKS = <?= json_encode($modalData, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_UNICODE) ?>;
+
+/* ---- Filters + search (client-side, no reload) ---- */
+let curType = 'all', curStatus = 'all', curSearch = '';
+
+function sanitizeSearch(v){
+  // strip characters that have no business in a title search
+  return String(v).replace(/[<>"'`]/g, '').trim().toLowerCase();
 }
+function setType(t, btn){
+  curType = t;
+  document.querySelectorAll('[data-type]').forEach(b=>{ if(b.classList.contains('filter-btn')) b.classList.remove('active'); });
+  btn.classList.add('active');
+  applyFilters();
+}
+function setStatus(s, btn){
+  curStatus = s;
+  document.querySelectorAll('[data-status].filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+function onSearch(v){ curSearch = sanitizeSearch(v); applyFilters(); }
+
+function applyFilters(){
+  let visible = 0;
+  document.querySelectorAll('#artGrid .card').forEach(card=>{
+    const okType   = curType === 'all'   || card.dataset.type === curType;
+    const okStatus = curStatus === 'all' || card.dataset.status === curStatus;
+    const okSearch = !curSearch
+      || (card.dataset.titleEn||'').toLowerCase().includes(curSearch)
+      || (card.dataset.titleAr||'').toLowerCase().includes(curSearch);
+    const show = okType && okStatus && okSearch;
+    card.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  const empty = document.getElementById('emptyState');
+  empty.style.display = visible === 0 ? 'block' : 'none';
+}
+
+/* ---- Details modal ---- */
+function esc(s){ return String(s==null?'':s); }
+function openModal(id){
+  const a = ARTWORKS[id];
+  if(!a) return;
+  document.getElementById('m-img').src = a.image;
+  document.getElementById('m-title-en').textContent = a.title_en;
+  document.getElementById('m-title-ar').textContent = a.title_ar;
+  const artist = document.getElementById('m-artist');
+  artist.textContent = (LANG==='ar' ? 'بواسطة ' : 'by ') + (LANG==='ar' ? a.artist_ar : a.artist_en);
+  artist.href = 'artist_dashboard.php?id=' + a.artist_id + '&lang=' + LANG;
+  document.getElementById('m-desc-en').textContent = esc(a.desc_en);
+  document.getElementById('m-desc-ar').textContent = esc(a.desc_ar);
+  document.getElementById('m-price').textContent =
+    Number(a.price).toLocaleString() + ' ' + (LANG==='ar' ? 'ر.س' : 'SAR');
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 </script>
 
 </body>
