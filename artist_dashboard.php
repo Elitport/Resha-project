@@ -1,23 +1,27 @@
 <?php
 require_once 'config.php';
 
+// TEMPORARY debugging — surface any PHP error instead of a blank page.
+// Remove these 2 lines once the page is confirmed working in production.
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 /* ---------------------------------------------------------------------
- *  Resolve which profile we're viewing.
- *  - ?id=N  -> public profile of user N
- *  - no id  -> own profile (requires login, else redirect to login.php)
+ *  Check 1 — Session check.
+ *  Not logged in -> login.php. Logged in -> we have $_SESSION['user_id'].
  * ------------------------------------------------------------------- */
-$profileId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-
-if ($profileId <= 0) {
-    if (!isLoggedIn()) {
-        header('Location: login.php');
-        exit;
-    }
-    $profileId = (int) $_SESSION['user_id'];
+if (!isLoggedIn()) {
+    header('Location: login.php');
+    exit;
 }
+$viewerId = (int) $_SESSION['user_id'];
 
-$viewerId = isLoggedIn() ? (int) $_SESSION['user_id'] : 0;
-$isOwner  = $viewerId > 0 && $viewerId === $profileId;
+/* Which profile are we viewing?
+ *  - ?id=N  -> that user's profile
+ *  - no id  -> the logged-in user's own profile
+ */
+$profileId = (isset($_GET['id']) && (int) $_GET['id'] > 0) ? (int) $_GET['id'] : $viewerId;
+$isOwner   = $viewerId === $profileId;
 
 $uploadError = '';   // shown to owner on a failed upload
 
@@ -107,6 +111,11 @@ $stmt->execute([':id' => $profileId]);
 $artist = $stmt->fetch();
 
 if (!$artist) {
+    // If the logged-in user's own record is missing, the session is stale -> login.
+    if ($profileId === $viewerId) {
+        header('Location: login.php');
+        exit;
+    }
     http_response_code(404);
     $artist = null;
 }
