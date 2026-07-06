@@ -61,18 +61,23 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 ':exp'   => $expires,
             ]);
 
-            // Send verification email (uses sendEmail() from config if present).
-            $verifyUrl = 'https://' . ($_SERVER['HTTP_HOST'] ?? 'reshaart.com')
+            // Send verification email via PHP mail() (Hostinger).
+            // The From address MUST be an address on this domain or the mail
+            // server will silently drop it — hence no-reply@oweili.com.
+            $verifyUrl = 'https://' . ($_SERVER['HTTP_HOST'] ?? 'oweili.com')
                        . '/verify.php?token=' . $token;
-            $subject = 'Verify your Resha Art account';
-            $body = "Welcome to Resha Art!\n\nPlease verify your account by clicking the link below:\n"
-                  . $verifyUrl . "\n\nThis link expires in 24 hours.";
-            if (function_exists('sendEmail')) {
-                sendEmail($old['email'], $subject, $body);
-            } else {
-                @mail($old['email'], $subject, $body,
-                    "From: no-reply@reshaart.com\r\nContent-Type: text/plain; charset=UTF-8");
-            }
+            $subject = 'Verify your account';
+            $body = "Welcome!\r\n\r\nPlease verify your account by clicking the link below:\r\n"
+                  . $verifyUrl . "\r\n\r\nThis link expires in 24 hours.\r\n";
+
+            $fromAddr = 'no-reply@oweili.com';
+            $headers  = 'From: Oweili <' . $fromAddr . ">\r\n"
+                      . 'Reply-To: ' . $fromAddr . "\r\n"
+                      . "MIME-Version: 1.0\r\n"
+                      . "Content-Type: text/plain; charset=UTF-8\r\n";
+
+            // 5th arg sets the envelope sender (-f) so Hostinger accepts it.
+            @mail($old['email'], $subject, $body, $headers, '-f' . $fromAddr);
 
             $okCode = 'check_email';
             $old = ['name_en' => '', 'name_ar' => '', 'email' => '', 'city' => '', 'role' => 'collector'];
