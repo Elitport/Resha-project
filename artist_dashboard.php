@@ -25,6 +25,69 @@ $isOwner   = $viewerId === $profileId;
 
 $uploadError = '';   // shown to owner on a failed upload
 
+/* =====================================================================
+ *  AI TRANSLATE ENDPOINT (EN -> AR) via the Claude API.
+ *  Called by the upload form as the artist fills the English fields.
+ *  Owner-only + CSRF; the API key stays server-side (never sent to the
+ *  browser). Set ANTHROPIC_API_KEY in the environment or config.php.
+ * ===================================================================== */
+if (($_GET['action'] ?? '') === 'translate') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    if (!$isOwner)                               { echo json_encode(['ok' => false, 'error' => 'forbidden']); exit; }
+    if (!verifyCsrf($_POST['csrf_token'] ?? null)) { echo json_encode(['ok' => false, 'error' => 'csrf']); exit; }
+
+    $text = trim((string) ($_POST['text'] ?? ''));
+    if ($text === '')            { echo json_encode(['ok' => false, 'error' => 'empty']); exit; }
+    if (mb_strlen($text) > 2000) { echo json_encode(['ok' => false, 'error' => 'toolong']); exit; }
+
+    // API key: prefer an env var, fall back to a config.php constant.
+    $apiKey = getenv('ANTHROPIC_API_KEY') ?: (defined('ANTHROPIC_API_KEY') ? ANTHROPIC_API_KEY : '');
+    if ($apiKey === '') { echo json_encode(['ok' => false, 'error' => 'nokey']); exit; }
+
+    $payload = json_encode([
+        'model'      => 'claude-opus-4-8',
+        'max_tokens' => 1024,
+        'system'     => 'You are a professional art translator. Translate the user\'s English text into natural, fluent Modern Standard Arabic suitable for an art marketplace. Reply with ONLY the Arabic translation — no quotes, no transliteration, no explanations, no English.',
+        'messages'   => [
+            ['role' => 'user', 'content' => $text],
+        ],
+    ], JSON_UNESCAPED_UNICODE);
+
+    $ch = curl_init('https://api.anthropic.com/v1/messages');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_HTTPHEADER     => [
+            'x-api-key: ' . $apiKey,
+            'anthropic-version: 2023-06-01',
+            'content-type: application/json',
+        ],
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_TIMEOUT        => 30,
+    ]);
+    $resp   = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $cerr   = curl_error($ch);
+    curl_close($ch);
+
+    if ($resp === false)   { error_log('Translate cURL error: ' . $cerr); echo json_encode(['ok' => false, 'error' => 'network']); exit; }
+    if ($status !== 200)   { error_log('Translate API status ' . $status . ': ' . $resp); echo json_encode(['ok' => false, 'error' => 'api']); exit; }
+
+    $data = json_decode($resp, true);
+    $ar   = '';
+    if (isset($data['content']) && is_array($data['content'])) {
+        foreach ($data['content'] as $block) {
+            if (($block['type'] ?? '') === 'text') { $ar .= $block['text']; }
+        }
+    }
+    $ar = trim($ar);
+    if ($ar === '') { echo json_encode(['ok' => false, 'error' => 'empty_result']); exit; }
+
+    echo json_encode(['ok' => true, 'ar' => $ar], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 /* ---------------------------------------------------------------------
  *  POST handlers (owner-only, CSRF-protected). PRG pattern.
  * ------------------------------------------------------------------- */
@@ -245,6 +308,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 .err-box{background:rgba(255,0,85,0.08);border:1px solid rgba(255,0,85,0.25);color:#ff0055;font-size:13px;font-weight:600;padding:11px 14px;border-radius:12px;margin-bottom:16px;}
 [dir="rtl"] .upload-card{text-align:right;}
 
+.ai-hint{font-size:10px;font-weight:600;color:#0066ff;letter-spacing:0;text-transform:none;margin-inline-start:6px;}
 @keyframes riseUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 @media(max-width:768px){.topnav{padding:10px 14px;}.nav-logo span{display:none;}.profile-head{flex-direction:column;text-align:center;}[dir="rtl"] .profile-head{flex-direction:column;}.head-actions{align-items:center;}.upload-card .grid2{grid-template-columns:1fr;}.stats-row{justify-content:center;}}
 </style>
@@ -356,12 +420,12 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
       <?= csrfField() ?>
       <input type="hidden" name="action" value="upload">
       <div class="grid2">
-        <div class="field"><label id="t-f-ten">Title in English</label><input type="text" name="title_en" required></div>
-        <div class="field"><label id="t-f-tar">Title in Arabic</label><input type="text" name="title_ar" dir="rtl" required></div>
+        <div class="field"><label id="t-f-ten">Title in English</label><input type="text" id="f-title-en" name="title_en" required onblur="autoTranslate('f-title-en','f-title-ar',this)"></div>
+        <div class="field"><label id="t-f-tar">Title in Arabic <span class="ai-hint" id="hint-title"></span></label><input type="text" id="f-title-ar" name="title_ar" dir="rtl" required></div>
       </div>
       <div class="grid2">
-        <div class="field"><label id="t-f-den">Description in English</label><textarea name="desc_en" required></textarea></div>
-        <div class="field"><label id="t-f-dar">Description in Arabic</label><textarea name="desc_ar" dir="rtl" required></textarea></div>
+        <div class="field"><label id="t-f-den">Description in English</label><textarea id="f-desc-en" name="desc_en" required onblur="autoTranslate('f-desc-en','f-desc-ar',this)"></textarea></div>
+        <div class="field"><label id="t-f-dar">Description in Arabic <span class="ai-hint" id="hint-desc"></span></label><textarea id="f-desc-ar" name="desc_ar" dir="rtl" required></textarea></div>
       </div>
       <div class="grid2">
         <div class="field"><label id="t-f-price">Price in SAR</label><input type="number" name="price" min="0" step="0.01" required></div>
@@ -386,6 +450,37 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 
 <script>
 const IS_OWNER = <?= $isOwner ? 'true' : 'false' ?>;
+const CSRF = <?= json_encode(csrfToken()) ?>;
+
+/* ---- Auto-translate English -> Arabic via the server-side Claude proxy ---- */
+function autoTranslate(srcId, dstId, srcEl){
+  const src = document.getElementById(srcId);
+  const dst = document.getElementById(dstId);
+  if(!src || !dst) return;
+  const text = src.value.trim();
+  if(!text) return;
+  if(dst.value.trim() && dst.dataset.auto !== '1') return;   // don't overwrite manual edits
+  const hint = document.getElementById(srcId.indexOf('title')>-1 ? 'hint-title' : 'hint-desc');
+  if(hint) hint.textContent = (L==='ar'?'... جارٍ الترجمة':'translating…');
+
+  const body = new URLSearchParams();
+  body.set('text', text); body.set('csrf_token', CSRF);
+  fetch('artist_dashboard.php?action=translate', {
+      method:'POST', credentials:'same-origin',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'}, body})
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.ok){ dst.value = d.ar; dst.dataset.auto = '1';
+        if(hint) hint.textContent = (L==='ar'?'✓ مُترجم تلقائياً':'✓ auto-translated'); }
+      else { if(hint) hint.textContent = (L==='ar'?'تعذّرت الترجمة':'translation unavailable'); }
+    })
+    .catch(()=>{ if(hint) hint.textContent = (L==='ar'?'خطأ في الشبكة':'network error'); });
+}
+// Clear the "auto" flag if the artist edits the Arabic field by hand.
+['f-title-ar','f-desc-ar'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('input', ()=>{ el.dataset.auto = '0'; });
+});
 const T={
   en:{dir:'ltr',lb:'العربية',
     profileTitle:'Artist Profile',worksTitle:'Artworks',uploadTitle:'Upload Artwork',
