@@ -70,14 +70,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $body = "Welcome!\r\n\r\nPlease verify your account by clicking the link below:\r\n"
                   . $verifyUrl . "\r\n\r\nThis link expires in 24 hours.\r\n";
 
-            $fromAddr = 'no-reply@oweili.com';
-            $headers  = 'From: Oweili <' . $fromAddr . ">\r\n"
-                      . 'Reply-To: ' . $fromAddr . "\r\n"
-                      . "MIME-Version: 1.0\r\n"
-                      . "Content-Type: text/plain; charset=UTF-8\r\n";
-
-            // 5th arg sets the envelope sender (-f) so Hostinger accepts it.
-            @mail($old['email'], $subject, $body, $headers, '-f' . $fromAddr);
+            // Prefer authenticated SMTP (sendEmail from config.php); fall back
+            // to PHP mail() only if the helper isn't available.
+            if (function_exists('sendEmail')) {
+                sendEmail($old['email'], $subject, $body);
+            } else {
+                $fromAddr = 'no-reply@oweili.com';
+                $headers  = 'From: Oweili <' . $fromAddr . ">\r\n"
+                          . 'Reply-To: ' . $fromAddr . "\r\n"
+                          . "MIME-Version: 1.0\r\n"
+                          . "Content-Type: text/plain; charset=UTF-8\r\n";
+                @mail($old['email'], $subject, $body, $headers, '-f' . $fromAddr);
+            }
 
             $okCode = 'check_email';
             $old = ['name_en' => '', 'name_ar' => '', 'email' => '', 'city' => '', 'role' => 'collector'];
