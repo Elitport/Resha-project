@@ -25,69 +25,6 @@ $isOwner   = $viewerId === $profileId;
 
 $uploadError = '';   // shown to owner on a failed upload
 
-/* =====================================================================
- *  AI TRANSLATE ENDPOINT (EN -> AR) via the Claude API.
- *  Called by the upload form as the artist fills the English fields.
- *  Owner-only + CSRF; the API key stays server-side (never sent to the
- *  browser). Set ANTHROPIC_API_KEY in the environment or config.php.
- * ===================================================================== */
-if (($_GET['action'] ?? '') === 'translate') {
-    header('Content-Type: application/json; charset=utf-8');
-
-    if (!$isOwner)                               { echo json_encode(['ok' => false, 'error' => 'forbidden']); exit; }
-    if (!verifyCsrf($_POST['csrf_token'] ?? null)) { echo json_encode(['ok' => false, 'error' => 'csrf']); exit; }
-
-    $text = trim((string) ($_POST['text'] ?? ''));
-    if ($text === '')            { echo json_encode(['ok' => false, 'error' => 'empty']); exit; }
-    if (mb_strlen($text) > 2000) { echo json_encode(['ok' => false, 'error' => 'toolong']); exit; }
-
-    // API key: prefer an env var, fall back to a config.php constant.
-    $apiKey = getenv('ANTHROPIC_API_KEY') ?: (defined('ANTHROPIC_API_KEY') ? ANTHROPIC_API_KEY : '');
-    if ($apiKey === '') { echo json_encode(['ok' => false, 'error' => 'nokey']); exit; }
-
-    $payload = json_encode([
-        'model'      => 'claude-opus-4-8',
-        'max_tokens' => 1024,
-        'system'     => 'You are a professional art translator. Translate the user\'s English text into natural, fluent Modern Standard Arabic suitable for an art marketplace. Reply with ONLY the Arabic translation — no quotes, no transliteration, no explanations, no English.',
-        'messages'   => [
-            ['role' => 'user', 'content' => $text],
-        ],
-    ], JSON_UNESCAPED_UNICODE);
-
-    $ch = curl_init('https://api.anthropic.com/v1/messages');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_HTTPHEADER     => [
-            'x-api-key: ' . $apiKey,
-            'anthropic-version: 2023-06-01',
-            'content-type: application/json',
-        ],
-        CURLOPT_POSTFIELDS     => $payload,
-        CURLOPT_TIMEOUT        => 30,
-    ]);
-    $resp   = curl_exec($ch);
-    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $cerr   = curl_error($ch);
-    curl_close($ch);
-
-    if ($resp === false)   { error_log('Translate cURL error: ' . $cerr); echo json_encode(['ok' => false, 'error' => 'network']); exit; }
-    if ($status !== 200)   { error_log('Translate API status ' . $status . ': ' . $resp); echo json_encode(['ok' => false, 'error' => 'api']); exit; }
-
-    $data = json_decode($resp, true);
-    $ar   = '';
-    if (isset($data['content']) && is_array($data['content'])) {
-        foreach ($data['content'] as $block) {
-            if (($block['type'] ?? '') === 'text') { $ar .= $block['text']; }
-        }
-    }
-    $ar = trim($ar);
-    if ($ar === '') { echo json_encode(['ok' => false, 'error' => 'empty_result']); exit; }
-
-    echo json_encode(['ok' => true, 'ar' => $ar], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
 /* ---------------------------------------------------------------------
  *  POST handlers (owner-only, CSRF-protected). PRG pattern.
  * ------------------------------------------------------------------- */
@@ -450,9 +387,10 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 
 <script>
 const IS_OWNER = <?= $isOwner ? 'true' : 'false' ?>;
-const CSRF = <?= json_encode(csrfToken()) ?>;
 
-/* ---- Auto-translate English -> Arabic via the server-side Claude proxy ---- */
+/* ---- Auto-translate English -> Arabic via the free Google Translate endpoint ----
+ * Client-side fetch, no API key, no cost. Endpoint returns a nested JSON array;
+ * the translated segments are at data[0][*][0]. */
 function autoTranslate(srcId, dstId, srcEl){
   const src = document.getElementById(srcId);
   const dst = document.getElementById(dstId);
@@ -463,14 +401,18 @@ function autoTranslate(srcId, dstId, srcEl){
   const hint = document.getElementById(srcId.indexOf('title')>-1 ? 'hint-title' : 'hint-desc');
   if(hint) hint.textContent = (L==='ar'?'... جارٍ الترجمة':'translating…');
 
-  const body = new URLSearchParams();
-  body.set('text', text); body.set('csrf_token', CSRF);
-  fetch('artist_dashboard.php?action=translate', {
-      method:'POST', credentials:'same-origin',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'}, body})
+  const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q='
+            + encodeURIComponent(text);
+  fetch(url)
     .then(r=>r.json())
-    .then(d=>{
-      if(d.ok){ dst.value = d.ar; dst.dataset.auto = '1';
+    .then(data=>{
+      // data[0] is an array of [translatedChunk, originalChunk, ...]; join the chunks.
+      let ar = '';
+      if(Array.isArray(data) && Array.isArray(data[0])){
+        ar = data[0].map(seg => (seg && seg[0]) ? seg[0] : '').join('');
+      }
+      ar = ar.trim();
+      if(ar){ dst.value = ar; dst.dataset.auto = '1';
         if(hint) hint.textContent = (L==='ar'?'✓ مُترجم تلقائياً':'✓ auto-translated'); }
       else { if(hint) hint.textContent = (L==='ar'?'تعذّرت الترجمة':'translation unavailable'); }
     })
