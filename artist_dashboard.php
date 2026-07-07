@@ -16,6 +16,9 @@ if (!isLoggedIn()) {
 }
 $viewerId = (int) $_SESSION['user_id'];
 
+/* Artwork types (shared list) */
+$ART_TYPES = require __DIR__ . '/art_types.php';
+
 /* Which profile are we viewing?
  *  - ?id=N  -> that user's profile
  *  - no id  -> the logged-in user's own profile
@@ -60,8 +63,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $dEn   = sanitize($_POST['desc_en'] ?? '');
         $dAr   = sanitize($_POST['desc_ar'] ?? '');
         $price = $_POST['price'] ?? '';
-        $type  = in_array($_POST['type'] ?? '', ['abstract','landscape','portrait','other'], true)
-               ? $_POST['type'] : '';
+        $type  = array_key_exists($_POST['type'] ?? '', $ART_TYPES) ? $_POST['type'] : '';
 
         if ($tEn === '' || $tAr === '' || $dEn === '' || $dAr === '' || $type === '' || !is_numeric($price)) {
             $uploadError = 'required';
@@ -367,11 +369,10 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
       <div class="grid2">
         <div class="field"><label id="t-f-price">Price in SAR</label><input type="number" name="price" min="0" step="0.01" required></div>
         <div class="field"><label id="t-f-type">Type</label>
-          <select name="type" required>
-            <option value="abstract" id="opt-abstract">Abstract</option>
-            <option value="landscape" id="opt-landscape">Landscape</option>
-            <option value="portrait" id="opt-portrait">Portrait</option>
-            <option value="other" id="opt-other">Other</option>
+          <select name="type" class="type-select" required>
+            <?php foreach ($ART_TYPES as $slug => $lbl): ?>
+              <option value="<?= e($slug) ?>" data-en="<?= e($lbl['en']) ?>" data-ar="<?= e($lbl['ar']) ?>"><?= e($ar ? $lbl['ar'] : $lbl['en']) ?></option>
+            <?php endforeach; ?>
           </select>
         </div>
       </div>
@@ -465,7 +466,7 @@ function apply(l){
   setTxt('t-edit',t.edit);setTxt('t-empty',t.empty);
   setTxt('t-f-ten',t.fTen);setTxt('t-f-tar',t.fTar);setTxt('t-f-den',t.fDen);setTxt('t-f-dar',t.fDar);
   setTxt('t-f-price',t.fPrice);setTxt('t-f-type',t.fType);setTxt('t-f-img',t.fImg);setTxt('t-f-submit',t.fSubmit);
-  setTxt('opt-abstract',t.abstract);setTxt('opt-landscape',t.landscape);setTxt('opt-portrait',t.portrait);setTxt('opt-other',t.other);
+  document.querySelectorAll('.type-select option').forEach(o=>{ o.textContent = (l==='ar' ? o.dataset.ar : o.dataset.en) || o.textContent; });
   document.querySelectorAll('.badge').forEach(b=>{const s=b.dataset.status;if(t[s])b.textContent=t[s];});
   document.querySelectorAll('.sar').forEach(s=>s.textContent=t.sar);
   document.querySelectorAll('[data-t="edit"]').forEach(el=>el.textContent=t.cardEdit);
