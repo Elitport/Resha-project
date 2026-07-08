@@ -40,6 +40,30 @@ if ($isAdmin && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST
     }
     $uid    = (int) ($_POST['user_id'] ?? 0);
     $action = $_POST['action'];
+
+    /* --- Artwork moderation --- */
+    if ($action === 'approve_art' || $action === 'reject_art') {
+        $awId = (int) ($_POST['artwork_id'] ?? 0);
+        if ($awId > 0) {
+            if ($action === 'approve_art') {
+                getDB()->prepare('UPDATE artworks SET is_approved = 1 WHERE id = :id')
+                       ->execute([':id' => $awId]);
+            } else {
+                // Reject = remove the pending artwork and its uploaded image file.
+                $row = getDB()->prepare('SELECT image_url FROM artworks WHERE id = :id');
+                $row->execute([':id' => $awId]);
+                $img = $row->fetchColumn();
+                getDB()->prepare('DELETE FROM artworks WHERE id = :id')->execute([':id' => $awId]);
+                if ($img && strpos($img, 'uploads/') === 0) {
+                    $path = __DIR__ . '/' . $img;
+                    if (is_file($path)) { @unlink($path); }
+                }
+            }
+        }
+        header('Location: admin.php?ok=1#pending');
+        exit;
+    }
+
     $map = [
         'approve'   => 'UPDATE users SET is_approved = 1 WHERE id = :id',
         'unapprove' => 'UPDATE users SET is_approved = 0 WHERE id = :id',
@@ -52,6 +76,19 @@ if ($isAdmin && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST
     }
     header('Location: admin.php' . ($flash ? '?ok=1' : ''));
     exit;
+}
+
+/* ---- Load pending artworks (only when authed) ---- */
+$pendingArt = [];
+if ($isAdmin) {
+    $pendingArt = getDB()->query(
+        "SELECT a.id, a.title_en, a.title_ar, a.price, a.type, a.image_url, a.created_at,
+                u.full_name_en AS artist_name
+         FROM artworks a
+         LEFT JOIN users u ON u.id = a.artist_id
+         WHERE a.is_approved = 0
+         ORDER BY a.created_at DESC"
+    )->fetchAll();
 }
 
 /* ---- Load artists list (only when authed) ---- */
@@ -102,6 +139,15 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 .acts{display:flex;gap:6px;flex-wrap:wrap;}
 .name-ar{font-size:11px;color:rgba(0,0,0,0.45);}
 .empty{padding:30px;text-align:center;color:rgba(0,0,0,0.4);}
+.sec-head{margin-bottom:16px;}
+.sec-head h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.count{background:#ff0055;color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;}
+.art-list{display:flex;flex-direction:column;gap:12px;}
+.art-item{display:flex;align-items:center;gap:16px;padding:12px;border:1px solid rgba(0,0,0,0.07);border-radius:14px;}
+.art-thumb{width:64px;height:64px;border-radius:10px;background-size:cover;background-position:center;background-color:#eee;flex-shrink:0;}
+.art-meta{flex:1;min-width:0;}
+.art-meta strong{font-size:14px;}
+.art-info{font-size:12px;color:rgba(0,0,0,0.5);margin-top:3px;}
 </style>
 </head>
 <body>
@@ -130,7 +176,40 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     </div>
   </div>
 
+  <!-- ===== PENDING ARTWORK APPROVAL ===== -->
+  <div class="card" id="pending" style="margin-bottom:24px;">
+    <div class="sec-head">
+      <h2>Pending Artworks <span class="count"><?= count($pendingArt) ?></span></h2>
+      <div class="sub" style="margin:0;">New uploads waiting for approval before they appear in the marketplace.</div>
+    </div>
+    <?php if (!$pendingArt): ?>
+      <div class="empty">Nothing pending — all caught up. 🎉</div>
+    <?php else: ?>
+      <div class="art-list">
+      <?php foreach ($pendingArt as $art): ?>
+        <div class="art-item">
+          <div class="art-thumb" style="background-image:url('<?= e($art['image_url']) ?>');"></div>
+          <div class="art-meta">
+            <strong><?= e($art['title_en'] ?: ($art['title_ar'] ?: 'Untitled')) ?></strong>
+            <?php if (!empty($art['title_ar'])): ?><div class="name-ar" dir="rtl"><?= e($art['title_ar']) ?></div><?php endif; ?>
+            <div class="art-info">
+              <?= e($art['artist_name'] ?: 'Unknown artist') ?> ·
+              <?= e(ucfirst((string)$art['type'])) ?> ·
+              <?= $art['price'] !== null ? e(number_format((float)$art['price'])) . ' SAR' : '—' ?>
+            </div>
+          </div>
+          <div class="acts">
+            <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="artwork_id" value="<?= (int)$art['id'] ?>"><button class="btn sm green" name="action" value="approve_art">Approve</button></form>
+            <form method="post" action="admin.php" onsubmit="return confirm('Reject and permanently delete this artwork?');"><?= csrfField() ?><input type="hidden" name="artwork_id" value="<?= (int)$art['id'] ?>"><button class="btn sm red" name="action" value="reject_art">Reject</button></form>
+          </div>
+        </div>
+      <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </div>
+
   <div class="card">
+    <div class="sec-head"><h2>Artists</h2></div>
     <?php if (!$artists): ?>
       <div class="empty">No artist accounts yet.</div>
     <?php else: ?>
