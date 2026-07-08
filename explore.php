@@ -145,10 +145,21 @@ function stylesFor(lang){
   return [];
 }
 
+/* Bilingual labels for the 19 artwork types (mirrors art_types.php) plus the
+   legacy style tags, so a card's own category — whatever it uses — gets a label. */
+const TYPELABEL = <?php
+  $ART_TYPES = require __DIR__ . '/art_types.php';
+  $map = ['all' => ['en' => 'All', 'ar' => 'الكل']];
+  foreach ($ART_TYPES as $slug => $lbl) { $map[$slug] = ['en' => $lbl['en'], 'ar' => $lbl['ar']]; }
+  echo json_encode($map, JSON_UNESCAPED_UNICODE);
+?>;
 const TAGLABEL = {
-  en:{all:'All', Traditional:'Traditional', Digital:'Digital', 'Mixed Media':'Mixed Media'},
-  ar:{all:'الكل', Traditional:'تقليدي', Digital:'رقمي', 'Mixed Media':'وسائط مختلطة'}
+  en:Object.assign({Traditional:'Traditional', Digital:'Digital', 'Mixed Media':'Mixed Media'}, mapLang(TYPELABEL,'en')),
+  ar:Object.assign({Traditional:'تقليدي', Digital:'رقمي', 'Mixed Media':'وسائط مختلطة'}, mapLang(TYPELABEL,'ar'))
 };
+function mapLang(m, lang){ const o={}; for(const k in m) o[k]=m[k][lang]; return o; }
+/* The category a card filters by: an explicit artwork type if present, else its style tag. */
+function catOf(s){ return s.type || s.tag || ''; }
 const UI = {
   en:{badge:'12 Art Styles', h1:'Explore <em>Art Styles</em>',
       desc:'Discover the twelve creative disciplines at the heart of Resha Art — from timeless traditional media to cutting-edge digital forms.',
@@ -165,9 +176,10 @@ function tagLabel(tag){ return (TAGLABEL[L] && TAGLABEL[L][tag]) ? TAGLABEL[L][t
 
 function buildFilters(){
   const list = stylesFor(L);
-  const tags = ['all', ...Array.from(new Set(list.map(s => s.tag).filter(Boolean)))];
+  // Only show a chip for a category that actually has cards, so no dead filters.
+  const cats = ['all', ...Array.from(new Set(list.map(catOf).filter(Boolean)))];
   const bar = document.getElementById('filterBar');
-  bar.innerHTML = tags.map(t =>
+  bar.innerHTML = cats.map(t =>
     '<button class="filter-btn'+(t===curFilter?' active':'')+'" data-tag="'+String(t).replace(/"/g,'')+'" '+
     'onclick="setFilter(this.dataset.tag,this)">'+tagLabel(t)+'</button>'
   ).join('');
@@ -176,7 +188,7 @@ function buildFilters(){
 function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
 
 function buildGrid(){
-  const list = stylesFor(L).filter(s => curFilter==='all' || s.tag===curFilter);
+  const list = stylesFor(L).filter(s => curFilter==='all' || catOf(s)===curFilter);
   const grid = document.getElementById('stylesGrid');
   const empty = document.getElementById('emptyState');
   if(!list.length){
@@ -188,7 +200,7 @@ function buildGrid(){
     '<div class="style-card" onclick="openModal('+i+')">'+
       '<div class="style-img" style="background-image:url(\''+esc(s.img)+'\')"></div>'+
       '<div class="style-body">'+
-        (s.tag?'<span class="style-tag">'+esc(tagLabel(s.tag))+'</span>':'')+
+        (catOf(s)?'<span class="style-tag">'+esc(tagLabel(catOf(s)))+'</span>':'')+
         '<div class="style-title">'+esc(s.title)+'</div>'+
         (s.sub?'<div class="style-sub">'+esc(s.sub)+'</div>':'')+
         (s.desc?'<div class="style-desc">'+esc(s.desc)+'</div>':'')+
@@ -211,7 +223,7 @@ function openModal(i){
   const s = (window.__filtered||[])[i];
   if(!s) return;
   document.getElementById('m-img').src = s.img || '';
-  document.getElementById('m-tag').textContent = s.tag ? tagLabel(s.tag) : '';
+  document.getElementById('m-tag').textContent = catOf(s) ? tagLabel(catOf(s)) : '';
   document.getElementById('m-title').textContent = s.title || '';
   document.getElementById('m-sub').textContent = s.sub || '';
   document.getElementById('m-desc').textContent = s.desc || '';

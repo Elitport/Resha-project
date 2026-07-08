@@ -1,6 +1,7 @@
 <?php
 // marketplace.php — Resha Art · Marketplace (live, database-driven)
 require_once 'config.php';
+$ART_TYPES = require __DIR__ . '/art_types.php';
 
 $lang = isset($_GET['lang']) && $_GET['lang'] === 'ar' ? 'ar' : 'en';
 $ar   = $lang === 'ar';
@@ -236,10 +237,9 @@ foreach ($artworks as $aw) {
   <div class="filter-group">
     <span class="filter-label"><?= $ar?'النوع':'Type' ?></span>
     <button class="filter-btn active" data-type="all" onclick="setType('all',this)"><?= $ar?'الكل':'All' ?></button>
-    <button class="filter-btn" data-type="abstract" onclick="setType('abstract',this)"><?= $ar?'تجريدي':'Abstract' ?></button>
-    <button class="filter-btn" data-type="landscape" onclick="setType('landscape',this)"><?= $ar?'طبيعي':'Landscape' ?></button>
-    <button class="filter-btn" data-type="portrait" onclick="setType('portrait',this)"><?= $ar?'بورتريه':'Portrait' ?></button>
-    <button class="filter-btn" data-type="other" onclick="setType('other',this)"><?= $ar?'أخرى':'Other' ?></button>
+    <?php foreach ($ART_TYPES as $slug => $lbl): ?>
+    <button class="filter-btn" data-type="<?= e($slug) ?>" onclick="setType('<?= e($slug) ?>',this)"><?= e($ar ? $lbl['ar'] : $lbl['en']) ?></button>
+    <?php endforeach; ?>
   </div>
 
   <!-- STATUS FILTER -->
