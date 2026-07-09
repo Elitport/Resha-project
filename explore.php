@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Explore Art Styles · Resha Art</title>
+<title>Explore Art Styles · Oweili</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
@@ -103,7 +103,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
   <div class="page-header">
     <div class="page-badge"><div class="pulse-dot"></div><span id="t-badge">12 Art Styles</span></div>
     <h1 id="t-h1">Explore <em>Art Styles</em></h1>
-    <p id="t-desc">Discover the twelve creative disciplines at the heart of Resha Art — from timeless traditional media to cutting-edge digital forms.</p>
+    <p id="t-desc">Discover the twelve creative disciplines at the heart of Oweili — from timeless traditional media to cutting-edge digital forms.</p>
   </div>
 
   <div class="filter-bar" id="filterBar"></div>
@@ -162,10 +162,10 @@ function mapLang(m, lang){ const o={}; for(const k in m) o[k]=m[k][lang]; return
 function catOf(s){ return s.type || s.tag || ''; }
 const UI = {
   en:{badge:'12 Art Styles', h1:'Explore <em>Art Styles</em>',
-      desc:'Discover the twelve creative disciplines at the heart of Resha Art — from timeless traditional media to cutting-edge digital forms.',
+      desc:'Discover the twelve creative disciplines at the heart of Oweili — from timeless traditional media to cutting-edge digital forms.',
       more:'View details →', empty:'No styles found.', tools:'Tools & Materials'},
   ar:{badge:'١٢ أسلوب فني', h1:'استكشف <em>أساليب الرسم</em>',
-      desc:'اكتشف الأساليب الإبداعية الاثني عشر في قلب ريشة آرت — من الوسائط التقليدية الخالدة إلى الأشكال الرقمية الحديثة.',
+      desc:'اكتشف الأساليب الإبداعية الاثني عشر في قلب أويلي — من الوسائط التقليدية الخالدة إلى الأشكال الرقمية الحديثة.',
       more:'عرض التفاصيل ←', empty:'لم يتم العثور على أساليب.', tools:'الأدوات والخامات'}
 };
 

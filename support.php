@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Support · Resha Art</title>
+<title>Support · Oweili</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
@@ -101,11 +101,11 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 
   <p class="section-title" id="t-ct-title">GET IN TOUCH</p>
   <div class="contact-grid">
-    <a class="contact-card" href="mailto:contact@reshaart.com">
+    <a class="contact-card" href="mailto:contact@oweili.com">
       <div class="contact-icon">✉️</div>
       <h3 id="t-c1">Contact the Gallery</h3>
       <p id="t-c1d">Send us a message and our team will get back to you within 24 hours.</p>
-      <span class="contact-link">contact@reshaart.com</span>
+      <span class="contact-link">contact@oweili.com</span>
     </a>
     <a class="contact-card" href="chat.php">
       <div class="contact-icon">💬</div>
@@ -129,19 +129,19 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
     <a class="legal-card" href="#">
       <span class="legal-arrow">→</span>
       <h4 id="t-l1">Artwork Rights Policy</h4>
-      <p id="t-l1d">All artwork shared on Resha Art remains the intellectual property of the original creator.</p>
+      <p id="t-l1d">All artwork shared on Oweili remains the intellectual property of the original creator.</p>
     </a>
     <a class="legal-card" href="#">
       <span class="legal-arrow">→</span>
       <h4 id="t-l2">Terms of Digital Use</h4>
-      <p id="t-l2d">By using Resha Art you agree to our community guidelines and terms of service.</p>
+      <p id="t-l2d">By using Oweili you agree to our community guidelines and terms of service.</p>
     </a>
     <a class="legal-card" href="#">
       <span class="legal-arrow">→</span>
       <h4 id="t-l3">Privacy Policy</h4>
       <p id="t-l3d">We are committed to protecting your personal data and creative work at all times.</p>
     </a>
-    <a class="legal-card" href="mailto:contact@reshaart.com">
+    <a class="legal-card" href="mailto:contact@oweili.com">
       <span class="legal-arrow">→</span>
       <h4 id="t-l4">Report an Infringement</h4>
       <p id="t-l4d">If you believe your artwork has been used without permission, contact us immediately.</p>
@@ -153,19 +153,19 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 const FAQS={
   en:[
     {q:'How do I create an account?',a:'Click "Join Free" in the navigation bar, fill in your artist name, email, phone number, and password. Then verify your email to activate your account.'},
-    {q:'Is Resha Art free to use?',a:'Yes! Resha Art is completely free for all artists. Create your account, join workshops, and connect with the community at no cost.'},
+    {q:'Is Oweili free to use?',a:'Yes! Oweili is completely free for all artists. Create your account, join workshops, and connect with the community at no cost.'},
     {q:'How does the Artist Chat Room work?',a:'Once your account is verified, you can enter the Artist Chat Room and send messages to fellow artists in real time. Each artist has a unique color.'},
-    {q:'Can I share my artwork on Resha Art?',a:'Absolutely! The Artist Chat Room is the place to share your work, get feedback, and inspire others. Portfolio pages are coming soon.'},
-    {q:'How do I report a problem?',a:'You can contact us directly at contact@reshaart.com or use the report function in the chat room for any community issues.'},
-    {q:'Is the platform available in Arabic?',a:'Yes! Resha Art fully supports Arabic with RTL layout. Click the language button in the top navigation to switch between English and Arabic.'}
+    {q:'Can I share my artwork on Oweili?',a:'Absolutely! The Artist Chat Room is the place to share your work, get feedback, and inspire others. Portfolio pages are coming soon.'},
+    {q:'How do I report a problem?',a:'You can contact us directly at contact@oweili.com or use the report function in the chat room for any community issues.'},
+    {q:'Is the platform available in Arabic?',a:'Yes! Oweili fully supports Arabic with RTL layout. Click the language button in the top navigation to switch between English and Arabic.'}
   ],
   ar:[
     {q:'كيف أنشئ حساباً؟',a:'انقر على "انضم مجاناً" في شريط التنقل، أدخل اسمك الفني والبريد الإلكتروني ورقم الجوال وكلمة السر. ثم تحقق من بريدك لتفعيل الحساب.'},
-    {q:'هل Resha Art مجاني؟',a:'نعم! Resha Art مجاني تماماً لجميع الفنانين. أنشئ حسابك، انضم إلى الورش، وتواصل مع المجتمع بدون أي تكلفة.'},
+    {q:'هل Oweili مجاني؟',a:'نعم! Oweili مجاني تماماً لجميع الفنانين. أنشئ حسابك، انضم إلى الورش، وتواصل مع المجتمع بدون أي تكلفة.'},
     {q:'كيف تعمل غرفة محادثة الفنانين؟',a:'بمجرد التحقق من حسابك، يمكنك الدخول إلى غرفة المحادثة وإرسال رسائل للفنانين الآخرين في الوقت الفعلي. لكل فنان لون مميز.'},
     {q:'هل يمكنني مشاركة أعمالي الفنية؟',a:'بالتأكيد! غرفة محادثة الفنانين هي المكان المثالي لمشاركة أعمالك والحصول على ملاحظات وإلهام الآخرين. صفحات الملفات الشخصية قادمة قريباً.'},
-    {q:'كيف أبلّغ عن مشكلة؟',a:'يمكنك التواصل معنا مباشرة على contact@reshaart.com أو استخدام وظيفة الإبلاغ في غرفة المحادثة لأي مشكلات في المجتمع.'},
-    {q:'هل المنصة متاحة باللغة العربية؟',a:'نعم! Resha Art يدعم اللغة العربية بالكامل مع تخطيط RTL. انقر على زر اللغة في التنقل العلوي للتبديل بين الإنجليزية والعربية.'}
+    {q:'كيف أبلّغ عن مشكلة؟',a:'يمكنك التواصل معنا مباشرة على contact@oweili.com أو استخدام وظيفة الإبلاغ في غرفة المحادثة لأي مشكلات في المجتمع.'},
+    {q:'هل المنصة متاحة باللغة العربية؟',a:'نعم! Oweili يدعم اللغة العربية بالكامل مع تخطيط RTL. انقر على زر اللغة في التنقل العلوي للتبديل بين الإنجليزية والعربية.'}
   ]
 };
 const T={
@@ -173,16 +173,16 @@ const T={
     badge:"We're Here to Help",h1:'Artist <em>Support Center</em>',desc:"Have a question or need help? We're here for every artist in the Resha community.",
     ctTitle:'GET IN TOUCH',c1:'Contact the Gallery',c1d:'Send us a message and our team will get back to you within 24 hours.',c2:'Artist Chat Room',c2d:'Ask the community directly — artists helping artists, in real time.',c2l:'Open Chat →',c3:'Join the Community',c3d:'Create a free account to access all features, workshops, and the artist network.',c3l:'Join Free →',
     faqTitle:'FREQUENTLY ASKED QUESTIONS',legalTitle:'LEGAL & POLICIES',
-    l1:'Artwork Rights Policy',l1d:'All artwork shared on Resha Art remains the intellectual property of the original creator.',
-    l2:'Terms of Digital Use',l2d:'By using Resha Art you agree to our community guidelines and terms of service.',
+    l1:'Artwork Rights Policy',l1d:'All artwork shared on Oweili remains the intellectual property of the original creator.',
+    l2:'Terms of Digital Use',l2d:'By using Oweili you agree to our community guidelines and terms of service.',
     l3:'Privacy Policy',l3d:'We are committed to protecting your personal data and creative work at all times.',
     l4:'Report an Infringement',l4d:'If you believe your artwork has been used without permission, contact us immediately.'},
   ar:{dir:'rtl',lb:'English',studio:'الاستوديو',explore:'استكشف',community:'المجتمع',support:'الدعم',chat:'محادثة الفنانين',login:'تسجيل الدخول',
-    badge:'نحن هنا للمساعدة',h1:'<em>مركز دعم</em> الفنانين',desc:'هل لديك سؤال أو تحتاج مساعدة؟ نحن هنا لكل فنان في مجتمع ريشة.',
+    badge:'نحن هنا للمساعدة',h1:'<em>مركز دعم</em> الفنانين',desc:'هل لديك سؤال أو تحتاج مساعدة؟ نحن هنا لكل فنان في مجتمع أويلي.',
     ctTitle:'تواصل معنا',c1:'تواصل مع المعرض',c1d:'أرسل لنا رسالة وسيرد فريقنا خلال 24 ساعة.',c2:'غرفة محادثة الفنانين',c2d:'اسأل المجتمع مباشرة — فنانون يساعدون فنانين، في الوقت الفعلي.',c2l:'افتح المحادثة →',c3:'انضم للمجتمع',c3d:'أنشئ حساباً مجانياً للوصول إلى جميع الميزات والورش وشبكة الفنانين.',c3l:'انضم مجاناً →',
     faqTitle:'الأسئلة الشائعة',legalTitle:'القانوني والسياسات',
-    l1:'سياسة حقوق اللوحات',l1d:'جميع الأعمال الفنية المشتركة على Resha Art تبقى ملكاً فكرياً للمبدع الأصلي.',
-    l2:'شروط الاستخدام الرقمي',l2d:'باستخدام Resha Art فإنك توافق على إرشادات مجتمعنا وشروط الخدمة.',
+    l1:'سياسة حقوق اللوحات',l1d:'جميع الأعمال الفنية المشتركة على Oweili تبقى ملكاً فكرياً للمبدع الأصلي.',
+    l2:'شروط الاستخدام الرقمي',l2d:'باستخدام Oweili فإنك توافق على إرشادات مجتمعنا وشروط الخدمة.',
     l3:'سياسة الخصوصية',l3d:'نحن ملتزمون بحماية بياناتك الشخصية وأعمالك الإبداعية في جميع الأوقات.',
     l4:'الإبلاغ عن انتهاك فني',l4d:'إذا كنت تعتقد أن أعمالك الفنية استُخدمت دون إذن، تواصل معنا فوراً.'}
 };

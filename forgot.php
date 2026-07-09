@@ -47,15 +47,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                           . "Open this link to set a new password (valid for 1 hour):\r\n"
                           . $resetUrl . "\r\n\r\nIf you didn't request this, ignore this email.\r\n";
 
-                if (function_exists('sendEmail')) {
-                    sendEmail($email, $subject, $body);
-                } else {
-                    $from = 'no-reply@oweili.com';
-                    $headers = 'From: Oweili <' . $from . ">\r\n"
-                             . 'Reply-To: ' . $from . "\r\n"
-                             . "MIME-Version: 1.0\r\n"
-                             . "Content-Type: text/plain; charset=UTF-8\r\n";
-                    @mail($email, $subject, $body, $headers, '-f' . $from);
+                // Authenticated SMTP only (Hostinger mail() is unreliable).
+                if (!sendEmail($email, $subject, $body)) {
+                    error_log('forgot.php: password-reset email failed to send to ' . $email);
                 }
             }
             // Always show the same message (don't reveal whether the email exists).
@@ -107,7 +101,7 @@ $okEn  = $okCode ? $OK[$okCode]['en'] : '';      $okAr  = $okCode ? $OK[$okCode]
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reset Password · Resha Art</title>
+<title>Reset Password · Oweili</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}

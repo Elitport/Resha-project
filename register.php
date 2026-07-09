@@ -61,26 +61,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 ':exp'   => $expires,
             ]);
 
-            // Send verification email via PHP mail() (Hostinger).
-            // The From address MUST be an address on this domain or the mail
-            // server will silently drop it — hence no-reply@oweili.com.
+            // Send the verification email over authenticated SMTP. The From
+            // address MUST be an address on this domain (no-reply@oweili.com)
+            // or the mail server will silently drop it.
             $verifyUrl = 'https://' . ($_SERVER['HTTP_HOST'] ?? 'oweili.com')
                        . '/verify.php?token=' . $token;
             $subject = 'Verify your account';
             $body = "Welcome!\r\n\r\nPlease verify your account by clicking the link below:\r\n"
                   . $verifyUrl . "\r\n\r\nThis link expires in 24 hours.\r\n";
 
-            // Prefer authenticated SMTP (sendEmail from config.php); fall back
-            // to PHP mail() only if the helper isn't available.
-            if (function_exists('sendEmail')) {
-                sendEmail($old['email'], $subject, $body);
-            } else {
-                $fromAddr = 'no-reply@oweili.com';
-                $headers  = 'From: Oweili <' . $fromAddr . ">\r\n"
-                          . 'Reply-To: ' . $fromAddr . "\r\n"
-                          . "MIME-Version: 1.0\r\n"
-                          . "Content-Type: text/plain; charset=UTF-8\r\n";
-                @mail($old['email'], $subject, $body, $headers, '-f' . $fromAddr);
+            if (!sendEmail($old['email'], $subject, $body)) {
+                error_log('register.php: verification email failed to send to ' . $old['email']);
             }
 
             $okCode = 'check_email';
@@ -109,7 +100,7 @@ $okAr  = $okCode ? $OK[$okCode]['ar'] : '';
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Join Free · Resha Art</title>
+<title>Join Free · Oweili</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
@@ -193,7 +184,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
   <div class="auth-card">
     <div class="auth-head">
       <h1 id="t-title">Join Free</h1>
-      <p id="t-sub">Create your Resha Art account</p>
+      <p id="t-sub">Create your Oweili account</p>
     </div>
 
     <div class="err-box" id="err"
@@ -265,7 +256,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 
 <script>
 const T={
-  en:{dir:'ltr',lb:'العربية',title:'Join Free',sub:'Create your Resha Art account',
+  en:{dir:'ltr',lb:'العربية',title:'Join Free',sub:'Create your Oweili account',
     nen:'Full name (English)',nar:'Full name (Arabic)',email:'Email',pass:'Password',confirm:'Confirm password',
     role:'I am a…',artist:'Artist',collector:'Collector',city:'City',
     rlen:'Minimum 8 characters',rupper:'At least one uppercase letter',rnum:'At least one number',rspec:'At least one special character (!@#$%^&*)',
@@ -275,7 +266,7 @@ const T={
       s1:'Watercolor Workshop',s2:'Oil Painting Studio',s3:'Digital Art Lab',s4:'Charcoal & Ink',
       c1:'Artist Chat Room',c2:'Meet Fellow Artists',c3:'Share Your Work',c4:'Learn Together',
       sp1:'Contact Us',sp2:'How It Works',sp3:'Terms of Use',chat:'Artist Chat',login:'Sign In',reg:'Join Free'}},
-  ar:{dir:'rtl',lb:'English',title:'انضم مجاناً',sub:'أنشئ حسابك في ريشة آرت',
+  ar:{dir:'rtl',lb:'English',title:'انضم مجاناً',sub:'أنشئ حسابك في أويلي',
     nen:'الاسم الكامل بالإنجليزية',nar:'الاسم الكامل بالعربية',email:'البريد الإلكتروني',pass:'كلمة المرور',confirm:'تأكيد كلمة المرور',
     role:'أنا…',artist:'فنان',collector:'مقتني',city:'المدينة',
     rlen:'الحد الأدنى 8 أحرف',rupper:'حرف كبير واحد على الأقل',rnum:'رقم واحد على الأقل',rspec:'رمز خاص واحد على الأقل (!@#$%^&*)',

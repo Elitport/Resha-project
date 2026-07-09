@@ -1,5 +1,5 @@
 <?php
-// marketplace.php — Resha Art · Marketplace (live, database-driven)
+// marketplace.php — Oweili · Marketplace (live, database-driven)
 require_once 'config.php';
 $ART_TYPES = require __DIR__ . '/art_types.php';
 
@@ -59,7 +59,7 @@ foreach ($artworks as $aw) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resha Art Marketplace</title>
+  <title>Oweili Marketplace</title>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
     body, html { width:100%; min-height:100vh; background:#fff; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; overflow-x:hidden; }
@@ -180,7 +180,7 @@ foreach ($artworks as $aw) {
 <nav class="topnav">
   <a class="nav-logo" href="index.html">
     <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor"><path d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/></svg>
-    <span>RESHA ART</span>
+    <span>OWEILI</span>
   </a>
   <div class="nav-center">
     <div class="nav-item">
@@ -206,7 +206,7 @@ foreach ($artworks as $aw) {
     <div class="nav-item">
       <a href="support.php"><span><?= $ar?'الدعم':'Support' ?></span><svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg></a>
       <div class="dropdown">
-        <a href="mailto:contact@reshaart.com"><svg class="d-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span><?= $ar?'تواصل معنا':'Contact Us' ?></span></a>
+        <a href="mailto:contact@oweili.com"><svg class="d-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span><?= $ar?'تواصل معنا':'Contact Us' ?></span></a>
         <a href="support.php#how"><svg class="d-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span><?= $ar?'كيف يعمل الموقع':'How It Works' ?></span></a>
         <a href="support.php#terms"><svg class="d-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span><?= $ar?'شروط الاستخدام':'Terms of Use' ?></span></a>
       </div>

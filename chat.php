@@ -133,7 +133,7 @@ if ($access === 'ok') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= $ar ? 'غرف دردشة الفنانين' : 'Artist Chat Rooms' ?> · Resha Art</title>
+<title><?= $ar ? 'غرف دردشة الفنانين' : 'Artist Chat Rooms' ?> · Oweili</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}

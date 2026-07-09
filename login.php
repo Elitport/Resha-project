@@ -44,7 +44,7 @@ $errAr = $errCode ? $ERR[$errCode]['ar'] : '';
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In · Resha Art</title>
+<title>Sign In · Oweili</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
@@ -122,7 +122,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
   <div class="auth-card">
     <div class="auth-head">
       <h1 id="t-title">Sign In</h1>
-      <p id="t-sub">Welcome back to Resha Art</p>
+      <p id="t-sub">Welcome back to Oweili</p>
     </div>
 
     <div class="err-box" id="err"
@@ -159,14 +159,14 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 
 <script>
 const T={
-  en:{dir:'ltr',lb:'العربية',title:'Sign In',sub:'Welcome back to Resha Art',
+  en:{dir:'ltr',lb:'العربية',title:'Sign In',sub:'Welcome back to Oweili',
     email:'Email',pass:'Password',remember:'Remember me',forgot:'Forgot password?',
     submit:'Sign In',noacc:"Don't have an account?",joinlink:'Join Free',show:'SHOW',hide:'HIDE',
     nav:{studio:'The Studio',community:'Community',marketplace:'Marketplace',explore:'Explore Art Styles',support:'Support',
       s1:'Watercolor Workshop',s2:'Oil Painting Studio',s3:'Digital Art Lab',s4:'Charcoal & Ink',
       c1:'Artist Chat Room',c2:'Meet Fellow Artists',c3:'Share Your Work',c4:'Learn Together',
       sp1:'Contact Us',sp2:'How It Works',sp3:'Terms of Use',chat:'Artist Chat',login:'Sign In',reg:'Join Free'}},
-  ar:{dir:'rtl',lb:'English',title:'تسجيل الدخول',sub:'مرحباً بعودتك إلى ريشة آرت',
+  ar:{dir:'rtl',lb:'English',title:'تسجيل الدخول',sub:'مرحباً بعودتك إلى أويلي',
     email:'البريد الإلكتروني',pass:'كلمة المرور',remember:'تذكرني',forgot:'نسيت كلمة المرور؟',
     submit:'تسجيل الدخول',noacc:'ليس لديك حساب؟',joinlink:'انضم مجاناً',show:'إظهار',hide:'إخفاء',
     nav:{studio:'الاستوديو',community:'المجتمع',marketplace:'السوق',explore:'استكشف أساليب الرسم',support:'الدعم',

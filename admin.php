@@ -2,7 +2,7 @@
 require_once 'config.php';
 
 /* =====================================================================
- *  Resha Art · admin.php — approve / ban artists
+ *  Oweili · admin.php — approve / ban artists
  *  Simple password gate (no user account needed). The password is stored
  *  as a BCRYPT hash, never in plaintext. To change it, run:
  *     php -r "echo password_hash('NEW_PASS', PASSWORD_BCRYPT, ['cost'=>12]);"
@@ -108,7 +108,7 @@ if ($isAdmin) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin · Resha Art</title>
+<title>Admin · Oweili</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 body{min-height:100vh;background:#f4f5f7;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#111111;padding:40px 20px;}
