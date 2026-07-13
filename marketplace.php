@@ -60,6 +60,19 @@ foreach ($artworks as $aw) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Oweili Marketplace</title>
+  <script>
+  /* Honor the site-wide saved language. This page switches language via a
+     server reload (?lang=), so if the visitor previously chose Arabic on
+     another page, redirect to the Arabic version before rendering. */
+  (function(){
+    var KEY='oweili_lang';
+    var params=new URLSearchParams(location.search);
+    var urlLang=params.get('lang');
+    var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
+    if(urlLang){ try{ localStorage.setItem(KEY, urlLang==='ar'?'ar':'en'); }catch(e){} }
+    else if(saved==='ar'){ params.set('lang','ar'); location.replace(location.pathname+'?'+params.toString()); }
+  })();
+  </script>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
     body, html { width:100%; min-height:100vh; background:#fff; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; overflow-x:hidden; }

@@ -9,6 +9,11 @@ if ($navName === '') { $navName = 'Account'; }
 $navFirst = $navUser ? (explode(' ', $navName)[0]) : '';
 $navId    = $navUser ? (int) $navUser['id'] : 0;
 ?>
+<script>
+/* Apply the saved language direction as early as possible to avoid a flash
+   of the wrong direction before the page's own script runs. */
+(function(){try{var l=localStorage.getItem('oweili_lang');if(l==='ar'){document.documentElement.setAttribute('dir','rtl');document.documentElement.setAttribute('lang','ar');}}catch(e){}})();
+</script>
 <nav class="topnav" id="topnav">
   <a class="nav-logo" href="index.html">
     <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor"><path d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/></svg>
@@ -61,18 +66,55 @@ $navId    = $navUser ? (int) $navUser['id'] : 0;
   </div>
 </nav>
 <script>
-/* Keep the logged-in nav buttons (Admin / Sign Out) in sync with the page
-   language, whichever toggle each page uses — driven off <html> dir/lang. */
+/* =====================================================================
+ *  Language persistence — shared across every page that includes nav.php.
+ *  Saves the EN/AR choice in localStorage and re-applies it on each load,
+ *  so switching to Arabic sticks when navigating between pages.
+ * ===================================================================== */
 (function(){
+  var KEY = 'oweili_lang';
+
+  // Capture the saved preference NOW, before the page's own apply('en') runs
+  // (it runs later, at the end of the body) and before the observer below can
+  // overwrite storage with an intermediate value.
+  var want = null;
+  try { want = localStorage.getItem(KEY); } catch (e) {}
+
+  function curLang(){
+    return (document.documentElement.getAttribute('dir') === 'rtl' ||
+            document.documentElement.lang === 'ar') ? 'ar' : 'en';
+  }
+  function save(l){ try { localStorage.setItem(KEY, l); } catch (e) {} }
+
   function syncNavI18n(){
-    var ar = (document.documentElement.getAttribute('dir') === 'rtl') ||
-             (document.documentElement.lang === 'ar');
+    var ar = curLang() === 'ar';
     document.querySelectorAll('.nav-i18n').forEach(function(el){
       el.textContent = ar ? (el.dataset.ar || el.dataset.en) : el.dataset.en;
     });
   }
-  syncNavI18n();
-  new MutationObserver(syncNavI18n).observe(document.documentElement,
-    { attributes: true, attributeFilter: ['dir', 'lang'] });
+
+  // Persist whatever language the page settles on (toggle, or our re-apply).
+  new MutationObserver(function(){ syncNavI18n(); save(curLang()); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['dir', 'lang'] });
+
+  // Re-apply the saved language after the page's inline script has run.
+  function applySaved(){
+    if (want && want !== curLang() && typeof window.tgl === 'function') {
+      // Use the page's own toggle so its internal language state stays in sync.
+      window.tgl();
+    } else if (want && want !== curLang()) {
+      // Fallback for pages without a tgl(): set direction directly.
+      var ar = want === 'ar';
+      document.documentElement.setAttribute('dir', ar ? 'rtl' : 'ltr');
+      document.documentElement.setAttribute('lang', want);
+    }
+    syncNavI18n();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applySaved);
+  } else {
+    applySaved();
+  }
 })();
 </script>

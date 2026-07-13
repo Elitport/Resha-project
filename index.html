@@ -360,9 +360,11 @@ function apply(l) {
   });
 }
 
-function tgl() { L = L==='en'?'ar':'en'; apply(L); }
+function tgl() { L = L==='en'?'ar':'en'; apply(L); try{localStorage.setItem('oweili_lang',L);}catch(e){} }
 
-apply('en');
+/* Restore the site-wide saved language (shared with every other page). */
+try{ var _saved=localStorage.getItem('oweili_lang'); L=(_saved==='ar')?'ar':'en'; }catch(e){}
+apply(L);
 
 const v = document.getElementById('vid');
 if(v){
