@@ -7,7 +7,8 @@ $state = 'invalid';   // 'success' | 'invalid'
 
 if ($token !== '' && ctype_xdigit($token) && strlen($token) <= 128) {
     $stmt = getDB()->prepare(
-        'SELECT id FROM users
+        'SELECT id, email, full_name_en, full_name_ar, is_verified
+         FROM users
          WHERE verification_token = :t
            AND (verification_expires IS NULL OR verification_expires > NOW())
          LIMIT 1'
@@ -15,6 +16,7 @@ if ($token !== '' && ctype_xdigit($token) && strlen($token) <= 128) {
     $stmt->execute([':t' => $token]);
     $row = $stmt->fetch();
     if ($row) {
+        $alreadyVerified = (int) $row['is_verified'] === 1;
         $upd = getDB()->prepare(
             'UPDATE users
              SET is_verified = 1, verification_token = NULL, verification_expires = NULL
@@ -22,7 +24,91 @@ if ($token !== '' && ctype_xdigit($token) && strlen($token) <= 128) {
         );
         $upd->execute([':id' => $row['id']]);
         $state = 'success';
+
+        // Send the bilingual welcome email once, only on first verification.
+        if (!$alreadyVerified) {
+            $host      = $_SERVER['HTTP_HOST'] ?? 'oweili.com';
+            $dashUrl   = 'https://' . $host . '/artist_dashboard.php?id=' . (int) $row['id'];
+            $marketUrl = 'https://' . $host . '/marketplace.php';
+            $welcome   = welcomeEmailHtml(
+                $row['full_name_en'] ?: '',
+                $row['full_name_ar'] ?: '',
+                $dashUrl,
+                $marketUrl
+            );
+            if (!sendEmail($row['email'], 'Welcome to Oweili · مرحباً بك في أويلي', $welcome, true)) {
+                error_log('verify.php: welcome email failed to send to ' . $row['email']);
+            }
+        }
     }
+}
+
+/**
+ * Build the bilingual (EN + AR) HTML welcome email. Uses inline styles and a
+ * table layout so it renders in every email client.
+ */
+function welcomeEmailHtml(string $nameEn, string $nameAr, string $dashUrl, string $marketUrl): string {
+    $en  = htmlspecialchars($nameEn !== '' ? $nameEn : 'there', ENT_QUOTES);
+    $ar  = htmlspecialchars($nameAr !== '' ? $nameAr : 'صديقنا', ENT_QUOTES);
+    $dU  = htmlspecialchars($dashUrl, ENT_QUOTES);
+    $mU  = htmlspecialchars($marketUrl, ENT_QUOTES);
+    return <<<HTML
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#f4f5f7;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f7;padding:32px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.06);">
+        <!-- Header -->
+        <tr><td style="background:#111111;padding:34px 32px;text-align:center;">
+          <div style="font-size:22px;font-weight:700;letter-spacing:0.14em;color:#ffffff;text-transform:uppercase;">OWEILI</div>
+          <div style="height:3px;width:56px;margin:14px auto 0;background:linear-gradient(90deg,#ff0055,#0066ff,#aa00ff);border-radius:3px;"></div>
+        </td></tr>
+
+        <!-- English -->
+        <tr><td style="padding:32px 32px 8px;text-align:left;" dir="ltr">
+          <h1 style="margin:0 0 12px;font-size:22px;color:#111111;">Welcome, {$en}! 🎨</h1>
+          <p style="margin:0 0 14px;font-size:15px;line-height:1.7;color:#444;">
+            Your account is verified and you're now part of the <strong>Oweili</strong> art community —
+            a bilingual home for Saudi artists, collectors, and art lovers.
+          </p>
+          <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#444;">
+            Explore original artworks, connect with fellow artists, and share your own work with the world.
+          </p>
+          <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+            <td style="padding-right:10px;"><a href="{$dU}" style="display:inline-block;padding:12px 24px;background:#111111;color:#fff;font-size:13px;font-weight:700;text-decoration:none;border-radius:999px;">Go to your dashboard</a></td>
+            <td><a href="{$mU}" style="display:inline-block;padding:12px 24px;background:#ff0055;color:#fff;font-size:13px;font-weight:700;text-decoration:none;border-radius:999px;">Browse the marketplace</a></td>
+          </tr></table>
+        </td></tr>
+
+        <tr><td style="padding:8px 32px;"><hr style="border:none;border-top:1px solid #eee;margin:16px 0;"></td></tr>
+
+        <!-- Arabic -->
+        <tr><td style="padding:8px 32px 32px;text-align:right;" dir="rtl">
+          <h1 style="margin:0 0 12px;font-size:22px;color:#111111;">مرحباً، {$ar}! 🎨</h1>
+          <p style="margin:0 0 14px;font-size:15px;line-height:1.9;color:#444;">
+            تم تفعيل حسابك، وأنت الآن جزء من مجتمع <strong>أويلي</strong> الفني —
+            منصة ثنائية اللغة تجمع الفنانين السعوديين والمقتنين ومحبي الفن.
+          </p>
+          <p style="margin:0 0 20px;font-size:15px;line-height:1.9;color:#444;">
+            استكشف الأعمال الفنية الأصلية، وتواصل مع فنانين آخرين، وشارك أعمالك مع العالم.
+          </p>
+          <table role="presentation" cellpadding="0" cellspacing="0" align="right"><tr>
+            <td style="padding-left:10px;"><a href="{$dU}" style="display:inline-block;padding:12px 24px;background:#111111;color:#fff;font-size:13px;font-weight:700;text-decoration:none;border-radius:999px;">لوحة التحكم</a></td>
+            <td><a href="{$mU}" style="display:inline-block;padding:12px 24px;background:#ff0055;color:#fff;font-size:13px;font-weight:700;text-decoration:none;border-radius:999px;">تصفّح السوق</a></td>
+          </tr></table>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="background:#fafafa;padding:20px 32px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#999;">© Oweili · oweili.com — Saudi bilingual art marketplace</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
+HTML;
 }
 ?>
 <!DOCTYPE html>
