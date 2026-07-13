@@ -55,10 +55,15 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         }
 
         if ($err === '') {
+            // Stamp the sale date the first time an artwork becomes 'sold';
+            // clear it if it's moved back to available/auction.
+            $soldSql = $status === 'sold'
+                ? 'sold_at = COALESCE(sold_at, NOW())'
+                : 'sold_at = NULL';
             $upd = getDB()->prepare(
                 'UPDATE artworks
                  SET title_en=:ten, title_ar=:tar, description_en=:den, description_ar=:dar,
-                     price=:price, type=:type, status=:status, image_url=:img
+                     price=:price, type=:type, status=:status, image_url=:img, ' . $soldSql . '
                  WHERE id=:id AND artist_id=:uid'
             );
             $upd->execute([

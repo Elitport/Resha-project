@@ -1,11 +1,6 @@
 <?php
 require_once 'config.php';
 
-// TEMPORARY debugging — surface any PHP error instead of a blank page.
-// Remove these 2 lines once the page is confirmed working in production.
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 /* ---------------------------------------------------------------------
  *  Check 1 — Session check.
  *  Not logged in -> login.php. Logged in -> we have $_SESSION['user_id'].
@@ -136,6 +131,29 @@ if ($artist) {
 $memberSince = $artist && !empty($artist['created_at']) ? date('Y', strtotime($artist['created_at'])) : '—';
 $totalCount  = count($artworks);
 
+/* ---- Financial summary (owner's own figures) ---- */
+$earnAll   = 0.0;
+$earnYear  = 0.0;
+$soldList  = [];
+$thisYear  = date('Y');
+foreach ($artworks as $a) {
+    if ($a['status'] === 'sold') {
+        $price = (float) $a['price'];
+        $earnAll += $price;
+        // sold_at may not exist on older schemas; fall back to created_at.
+        $when = !empty($a['sold_at']) ? $a['sold_at'] : $a['created_at'];
+        if ($when && date('Y', strtotime($when)) === $thisYear) {
+            $earnYear += $price;
+        }
+        $soldList[] = [
+            'title_en' => $a['title_en'],
+            'title_ar' => $a['title_ar'],
+            'price'    => $price,
+            'date'     => $when ? date('Y-m-d', strtotime($when)) : '—',
+        ];
+    }
+}
+
 /* helpers for optional social columns (may not exist in older schemas) */
 $ig  = $artist['instagram'] ?? '';
 $tw  = $artist['twitter']   ?? '';
@@ -248,6 +266,23 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 [dir="rtl"] .upload-card{text-align:right;}
 
 .ai-hint{font-size:10px;font-weight:600;color:#0066ff;letter-spacing:0;text-transform:none;margin-inline-start:6px;}
+
+/* FINANCIAL REPORT */
+.fin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+.fin-card{padding:22px;text-align:center;}
+[dir="rtl"] .fin-card{text-align:center;}
+.fin-num{font-size:26px;font-weight:700;color:#111;margin-bottom:4px;}
+.fin-num.money{background:linear-gradient(90deg,#00a050,#0066ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.fin-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,0,0.45);font-weight:600;}
+.fin-table-wrap{padding:20px 24px;overflow-x:auto;}
+.fin-table{width:100%;border-collapse:collapse;font-size:13px;}
+.fin-table th,.fin-table td{text-align:left;padding:11px 10px;border-bottom:1px solid rgba(0,0,0,0.06);}
+[dir="rtl"] .fin-table th,[dir="rtl"] .fin-table td{text-align:right;}
+.fin-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,0,0.45);}
+.fin-table .price{color:#0066ff;font-weight:700;white-space:nowrap;}
+.fin-empty{padding:24px;text-align:center;color:rgba(0,0,0,0.45);font-size:13px;}
+.saved-box{background:rgba(0,180,100,0.1);border:1px solid rgba(0,180,100,0.3);color:#00a050;font-size:13px;font-weight:600;padding:11px 14px;border-radius:12px;margin-top:16px;}
+@media(max-width:768px){.fin-grid{grid-template-columns:1fr 1fr;}}
 @keyframes riseUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
 @media(max-width:768px){.topnav{padding:10px 14px;}.nav-logo span{display:none;}.profile-head{flex-direction:column;text-align:center;}[dir="rtl"] .profile-head{flex-direction:column;}.head-actions{align-items:center;}.upload-card .grid2{grid-template-columns:1fr;}.stats-row{justify-content:center;}}
 </style>
@@ -308,6 +343,43 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
       <?php endif; ?>
     </div>
   </div>
+
+  <?php if ($isOwner && isset($_GET['saved'])): ?>
+    <div class="saved-box" id="t-saved">Profile updated successfully.</div>
+  <?php endif; ?>
+
+  <!-- SECTION: FINANCIAL REPORT (owner only) -->
+  <?php if ($isOwner): ?>
+  <p class="section-title" id="t-fin-title">Financial Report</p>
+  <div class="fin-grid">
+    <div class="gc fin-card"><div class="fin-num"><?= (int) $totalCount ?></div><div class="fin-lbl" id="t-fin-total">Total Artworks</div></div>
+    <div class="gc fin-card"><div class="fin-num"><?= (int) $soldCount ?></div><div class="fin-lbl" id="t-fin-sold">Artworks Sold</div></div>
+    <div class="gc fin-card"><div class="fin-num money"><?= number_format($earnYear) ?></div><div class="fin-lbl" id="t-fin-year">Earnings This Year (SAR)</div></div>
+    <div class="gc fin-card"><div class="fin-num money"><?= number_format($earnAll) ?></div><div class="fin-lbl" id="t-fin-all">Earnings All Time (SAR)</div></div>
+  </div>
+  <div class="gc fin-table-wrap">
+    <?php if (!$soldList): ?>
+      <div class="fin-empty" id="t-fin-empty">No sales yet. Your sold artworks will appear here.</div>
+    <?php else: ?>
+      <table class="fin-table">
+        <thead><tr>
+          <th id="t-fin-h-art">Artwork</th>
+          <th id="t-fin-h-date">Sale Date</th>
+          <th id="t-fin-h-price">Price</th>
+        </tr></thead>
+        <tbody>
+        <?php foreach ($soldList as $s): ?>
+          <tr>
+            <td><?= e($s['title_en'] ?: ($s['title_ar'] ?: '—')) ?><?php if (!empty($s['title_ar'])): ?><div class="art-title-ar" dir="rtl"><?= e($s['title_ar']) ?></div><?php endif; ?></td>
+            <td><?= e($s['date']) ?></td>
+            <td class="price"><?= number_format($s['price']) ?> <span class="sar">SAR</span></td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php endif; ?>
+  </div>
+  <?php endif; ?>
 
   <!-- SECTION 2: ARTWORKS -->
   <p class="section-title" id="t-works-title">Artworks</p>
@@ -428,6 +500,8 @@ const T={
   en:{dir:'ltr',lb:'العربية',
     profileTitle:'Artist Profile',worksTitle:'Artworks',uploadTitle:'Upload Artwork',
     statTotal:'Total Artworks',statSold:'Artworks Sold',statSince:'Member Since',
+    finTitle:'Financial Report',finTotal:'Total Artworks',finSold:'Artworks Sold',finYear:'Earnings This Year (SAR)',finAll:'Earnings All Time (SAR)',
+    finEmpty:'No sales yet. Your sold artworks will appear here.',finHArt:'Artwork',finHDate:'Sale Date',finHPrice:'Price',saved:'Profile updated successfully.',
     edit:'Edit Profile',empty:'No artworks yet. Start by uploading your first piece.',
     fTen:'Title in English',fTar:'Title in Arabic',fDen:'Description in English',fDar:'Description in Arabic',
     fPrice:'Price in SAR',fType:'Type',fImg:'Upload Image (JPG/PNG/WEBP, max 5MB)',fSubmit:'Upload Artwork',
@@ -441,6 +515,8 @@ const T={
   ar:{dir:'rtl',lb:'English',
     profileTitle:'الملف الشخصي للفنان',worksTitle:'الأعمال الفنية',uploadTitle:'رفع عمل فني',
     statTotal:'إجمالي الأعمال',statSold:'الأعمال المباعة',statSince:'عضو منذ',
+    finTitle:'التقرير المالي',finTotal:'إجمالي الأعمال',finSold:'الأعمال المباعة',finYear:'أرباح هذا العام (ر.س)',finAll:'إجمالي الأرباح (ر.س)',
+    finEmpty:'لا توجد مبيعات بعد. ستظهر أعمالك المباعة هنا.',finHArt:'العمل الفني',finHDate:'تاريخ البيع',finHPrice:'السعر',saved:'تم تحديث الملف الشخصي بنجاح.',
     edit:'تعديل الملف الشخصي',empty:'لا توجد أعمال بعد. ابدأ برفع عملك الأول.',
     fTen:'العنوان بالإنجليزية',fTar:'العنوان بالعربية',fDen:'الوصف بالإنجليزية',fDar:'الوصف بالعربية',
     fPrice:'السعر بالريال',fType:'النوع',fImg:'رفع صورة (JPG/PNG/WEBP، بحد أقصى 5 ميغابايت)',fSubmit:'رفع عمل فني',
@@ -463,6 +539,9 @@ function apply(l){
   document.getElementById('lb').textContent=t.lb;
   setTxt('t-profile-title',t.profileTitle);setTxt('t-works-title',t.worksTitle);setTxt('t-upload-title',t.uploadTitle);
   setTxt('t-stat-total',t.statTotal);setTxt('t-stat-sold',t.statSold);setTxt('t-stat-since',t.statSince);
+  setTxt('t-fin-title',t.finTitle);setTxt('t-fin-total',t.finTotal);setTxt('t-fin-sold',t.finSold);
+  setTxt('t-fin-year',t.finYear);setTxt('t-fin-all',t.finAll);setTxt('t-fin-empty',t.finEmpty);
+  setTxt('t-fin-h-art',t.finHArt);setTxt('t-fin-h-date',t.finHDate);setTxt('t-fin-h-price',t.finHPrice);setTxt('t-saved',t.saved);
   setTxt('t-edit',t.edit);setTxt('t-empty',t.empty);
   setTxt('t-f-ten',t.fTen);setTxt('t-f-tar',t.fTar);setTxt('t-f-den',t.fDen);setTxt('t-f-dar',t.fDar);
   setTxt('t-f-price',t.fPrice);setTxt('t-f-type',t.fType);setTxt('t-f-img',t.fImg);setTxt('t-f-submit',t.fSubmit);

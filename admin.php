@@ -91,26 +91,28 @@ if ($isAdmin) {
     )->fetchAll();
 }
 
-/* ---- Load all members (only when authed) ---- */
-$members = [];
-if ($isAdmin) {
-    $members = getDB()->query(
-        "SELECT id, full_name_en, full_name_ar, email, phone, role,
-                is_verified, is_approved, COALESCE(is_banned,0) AS is_banned, created_at
-         FROM users
-         ORDER BY created_at DESC"
-    )->fetchAll();
-}
-
-/* ---- Load artists list (only when authed) ---- */
+/* ---- Load artists (only when authed) ---- */
 $artists = [];
 if ($isAdmin) {
     $artists = getDB()->query(
-        "SELECT id, email, full_name_en, full_name_ar, artist_name, city, is_verified, is_approved,
-                profile_picture, art_video, COALESCE(is_banned,0) AS is_banned, created_at
+        "SELECT id, email, phone, full_name_en, full_name_ar, artist_name, city,
+                is_verified, is_approved, profile_picture, art_video,
+                COALESCE(is_banned,0) AS is_banned, created_at
          FROM users
          WHERE role = 'artist'
          ORDER BY is_approved ASC, created_at DESC"
+    )->fetchAll();
+}
+
+/* ---- Load collectors (only when authed) ---- */
+$collectors = [];
+if ($isAdmin) {
+    $collectors = getDB()->query(
+        "SELECT id, email, phone, full_name_en, full_name_ar, city,
+                is_verified, COALESCE(is_banned,0) AS is_banned, created_at
+         FROM users
+         WHERE role = 'collector'
+         ORDER BY created_at DESC"
     )->fetchAll();
 }
 ?>
@@ -169,6 +171,14 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 .pill.role-collector{background:rgba(0,100,255,0.1);color:#0066ff;}
 .pill.role-admin{background:rgba(170,0,255,0.1);color:#aa00ff;}
 .status-pills{display:flex;gap:5px;flex-wrap:wrap;}
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.tab-btn{padding:10px 22px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:0.04em;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:#fff;color:rgba(0,0,0,0.6);transition:all 0.2s;display:flex;align-items:center;gap:8px;}
+.tab-btn:hover{background:rgba(0,0,0,0.03);color:#111;}
+.tab-btn.active{background:#111111;color:#fff;border-color:#111111;}
+.tab-btn .count{background:rgba(255,255,255,0.25);}
+.tab-btn:not(.active) .count{background:#ff0055;color:#fff;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
 </style>
 </head>
 <body>
@@ -188,8 +198,8 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 
   <div class="top">
     <div>
-      <h1>Artist Management</h1>
-      <div class="sub">Approve new artists and ban abusive accounts.</div>
+      <h1>Admin Dashboard</h1>
+      <div class="sub">Manage artists, collectors, and artwork approvals.</div>
     </div>
     <div style="display:flex;gap:8px;">
       <a class="btn grey" href="admin_styles.php">Manage Styles</a>
@@ -197,10 +207,123 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     </div>
   </div>
 
-  <!-- ===== PENDING ARTWORK APPROVAL ===== -->
-  <div class="card" id="pending" style="margin-bottom:24px;">
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="artists" onclick="showTab('artists',this)">Artists <span class="pill count"><?= count($artists) ?></span></button>
+    <button class="tab-btn" data-tab="collectors" onclick="showTab('collectors',this)">Collectors <span class="pill count"><?= count($collectors) ?></span></button>
+    <button class="tab-btn" data-tab="pending" onclick="showTab('pending',this)">Pending Artworks <span class="pill count"><?= count($pendingArt) ?></span></button>
+  </div>
+
+  <!-- ===== TAB: ARTISTS ===== -->
+  <div class="tab-panel active" id="tab-artists">
+  <div class="card">
+    <?php if (!$artists): ?>
+      <div class="empty">No artist accounts yet.</div>
+    <?php else: ?>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>Artist</th><th>Contact</th><th>City</th><th>Verification</th><th>Verified</th><th>Approved</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+        <?php foreach ($artists as $a): ?>
+          <tr>
+            <td>
+              <strong><?= e($a['full_name_en'] ?: '—') ?></strong>
+              <?php if (!empty($a['artist_name'])): ?><div class="name-ar"><?= e($a['artist_name']) ?></div><?php endif; ?>
+              <?php if (!empty($a['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($a['full_name_ar']) ?></div><?php endif; ?>
+            </td>
+            <td>
+              <div><?= e($a['email']) ?></div>
+              <div class="name-ar" dir="ltr"><?= e($a['phone'] ?: '—') ?></div>
+            </td>
+            <td><?= e($a['city'] ?: '—') ?></td>
+            <td>
+              <div class="verify-cell">
+                <?php if (!empty($a['profile_picture'])): ?>
+                  <a href="<?= e($a['profile_picture']) ?>" target="_blank" title="Open full photo"><img class="verify-photo" src="<?= e($a['profile_picture']) ?>" alt="photo"></a>
+                <?php else: ?>
+                  <span class="no-media">No photo</span>
+                <?php endif; ?>
+                <?php if (!empty($a['art_video'])): ?>
+                  <video class="verify-video" src="<?= e($a['art_video']) ?>" controls preload="metadata"></video>
+                  <a class="video-link" href="<?= e($a['art_video']) ?>" target="_blank">Open video ↗</a>
+                <?php else: ?>
+                  <span class="no-media">No video</span>
+                <?php endif; ?>
+              </div>
+            </td>
+            <td><span class="pill <?= $a['is_verified'] ? 'on' : 'off' ?>"><?= $a['is_verified'] ? 'Yes' : 'No' ?></span></td>
+            <td><span class="pill <?= $a['is_approved'] ? 'on' : 'off' ?>"><?= $a['is_approved'] ? 'Yes' : 'No' ?></span></td>
+            <td><?php if ((int)$a['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php else: ?><span class="pill on">Active</span><?php endif; ?></td>
+            <td>
+              <div class="acts">
+                <?php if (!$a['is_approved']): ?>
+                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm green" name="action" value="approve">Approve</button></form>
+                <?php else: ?>
+                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm grey" name="action" value="unapprove">Unapprove</button></form>
+                <?php endif; ?>
+                <?php if ((int)$a['is_banned'] === 1): ?>
+                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm grey" name="action" value="unban">Unban</button></form>
+                <?php else: ?>
+                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm red" name="action" value="ban">Ban</button></form>
+                <?php endif; ?>
+              </div>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+      </div>
+    <?php endif; ?>
+  </div>
+  </div>
+
+  <!-- ===== TAB: COLLECTORS ===== -->
+  <div class="tab-panel" id="tab-collectors">
+  <div class="card">
+    <?php if (!$collectors): ?>
+      <div class="empty">No collector accounts yet.</div>
+    <?php else: ?>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Phone</th><th>City</th><th>Verified</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+        <?php foreach ($collectors as $c): ?>
+          <tr>
+            <td>
+              <strong><?= e($c['full_name_en'] ?: '—') ?></strong>
+              <?php if (!empty($c['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($c['full_name_ar']) ?></div><?php endif; ?>
+            </td>
+            <td><?= e($c['email']) ?></td>
+            <td dir="ltr"><?= e($c['phone'] ?: '—') ?></td>
+            <td><?= e($c['city'] ?: '—') ?></td>
+            <td><span class="pill <?= $c['is_verified'] ? 'on' : 'off' ?>"><?= $c['is_verified'] ? 'Verified' : 'Unverified' ?></span></td>
+            <td><?php if ((int)$c['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php else: ?><span class="pill on">Active</span><?php endif; ?></td>
+            <td>
+              <div class="acts">
+                <?php if ((int)$c['is_banned'] === 1): ?>
+                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$c['id'] ?>"><button class="btn sm grey" name="action" value="unban">Unban</button></form>
+                <?php else: ?>
+                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$c['id'] ?>"><button class="btn sm red" name="action" value="ban">Ban</button></form>
+                <?php endif; ?>
+              </div>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+      </div>
+    <?php endif; ?>
+  </div>
+  </div>
+
+  <!-- ===== TAB: PENDING ARTWORKS ===== -->
+  <div class="tab-panel" id="tab-pending">
+  <div class="card" id="pending">
     <div class="sec-head">
-      <h2>Pending Artworks <span class="count"><?= count($pendingArt) ?></span></h2>
       <div class="sub" style="margin:0;">New uploads waiting for approval before they appear in the marketplace.</div>
     </div>
     <?php if (!$pendingArt): ?>
@@ -228,108 +351,25 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
       </div>
     <?php endif; ?>
   </div>
-
-  <div class="card">
-    <div class="sec-head"><h2>Artists</h2></div>
-    <?php if (!$artists): ?>
-      <div class="empty">No artist accounts yet.</div>
-    <?php else: ?>
-      <table>
-        <thead>
-          <tr><th>Artist</th><th>Verification</th><th>Email</th><th>City</th><th>Verified</th><th>Approved</th><th>Status</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-        <?php foreach ($artists as $a): ?>
-          <tr>
-            <td>
-              <strong><?= e($a['full_name_en'] ?: '—') ?></strong>
-              <?php if (!empty($a['artist_name'])): ?><div class="name-ar"><?= e($a['artist_name']) ?></div><?php endif; ?>
-              <?php if (!empty($a['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($a['full_name_ar']) ?></div><?php endif; ?>
-            </td>
-            <td>
-              <div class="verify-cell">
-                <?php if (!empty($a['profile_picture'])): ?>
-                  <a href="<?= e($a['profile_picture']) ?>" target="_blank" title="Open full photo">
-                    <img class="verify-photo" src="<?= e($a['profile_picture']) ?>" alt="photo">
-                  </a>
-                <?php else: ?>
-                  <span class="no-media">No photo</span>
-                <?php endif; ?>
-                <?php if (!empty($a['art_video'])): ?>
-                  <video class="verify-video" src="<?= e($a['art_video']) ?>" controls preload="metadata"></video>
-                  <a class="video-link" href="<?= e($a['art_video']) ?>" target="_blank">Open video ↗</a>
-                <?php else: ?>
-                  <span class="no-media">No video</span>
-                <?php endif; ?>
-              </div>
-            </td>
-            <td><?= e($a['email']) ?></td>
-            <td><?= e($a['city'] ?: '—') ?></td>
-            <td><span class="pill <?= $a['is_verified'] ? 'on' : 'off' ?>"><?= $a['is_verified'] ? 'Yes' : 'No' ?></span></td>
-            <td><span class="pill <?= $a['is_approved'] ? 'on' : 'off' ?>"><?= $a['is_approved'] ? 'Yes' : 'No' ?></span></td>
-            <td><?php if ((int)$a['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php else: ?><span class="pill on">Active</span><?php endif; ?></td>
-            <td>
-              <div class="acts">
-                <?php if (!$a['is_approved']): ?>
-                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm green" name="action" value="approve">Approve</button></form>
-                <?php else: ?>
-                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm grey" name="action" value="unapprove">Unapprove</button></form>
-                <?php endif; ?>
-                <?php if ((int)$a['is_banned'] === 1): ?>
-                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm grey" name="action" value="unban">Unban</button></form>
-                <?php else: ?>
-                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm red" name="action" value="ban">Ban</button></form>
-                <?php endif; ?>
-              </div>
-            </td>
-          </tr>
-        <?php endforeach; ?>
-        </tbody>
-      </table>
-    <?php endif; ?>
   </div>
 
-  <!-- ===== ALL MEMBERS ===== -->
-  <div class="card" id="members" style="margin-top:24px;">
-    <div class="sec-head">
-      <h2>Members <span class="count" style="background:#0066ff;"><?= count($members) ?></span></h2>
-      <div class="sub" style="margin:0;">Every registered user on Oweili.</div>
-    </div>
-    <?php if (!$members): ?>
-      <div class="empty">No members yet.</div>
-    <?php else: ?>
-      <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Registered</th></tr>
-        </thead>
-        <tbody>
-        <?php foreach ($members as $m): ?>
-          <tr>
-            <td>
-              <strong><?= e($m['full_name_en'] ?: '—') ?></strong>
-              <?php if (!empty($m['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($m['full_name_ar']) ?></div><?php endif; ?>
-            </td>
-            <td><?= e($m['email']) ?></td>
-            <td dir="ltr"><?= e($m['phone'] ?: '—') ?></td>
-            <td><span class="pill <?= $m['role'] === 'artist' ? 'role-artist' : ($m['role'] === 'admin' ? 'role-admin' : 'role-collector') ?>"><?= e(ucfirst((string)$m['role'])) ?></span></td>
-            <td>
-              <div class="status-pills">
-                <span class="pill <?= $m['is_verified'] ? 'on' : 'off' ?>" title="Email verified"><?= $m['is_verified'] ? 'Verified' : 'Unverified' ?></span>
-                <?php if ($m['role'] === 'artist'): ?>
-                  <span class="pill <?= $m['is_approved'] ? 'on' : 'off' ?>" title="Approved by admin"><?= $m['is_approved'] ? 'Approved' : 'Pending' ?></span>
-                <?php endif; ?>
-                <?php if ((int)$m['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php endif; ?>
-              </div>
-            </td>
-            <td><?= e(date('Y-m-d', strtotime((string)$m['created_at']))) ?></td>
-          </tr>
-        <?php endforeach; ?>
-        </tbody>
-      </table>
-      </div>
-    <?php endif; ?>
-  </div>
+  <script>
+  function showTab(name, btn){
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    var panel=document.getElementById('tab-'+name); if(panel)panel.classList.add('active');
+    if(btn)btn.classList.add('active');
+    try{location.hash=name;}catch(e){}
+  }
+  // Restore the tab from the URL hash (e.g. after approving an artwork).
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(h==='pending'||h==='collectors'||h==='artists'){
+      var btn=document.querySelector('.tab-btn[data-tab="'+h+'"]');
+      showTab(h,btn);
+    }
+  })();
+  </script>
 
 <?php endif; ?>
 </div>
