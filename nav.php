@@ -35,6 +35,7 @@ $navId    = $navUser ? (int) $navUser['id'] : 0;
     </div>
     <div class="nav-item"><a href="marketplace.php" id="nav-marketplace-link"><span id="nav-marketplace-label">Marketplace</span></a></div>
     <div class="nav-item"><a href="explore.php" id="nav-explore-link"><span id="nav-explore-label">Explore Art Styles</span></a></div>
+    <div class="nav-item"><a href="people.php"><span class="nav-i18n" data-en="People" data-ar="الأعضاء">People</span></a></div>
     <div class="nav-item">
       <a href="support.php" id="nav-support-link"><span id="nav-support-label">Support</span><svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg></a>
       <div class="dropdown" id="dd-support">

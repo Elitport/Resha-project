@@ -4,18 +4,25 @@ require_once 'config.php';
 /* ---- Handle submit (before any output) ---- */
 $errCode = '';
 $okCode  = '';
-$old = ['name_en' => '', 'name_ar' => '', 'email' => '', 'city' => '', 'role' => 'collector'];
+$old = ['name_en' => '', 'name_ar' => '', 'artist_name' => '', 'email' => '', 'city' => '', 'role' => 'collector'];
+
+/* Video upload limits (profile picture reuses config's 5 MB image validator). */
+const VIDEO_MAX_BYTES = 50 * 1024 * 1024; // 50 MB
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-    $old['name_en'] = sanitize($_POST['full_name_en'] ?? '');
-    $old['name_ar'] = sanitize($_POST['full_name_ar'] ?? '');
-    $old['email']   = sanitize($_POST['email'] ?? '');
-    $old['city']    = sanitize($_POST['city'] ?? '');
-    $role           = ($_POST['role'] ?? '') === 'artist' ? 'artist' : 'collector';
-    $old['role']    = $role;
+    $old['name_en']     = sanitize($_POST['full_name_en'] ?? '');
+    $old['name_ar']     = sanitize($_POST['full_name_ar'] ?? '');
+    $old['artist_name'] = sanitize($_POST['artist_name'] ?? '');
+    $old['email']       = sanitize($_POST['email'] ?? '');
+    $old['city']        = sanitize($_POST['city'] ?? '');
+    $role               = ($_POST['role'] ?? '') === 'artist' ? 'artist' : 'collector';
+    $old['role']        = $role;
     $pass    = (string) ($_POST['password'] ?? '');
     $confirm = (string) ($_POST['confirm'] ?? '');
     $terms   = !empty($_POST['terms']);
+
+    $hasPhoto = !empty($_FILES['profile_picture']['name']);
+    $hasVideo = !empty($_FILES['art_video']['name']);
 
     $strong = strlen($pass) >= 8
         && preg_match('/[A-Z]/', $pass)
@@ -34,6 +41,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $errCode = 'mismatch';
     } elseif (!$terms) {
         $errCode = 'terms';
+    } elseif ($role === 'artist' && !$hasVideo) {
+        $errCode = 'video_required';
+    } elseif ($hasPhoto && !validateUpload($_FILES['profile_picture'])['ok']) {
+        $errCode = 'photo';
+    } elseif ($hasVideo && !validateVideoUpload($_FILES['art_video'])['ok']) {
+        $errCode = 'video';
     } else {
         // Email already exists?
         $stmt = getDB()->prepare('SELECT 1 FROM users WHERE email = :e LIMIT 1');
@@ -41,22 +54,49 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         if ($stmt->fetchColumn()) {
             $errCode = 'exists';
         } else {
+            // ---- Save uploaded files (already validated above) ----
+            $photoRel = '';
+            $videoRel = '';
+            if ($hasPhoto) {
+                $chk = validateUpload($_FILES['profile_picture']);
+                $dir = __DIR__ . '/uploads/profiles/';
+                if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
+                $fname = safeUploadName($chk['ext']);
+                if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $dir . $fname)) {
+                    $photoRel = 'uploads/profiles/' . $fname;
+                }
+            }
+            if ($hasVideo) {
+                $chk = validateVideoUpload($_FILES['art_video']);
+                $dir = __DIR__ . '/uploads/videos/';
+                if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
+                $fname = safeUploadName($chk['ext']);
+                if (move_uploaded_file($_FILES['art_video']['tmp_name'], $dir . $fname)) {
+                    $videoRel = 'uploads/videos/' . $fname;
+                }
+            }
+
             $token   = bin2hex(random_bytes(32));
             $expires = date('Y-m-d H:i:s', time() + 24 * 60 * 60); // 24h
             $ins = getDB()->prepare(
                 'INSERT INTO users
-                   (email, password, full_name_en, full_name_ar, role, city,
+                   (email, password, full_name_en, full_name_ar, artist_name, role, city,
+                    profile_picture, art_video,
                     is_verified, is_approved, verification_token, verification_expires)
                  VALUES
-                   (:email, :pass, :nen, :nar, :role, :city, 0, 0, :tok, :exp)'
+                   (:email, :pass, :nen, :nar, :aname, :role, :city,
+                    :pic, :vid, 0, 0, :tok, :exp)'
             );
             $ins->execute([
                 ':email' => $old['email'],
                 ':pass'  => hashPassword($pass),
                 ':nen'   => $old['name_en'],
                 ':nar'   => $old['name_ar'],
+                ':aname' => $old['artist_name'],
                 ':role'  => $role,
                 ':city'  => $old['city'],
+                ':pic'   => $photoRel,
+                ':vid'   => $videoRel,
                 ':tok'   => $token,
                 ':exp'   => $expires,
             ]);
@@ -75,9 +115,32 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             }
 
             $okCode = 'check_email';
-            $old = ['name_en' => '', 'name_ar' => '', 'email' => '', 'city' => '', 'role' => 'collector'];
+            $old = ['name_en' => '', 'name_ar' => '', 'artist_name' => '', 'email' => '', 'city' => '', 'role' => 'collector'];
         }
     }
+}
+
+/**
+ * Validate an uploaded art video: MP4 only, up to 50 MB, real MIME check.
+ * Returns ['ok'=>bool, 'ext'=>'mp4'].
+ */
+function validateVideoUpload(array $file): array {
+    if (!isset($file['error']) || is_array($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
+        return ['ok' => false, 'ext' => ''];
+    }
+    if ($file['size'] <= 0 || $file['size'] > VIDEO_MAX_BYTES) {
+        return ['ok' => false, 'ext' => ''];
+    }
+    if (!is_uploaded_file($file['tmp_name'])) {
+        return ['ok' => false, 'ext' => ''];
+    }
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime  = $finfo->file($file['tmp_name']);
+    $ext   = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($mime, ['video/mp4', 'application/mp4'], true) || $ext !== 'mp4') {
+        return ['ok' => false, 'ext' => ''];
+    }
+    return ['ok' => true, 'ext' => 'mp4'];
 }
 
 $ERR = [
@@ -88,6 +151,9 @@ $ERR = [
     'mismatch' => ['en' => 'Passwords do not match.', 'ar' => 'كلمتا المرور غير متطابقتين.'],
     'terms'    => ['en' => 'You must accept the terms and conditions.', 'ar' => 'يجب الموافقة على الشروط والأحكام.'],
     'exists'   => ['en' => 'An account with this email already exists.', 'ar' => 'يوجد حساب بهذا البريد الإلكتروني بالفعل.'],
+    'video_required' => ['en' => 'Artists must upload a short video of themselves creating art.', 'ar' => 'يجب على الفنانين رفع فيديو قصير أثناء إبداع العمل الفني.'],
+    'photo'    => ['en' => 'Profile picture must be a JPG or PNG under 5 MB.', 'ar' => 'يجب أن تكون الصورة الشخصية بصيغة JPG أو PNG وأقل من 5 ميجابايت.'],
+    'video'    => ['en' => 'Art video must be an MP4 file under 50 MB.', 'ar' => 'يجب أن يكون الفيديو بصيغة MP4 وأقل من 50 ميجابايت.'],
 ];
 $OK = ['check_email' => ['en' => 'Please check your email to verify your account.', 'ar' => 'يرجى مراجعة بريدك الإلكتروني لتفعيل حسابك.']];
 $errEn = $errCode ? $ERR[$errCode]['en'] : '';
@@ -148,6 +214,10 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 .field input,.field select{width:100%;padding:11px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.12);background:rgba(255,255,255,0.7);font-size:14px;color:#111111;transition:border 0.2s,box-shadow 0.2s;font-family:inherit;}
 .field input:focus,.field select:focus{outline:none;border-color:#0066ff;box-shadow:0 0 0 3px rgba(0,100,255,0.12);}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field input[type=file]{padding:9px 12px;font-size:12px;cursor:pointer;background:rgba(255,255,255,0.7);}
+.field input[type=file]::file-selector-button{margin-right:12px;padding:6px 14px;border-radius:999px;border:none;background:#111111;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;font-family:inherit;}
+.field input[type=file]::file-selector-button:hover{background:#ff0055;}
+[dir="rtl"] .field input[type=file]::file-selector-button{margin-right:0;margin-left:12px;}
 .pw-wrap{position:relative;}
 .pw-toggle{position:absolute;top:50%;transform:translateY(-50%);right:10px;background:none;border:none;cursor:pointer;font-size:11px;font-weight:600;color:#0066ff;text-transform:uppercase;letter-spacing:0.04em;padding:4px;}
 [dir="rtl"] .pw-toggle{right:auto;left:10px;}
@@ -194,7 +264,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
          data-en="<?= e($okEn) ?>" data-ar="<?= e($okAr) ?>"
          style="display:<?= $okCode ? 'block' : 'none' ?>;"><?= e($okEn) ?></div>
 
-    <form method="post" action="register.php" autocomplete="on">
+    <form method="post" action="register.php" autocomplete="on" enctype="multipart/form-data">
       <?= csrfField() ?>
       <div class="grid2">
         <div class="field">
@@ -207,8 +277,16 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
         </div>
       </div>
       <div class="field">
+        <label id="t-l-aname" for="artist_name">Public / artist name</label>
+        <input type="text" id="artist_name" name="artist_name" value="<?= e($old['artist_name']) ?>" placeholder="Shown publicly on your profile">
+      </div>
+      <div class="field">
         <label id="t-l-email" for="email">Email</label>
         <input type="email" id="email" name="email" required value="<?= e($old['email']) ?>">
+      </div>
+      <div class="field">
+        <label id="t-l-photo" for="profile_picture">Profile picture (JPG/PNG, max 5MB)</label>
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/jpeg,image/png">
       </div>
       <div class="field">
         <label id="t-l-pass" for="password">Password</label>
@@ -233,7 +311,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
       <div class="grid2">
         <div class="field">
           <label id="t-l-role" for="role">I am a…</label>
-          <select id="role" name="role">
+          <select id="role" name="role" onchange="toggleVideo()">
             <option value="artist" id="opt-artist" <?= $old['role']==='artist'?'selected':'' ?>>Artist</option>
             <option value="collector" id="opt-collector" <?= $old['role']!=='artist'?'selected':'' ?>>Collector</option>
           </select>
@@ -242,6 +320,11 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
           <label id="t-l-city" for="city">City</label>
           <input type="text" id="city" name="city" value="<?= e($old['city']) ?>">
         </div>
+      </div>
+      <div class="field" id="video-field" style="display:none;">
+        <label id="t-l-video" for="art_video">Art video — proof you create art (MP4, max 50MB)</label>
+        <input type="file" id="art_video" name="art_video" accept="video/mp4">
+        <p id="t-video-hint" style="font-size:11px;color:rgba(0,0,0,0.5);margin-top:6px;line-height:1.6;">A short clip of you creating art. Required for artists — the admin reviews it before approval.</p>
       </div>
       <label class="terms"><input type="checkbox" name="terms" value="1"><span id="t-terms">I agree to the Terms &amp; Conditions and Privacy Policy.</span></label>
       <button type="submit" class="btn-submit" id="t-submit">Join Free</button>
@@ -257,7 +340,10 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 <script>
 const T={
   en:{dir:'ltr',lb:'العربية',title:'Join Free',sub:'Create your Oweili account',
-    nen:'Full name (English)',nar:'Full name (Arabic)',email:'Email',pass:'Password',confirm:'Confirm password',
+    nen:'Full name (English)',nar:'Full name (Arabic)',aname:'Public / artist name',anamePlace:'Shown publicly on your profile',
+    email:'Email',photo:'Profile picture (JPG/PNG, max 5MB)',
+    video:'Art video — proof you create art (MP4, max 50MB)',videoHint:'A short clip of you creating art. Required for artists — the admin reviews it before approval.',
+    pass:'Password',confirm:'Confirm password',
     role:'I am a…',artist:'Artist',collector:'Collector',city:'City',
     rlen:'Minimum 8 characters',rupper:'At least one uppercase letter',rnum:'At least one number',rspec:'At least one special character (!@#$%^&*)',
     terms:'I agree to the Terms & Conditions and Privacy Policy.',submit:'Join Free',
@@ -267,7 +353,10 @@ const T={
       c1:'Artist Chat Room',c2:'Meet Fellow Artists',c3:'Share Your Work',c4:'Learn Together',
       sp1:'Contact Us',sp2:'How It Works',sp3:'Terms of Use',chat:'Artist Chat',login:'Sign In',reg:'Join Free'}},
   ar:{dir:'rtl',lb:'English',title:'انضم مجاناً',sub:'أنشئ حسابك في أويلي',
-    nen:'الاسم الكامل بالإنجليزية',nar:'الاسم الكامل بالعربية',email:'البريد الإلكتروني',pass:'كلمة المرور',confirm:'تأكيد كلمة المرور',
+    nen:'الاسم الكامل بالإنجليزية',nar:'الاسم الكامل بالعربية',aname:'الاسم العام / اسم الفنان',anamePlace:'يظهر علناً في ملفك الشخصي',
+    email:'البريد الإلكتروني',photo:'الصورة الشخصية (JPG/PNG، بحد أقصى 5 ميجابايت)',
+    video:'فيديو فني — إثبات أنك تبدع الفن (MP4، بحد أقصى 50 ميجابايت)',videoHint:'مقطع قصير أثناء إبداعك للفن. مطلوب للفنانين — يراجعه المشرف قبل الموافقة.',
+    pass:'كلمة المرور',confirm:'تأكيد كلمة المرور',
     role:'أنا…',artist:'فنان',collector:'مقتني',city:'المدينة',
     rlen:'الحد الأدنى 8 أحرف',rupper:'حرف كبير واحد على الأقل',rnum:'رقم واحد على الأقل',rspec:'رمز خاص واحد على الأقل (!@#$%^&*)',
     terms:'أوافق على الشروط والأحكام وسياسة الخصوصية.',submit:'انضم مجاناً',
@@ -303,6 +392,9 @@ function apply(l){
   document.getElementById('lb').textContent=t.lb;
   setTxt('t-title',t.title);setTxt('t-sub',t.sub);
   setTxt('t-l-nen',t.nen);setTxt('t-l-nar',t.nar);setTxt('t-l-email',t.email);
+  setTxt('t-l-aname',t.aname);
+  const an=document.getElementById('artist_name');if(an)an.placeholder=t.anamePlace;
+  setTxt('t-l-photo',t.photo);setTxt('t-l-video',t.video);setTxt('t-video-hint',t.videoHint);
   setTxt('t-l-pass',t.pass);setTxt('t-l-confirm',t.confirm);
   setTxt('t-l-role',t.role);setTxt('opt-artist',t.artist);setTxt('opt-collector',t.collector);setTxt('t-l-city',t.city);
   setTxt('t-r-len',t.rlen);setTxt('t-r-upper',t.rupper);setTxt('t-r-num',t.rnum);setTxt('t-r-spec',t.rspec);
@@ -319,8 +411,16 @@ function apply(l){
   setTxt('dd-sp1',n.sp1);setTxt('dd-sp2',n.sp2);setTxt('dd-sp3',n.sp3);
   setTxt('n-chat-t',n.chat);setTxt('n-login-t',n.login);setTxt('n-reg-t',n.reg);
 }
+function toggleVideo(){
+  const isArtist=document.getElementById('role').value==='artist';
+  const wrap=document.getElementById('video-field');
+  const vid=document.getElementById('art_video');
+  if(wrap)wrap.style.display=isArtist?'block':'none';
+  if(vid)vid.required=isArtist;
+}
 function tgl(){L=L==='en'?'ar':'en';apply(L);}
 apply('en');
+toggleVideo();
 const v=document.getElementById('vid');
 if(v){v.addEventListener('canplay',()=>v.classList.add('on'),{once:true});v.play().catch(()=>{});}
 </script>

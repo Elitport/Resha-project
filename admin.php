@@ -95,8 +95,8 @@ if ($isAdmin) {
 $artists = [];
 if ($isAdmin) {
     $artists = getDB()->query(
-        "SELECT id, email, full_name_en, full_name_ar, city, is_verified, is_approved,
-                COALESCE(is_banned,0) AS is_banned, created_at
+        "SELECT id, email, full_name_en, full_name_ar, artist_name, city, is_verified, is_approved,
+                profile_picture, art_video, COALESCE(is_banned,0) AS is_banned, created_at
          FROM users
          WHERE role = 'artist'
          ORDER BY is_approved ASC, created_at DESC"
@@ -148,6 +148,12 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 .art-meta{flex:1;min-width:0;}
 .art-meta strong{font-size:14px;}
 .art-info{font-size:12px;color:rgba(0,0,0,0.5);margin-top:3px;}
+.verify-cell{display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:150px;}
+.verify-photo{width:52px;height:52px;border-radius:10px;object-fit:cover;border:1px solid rgba(0,0,0,0.1);}
+.verify-video{width:150px;max-width:100%;border-radius:10px;background:#000;}
+.video-link{font-size:11px;font-weight:600;color:#0066ff;text-decoration:none;}
+.video-link:hover{text-decoration:underline;}
+.no-media{font-size:11px;color:rgba(0,0,0,0.35);font-style:italic;}
 </style>
 </head>
 <body>
@@ -215,14 +221,32 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     <?php else: ?>
       <table>
         <thead>
-          <tr><th>Artist</th><th>Email</th><th>City</th><th>Verified</th><th>Approved</th><th>Status</th><th>Actions</th></tr>
+          <tr><th>Artist</th><th>Verification</th><th>Email</th><th>City</th><th>Verified</th><th>Approved</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
         <?php foreach ($artists as $a): ?>
           <tr>
             <td>
               <strong><?= e($a['full_name_en'] ?: '—') ?></strong>
+              <?php if (!empty($a['artist_name'])): ?><div class="name-ar"><?= e($a['artist_name']) ?></div><?php endif; ?>
               <?php if (!empty($a['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($a['full_name_ar']) ?></div><?php endif; ?>
+            </td>
+            <td>
+              <div class="verify-cell">
+                <?php if (!empty($a['profile_picture'])): ?>
+                  <a href="<?= e($a['profile_picture']) ?>" target="_blank" title="Open full photo">
+                    <img class="verify-photo" src="<?= e($a['profile_picture']) ?>" alt="photo">
+                  </a>
+                <?php else: ?>
+                  <span class="no-media">No photo</span>
+                <?php endif; ?>
+                <?php if (!empty($a['art_video'])): ?>
+                  <video class="verify-video" src="<?= e($a['art_video']) ?>" controls preload="metadata"></video>
+                  <a class="video-link" href="<?= e($a['art_video']) ?>" target="_blank">Open video ↗</a>
+                <?php else: ?>
+                  <span class="no-media">No video</span>
+                <?php endif; ?>
+              </div>
             </td>
             <td><?= e($a['email']) ?></td>
             <td><?= e($a['city'] ?: '—') ?></td>
