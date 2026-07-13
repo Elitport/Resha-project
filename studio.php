@@ -278,7 +278,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 <script>
 const T={
   en:{dir:'ltr',lb:'العربية',
-    studio:'The Studio',explore:'Explore',community:'Community',support:'Support',chat:'Artist Chat',login:'Sign In',
+    studio:'The Studio',explore:'Explore',community:'Community',support:'Support',login:'Sign In',
     badge:'Creative Workshops',h1:'The <em>Digital Studio</em>',
     desc:'Master your craft through immersive workshops, guided sessions, and hands-on creative challenges designed for artists of all levels.',
     wsTitle:'WORKSHOPS & SESSIONS',featTitle:'FEATURED PROGRAM',roadTitle:'FUTURE TOOLS ROADMAP',
@@ -297,7 +297,7 @@ const T={
     r3:'Texture Scanner',r3d:'Scan real-world textures with your phone and use them in artwork.',rs3:'Planned',
     r4:'Art Portfolio',r4d:'A personal gallery page for every artist to showcase their journey.',rs4:'Planned'},
   ar:{dir:'rtl',lb:'English',
-    studio:'الاستوديو',explore:'استكشف',community:'المجتمع',support:'الدعم',chat:'محادثة الفنانين',login:'تسجيل الدخول',
+    studio:'الاستوديو',explore:'استكشف',community:'المجتمع',support:'الدعم',login:'تسجيل الدخول',
     badge:'ورش العمل الإبداعية',h1:'<em>الاستوديو</em> الرقمي',
     desc:'أتقن فنك من خلال ورش عمل غامرة وجلسات موجّهة وتحديات إبداعية عملية مصمّمة لفنانين من جميع المستويات.',
     wsTitle:'الورش والجلسات',featTitle:'البرنامج المميز',roadTitle:'خارطة الأدوات المستقبلية',
@@ -322,12 +322,12 @@ const NAV={
     s1:'Watercolor Workshop',s2:'Oil Painting Studio',s3:'Digital Art Lab',s4:'Charcoal & Ink',
     c1:'Artist Chat Room',c2:'Meet Fellow Artists',c3:'Share Your Work',c4:'Learn Together',
     sp1:'Contact Us',sp2:'How It Works',sp3:'Terms of Use',
-    chat:'Artist Chat',login:'Sign In',reg:'Join Free'},
+    login:'Sign In',reg:'Join Free'},
   ar:{lb:'English',studio:'الاستوديو',community:'المجتمع',marketplace:'السوق',explore:'استكشف أساليب الرسم',support:'الدعم',
     s1:'ورشة الألوان المائية',s2:'استوديو الرسم الزيتي',s3:'مختبر الفن الرقمي',s4:'الفحم والحبر',
     c1:'غرفة محادثة الفنانين',c2:'تعرّف على فنانين',c3:'شارك أعمالك',c4:'تعلّم معاً',
     sp1:'تواصل معنا',sp2:'كيف يعمل الموقع',sp3:'شروط الاستخدام',
-    chat:'محادثة الفنانين',login:'تسجيل الدخول',reg:'انضم مجاناً'}
+    login:'تسجيل الدخول',reg:'انضم مجاناً'}
 };
 function applyNav(l){
   const n=NAV[l];
@@ -338,7 +338,7 @@ function applyNav(l){
   set('dd-s1',n.s1);set('dd-s2',n.s2);set('dd-s3',n.s3);set('dd-s4',n.s4);
   set('dd-c1',n.c1);set('dd-c2',n.c2);set('dd-c3',n.c3);set('dd-c4',n.c4);
   set('dd-sp1',n.sp1);set('dd-sp2',n.sp2);set('dd-sp3',n.sp3);
-  set('n-chat-t',n.chat);set('n-login-t',n.login);set('n-reg-t',n.reg);
+  set('n-login-t',n.login);set('n-reg-t',n.reg);
   const mk=document.getElementById('nav-marketplace-link');
   if(mk)mk.href=l==='en'?'marketplace.php?lang=en':'marketplace.php?lang=ar';
 }
@@ -359,8 +359,9 @@ function apply(l){
   const ids=['tag1','ws1','ws1d','lv1','join1','tag2','ws2','ws2d','lv2','join2','tag3','ws3','ws3d','lv3','join3','tag4','ws4','ws4d','lv4','join4','tag5','ws5','ws5d','lv5','join5','tag6','ws6','ws6d','lv6','join6','featH','featP','featBtn','sc1','sc1d','sc2','sc2d','sc3','sc3d','r1','r1d','rs1','r2','r2d','rs2','r3','r3d','rs3','r4','r4d','rs4'];
   ids.forEach(id=>{const el=document.getElementById('t-'+id);if(el)el.innerHTML=t[id];});
 }
-function tgl(){L=L==='en'?'ar':'en';apply(L);}
-apply('en');
+function tgl(){L=L==='en'?'ar':'en';apply(L);try{localStorage.setItem('lang',L);}catch(e){}}
+try{var _s=localStorage.getItem('lang');if(_s==='ar'||_s==='en')L=_s;}catch(e){}
+apply(L);
 const v=document.getElementById('vid');
 v.addEventListener('canplay',()=>v.classList.add('on'),{once:true});
 v.play().catch(()=>{});

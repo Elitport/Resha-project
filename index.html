@@ -192,10 +192,6 @@ html,body{width:100%;min-height:100vh;background:#ffffff;font-family:"Helvetica 
         <svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg>
       </a>
       <div class="dropdown" id="dd-community">
-        <a href="/chat.php">
-          <svg class="d-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span id="dd-c1">Artist Chat Room</span>
-        </a>
         <a href="/community.php#meet">
           <svg class="d-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           <span id="dd-c2">Meet Fellow Artists</span>
@@ -247,10 +243,6 @@ html,body{width:100%;min-height:100vh;background:#ffffff;font-family:"Helvetica 
   </div>
 
   <div class="nav-right">
-    <a class="nav-btn primary" href="/chat.php" id="n-chat">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-      <span id="n-chat-t">Artist Chat</span>
-    </a>
     <a class="nav-btn" href="/login.php" id="n-login"><span id="n-login-t">Sign In</span></a>
     <a class="nav-btn" href="/register.php" id="n-reg"><span id="n-reg-t">Join Free</span></a>
     <button class="lang-btn" onclick="tgl()" id="lb">العربية</button>
@@ -290,14 +282,14 @@ const T = {
     badge:'Digital Ink Studio',
     h1:'Where art meets<br><em>the living wild</em>',
     desc:"Step inside the jungle. Paint with the rhythm of ocean waves and the breath of ancient forests. A fully immersive creative sanctuary built for artists who draw from nature's soul.",
-    b1:'Start Creating Free',b2:'Enter Artist Chat',
+    b1:'Start Creating Free',b2:'Explore Art Styles',
     galleryTitle:'Explore Art Styles',
-    'n-chat':'Artist Chat','n-login':'Sign In','n-reg':'Join Free',
+    'n-login':'Sign In','n-reg':'Join Free',
     modalCta:'Start This Style',
     nav:{
       studio:'The Studio', community:'Community', marketplace:'Marketplace', explore:'Explore Art Styles', support:'Support',
       's1':'Watercolor Workshop','s2':'Oil Painting Studio','s3':'Digital Art Lab','s4':'Charcoal & Ink',
-      'c1':'Artist Chat Room','c2':'Meet Fellow Artists','c3':'Share Your Work','c4':'Learn Together',
+      'c2':'Meet Fellow Artists','c3':'Share Your Work','c4':'Learn Together',
       'sp1':'Contact Us','sp2':'How It Works','sp3':'Terms of Use'
     }
   },
@@ -307,12 +299,12 @@ const T = {
     desc:'اكتشف الفن وتعلّم وبِع أعمالك. أويلي هي منصة الفن السعودية الثنائية اللغة — تجمع الفنانين والهواة والمقتنين في فضاء إبداعي واحد.',
     b1:'ابدأ الإبداع مجاناً',b2:'استكشف أساليب الرسم',
     galleryTitle:'استكشف أساليب الرسم',
-    'n-chat':'محادثة الفنانين','n-login':'تسجيل الدخول','n-reg':'انضم مجاناً',
+    'n-login':'تسجيل الدخول','n-reg':'انضم مجاناً',
     modalCta:'ابدأ هذا الأسلوب',
     nav:{
       studio:'الاستوديو', community:'المجتمع', marketplace:'السوق', explore:'استكشف أساليب الرسم', support:'الدعم',
       's1':'ورشة الألوان المائية','s2':'استوديو الرسم الزيتي','s3':'مختبر الفن الرقمي','s4':'الفحم والحبر',
-      'c1':'غرفة محادثة الفنانين','c2':'تعرّف على فنانين','c3':'شارك أعمالك','c4':'تعلّم معاً',
+      'c2':'تعرّف على فنانين','c3':'شارك أعمالك','c4':'تعلّم معاً',
       'sp1':'تواصل معنا','sp2':'كيف يعمل الموقع','sp3':'شروط الاستخدام'
     }
   }
@@ -341,7 +333,6 @@ function apply(l) {
   document.getElementById('t-desc').textContent = t.desc;
   document.getElementById('t-b1').textContent = t.b1;
   document.getElementById('t-b2').textContent = t.b2;
-  document.getElementById('n-chat-t').textContent = t['n-chat'];
   document.getElementById('n-login-t').textContent = t['n-login'];
   document.getElementById('n-reg-t').textContent = t['n-reg'];
   const n = t.nav;
@@ -354,16 +345,16 @@ function apply(l) {
   // تحديث الرابط ديناميكياً ليمرر اللغة للمتجر أوتوماتيكياً
   document.getElementById('nav-marketplace-link').href = l === 'en' ? 'marketplace.php?lang=en' : 'marketplace.php?lang=ar';
 
-  ['s1','s2','s3','s4','c1','c2','c3','c4','sp1','sp2','sp3'].forEach(k=>{
+  ['s1','s2','s3','s4','c2','c3','c4','sp1','sp2','sp3'].forEach(k=>{
     const el = document.getElementById('dd-'+k);
     if(el) el.textContent = n[k];
   });
 }
 
-function tgl() { L = L==='en'?'ar':'en'; apply(L); try{localStorage.setItem('oweili_lang',L);}catch(e){} }
+function tgl() { L = L==='en'?'ar':'en'; apply(L); try{localStorage.setItem('lang',L);}catch(e){} }
 
 /* Restore the site-wide saved language (shared with every other page). */
-try{ var _saved=localStorage.getItem('oweili_lang'); L=(_saved==='ar')?'ar':'en'; }catch(e){}
+try{ var _saved=localStorage.getItem('lang'); L=(_saved==='ar')?'ar':'en'; }catch(e){}
 apply(L);
 
 const v = document.getElementById('vid');

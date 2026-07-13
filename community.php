@@ -115,25 +115,8 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
     <div class="stat-card"><div class="stat-num">🇸🇦</div><div class="stat-label" id="t-s4">Saudi Community</div></div>
   </div>
 
-  <div class="chat-cta">
-    <div class="chat-cta-left">
-      <h2 id="t-cta-h">Join the Artist Chat Room</h2>
-      <p id="t-cta-p">Talk to fellow artists in real time. Share techniques, get feedback, ask questions, and build friendships with creators who share your passion for art and nature.</p>
-    </div>
-    <div class="chat-cta-right">
-      <div class="live-badge"><div class="live-dot"></div><span id="t-live">Live Now</span></div>
-      <a class="btn-p btn-blue" href="chat.php" id="t-cta-btn">Enter Chat Room</a>
-    </div>
-  </div>
-
   <p class="section-title" id="t-comm-title">COMMUNITY SPACES</p>
   <div class="community-grid">
-    <a class="comm-card" href="chat.php">
-      <div class="comm-icon">💬</div>
-      <h3 id="t-c1">Artist Chat Room</h3>
-      <p id="t-c1d">A live chat room where artists from across Saudi Arabia connect, share their work, and inspire each other in real time.</p>
-      <span class="comm-link" id="t-c1l">Enter Room →</span>
-    </a>
     <a class="comm-card" href="register.php">
       <div class="comm-icon">🎨</div>
       <h3 id="t-c2">Professional Artists Guild</h3>
@@ -164,7 +147,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 
 <script>
 const T={
-  en:{dir:'ltr',lb:'العربية',studio:'The Studio',explore:'Explore',community:'Community',support:'Support',chat:'Artist Chat',login:'Sign In',
+  en:{dir:'ltr',lb:'العربية',studio:'The Studio',explore:'Explore',community:'Community',support:'Support',login:'Sign In',
     badge:'Artists Network',h1:'The <em>Artist Community</em>',desc:'Connect with fellow artists, share your work, learn together, and grow as part of a vibrant creative community powered by passion for nature and art.',
     s1:'Registered Artists',s2:'Messages Shared',s3:'Art Styles',s4:'Saudi Community',
     ctaH:'Join the Artist Chat Room',ctaP:'Talk to fellow artists in real time. Share techniques, get feedback, ask questions, and build friendships with creators who share your passion for art and nature.',live:'Live Now',ctaBtn:'Enter Chat Room',
@@ -177,7 +160,7 @@ const T={
     i1:'Jungle Light Studies',i1d:'Capture the dappled light filtering through dense canopy',
     i2:'Ocean Movement',i2d:'Study the rhythm and energy of waves in motion',
     i3:'Ancient Trees',i3d:'Explore the texture and wisdom of centuries-old forests'},
-  ar:{dir:'rtl',lb:'English',studio:'الاستوديو',explore:'استكشف',community:'المجتمع',support:'الدعم',chat:'محادثة الفنانين',login:'تسجيل الدخول',
+  ar:{dir:'rtl',lb:'English',studio:'الاستوديو',explore:'استكشف',community:'المجتمع',support:'الدعم',login:'تسجيل الدخول',
     badge:'شبكة الفنانين',h1:'<em>مجتمع</em> الفنانين',desc:'تواصل مع فنانين آخرين وشارك أعمالك وتعلّم معاً وانمُ كجزء من مجتمع إبداعي نابض بالحياة مدفوع بشغف الطبيعة والفن.',
     s1:'الفنانين المسجلين',s2:'الرسائل المتبادلة',s3:'أساليب فنية',s4:'المجتمع السعودي',
     ctaH:'انضم إلى غرفة محادثة الفنانين',ctaP:'تحدّث مع فنانين آخرين في الوقت الفعلي. شارك التقنيات واحصل على ملاحظات واطرح أسئلتك وابنِ صداقات مع المبدعين.',live:'مباشر الآن',ctaBtn:'ادخل غرفة المحادثة',
@@ -197,12 +180,12 @@ const NAV={
     s1:'Watercolor Workshop',s2:'Oil Painting Studio',s3:'Digital Art Lab',s4:'Charcoal & Ink',
     c1:'Artist Chat Room',c2:'Meet Fellow Artists',c3:'Share Your Work',c4:'Learn Together',
     sp1:'Contact Us',sp2:'How It Works',sp3:'Terms of Use',
-    chat:'Artist Chat',login:'Sign In',reg:'Join Free'},
+    login:'Sign In',reg:'Join Free'},
   ar:{lb:'English',studio:'الاستوديو',community:'المجتمع',marketplace:'السوق',explore:'استكشف أساليب الرسم',support:'الدعم',
     s1:'ورشة الألوان المائية',s2:'استوديو الرسم الزيتي',s3:'مختبر الفن الرقمي',s4:'الفحم والحبر',
     c1:'غرفة محادثة الفنانين',c2:'تعرّف على فنانين',c3:'شارك أعمالك',c4:'تعلّم معاً',
     sp1:'تواصل معنا',sp2:'كيف يعمل الموقع',sp3:'شروط الاستخدام',
-    chat:'محادثة الفنانين',login:'تسجيل الدخول',reg:'انضم مجاناً'}
+    login:'تسجيل الدخول',reg:'انضم مجاناً'}
 };
 function applyNav(l){
   const n=NAV[l];
@@ -213,7 +196,7 @@ function applyNav(l){
   set('dd-s1',n.s1);set('dd-s2',n.s2);set('dd-s3',n.s3);set('dd-s4',n.s4);
   set('dd-c1',n.c1);set('dd-c2',n.c2);set('dd-c3',n.c3);set('dd-c4',n.c4);
   set('dd-sp1',n.sp1);set('dd-sp2',n.sp2);set('dd-sp3',n.sp3);
-  set('n-chat-t',n.chat);set('n-login-t',n.login);set('n-reg-t',n.reg);
+  set('n-login-t',n.login);set('n-reg-t',n.reg);
   const mk=document.getElementById('nav-marketplace-link');
   if(mk)mk.href=l==='en'?'marketplace.php?lang=en':'marketplace.php?lang=ar';
 }
@@ -235,17 +218,15 @@ function apply(l){
   setH('t-comm-title',t.commTitle);
   setH('t-inspo-title',t.inspoTitle);
 }
-function tgl(){L=L==='en'?'ar':'en';apply(L);}
-apply('en');
+function tgl(){L=L==='en'?'ar':'en';apply(L);try{localStorage.setItem('lang',L);}catch(e){}}
+try{var _s=localStorage.getItem('lang');if(_s==='ar'||_s==='en')L=_s;}catch(e){}
+apply(L);
 
-// Load live stats
-fetch('messages.php?since=0').then(r=>r.json()).then(d=>{
-  if(d.online) document.getElementById('s-artists').textContent=d.online+'+';
-  if(d.messages) document.getElementById('s-msgs').textContent=d.messages.length+'+';
-}).catch(()=>{
-  document.getElementById('s-artists').textContent='50+';
-  document.getElementById('s-msgs').textContent='200+';
-});
+// Community stats
+(function(){
+  var a=document.getElementById('s-artists');if(a)a.textContent='50+';
+  var m=document.getElementById('s-msgs');if(m)m.textContent='200+';
+})();
 
 const v=document.getElementById('vid');
 v.addEventListener('canplay',()=>v.classList.add('on'),{once:true});

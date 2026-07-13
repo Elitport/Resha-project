@@ -65,7 +65,7 @@ foreach ($artworks as $aw) {
      server reload (?lang=), so if the visitor previously chose Arabic on
      another page, redirect to the Arabic version before rendering. */
   (function(){
-    var KEY='oweili_lang';
+    var KEY='lang';
     var params=new URLSearchParams(location.search);
     var urlLang=params.get('lang');
     var saved=null; try{ saved=localStorage.getItem(KEY); }catch(e){}
@@ -208,7 +208,6 @@ foreach ($artworks as $aw) {
     <div class="nav-item">
       <a href="community.php"><span><?= $ar?'المجتمع':'Community' ?></span><svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg></a>
       <div class="dropdown">
-        <a href="chat.php"><svg class="d-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span><?= $ar?'غرفة محادثة الفنانين':'Artist Chat Room' ?></span></a>
         <a href="community.php#meet"><svg class="d-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span><?= $ar?'تعرّف على فنانين':'Meet Fellow Artists' ?></span></a>
         <a href="community.php#share"><svg class="d-icon" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg><span><?= $ar?'شارك أعمالك':'Share Your Work' ?></span></a>
         <a href="community.php#learn"><svg class="d-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span><?= $ar?'تعلّم معاً':'Learn Together' ?></span></a>
@@ -226,7 +225,6 @@ foreach ($artworks as $aw) {
     </div>
   </div>
   <div class="nav-right">
-    <a class="nav-btn primary" href="chat.php"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span><?= $ar?'محادثة الفنانين':'Artist Chat' ?></span></a>
     <a class="nav-btn" href="login.php"><span><?= $ar?'تسجيل الدخول':'Sign In' ?></span></a>
     <a class="nav-btn" href="register.php"><span><?= $ar?'انضم مجاناً':'Join Free' ?></span></a>
     <button class="lang-btn" onclick="window.location.href='?lang=<?= $ar?'en':'ar' ?>'"><?= $ar?'English':'العربية' ?></button>
