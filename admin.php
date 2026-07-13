@@ -91,6 +91,17 @@ if ($isAdmin) {
     )->fetchAll();
 }
 
+/* ---- Load all members (only when authed) ---- */
+$members = [];
+if ($isAdmin) {
+    $members = getDB()->query(
+        "SELECT id, full_name_en, full_name_ar, email, phone, role,
+                is_verified, is_approved, COALESCE(is_banned,0) AS is_banned, created_at
+         FROM users
+         ORDER BY created_at DESC"
+    )->fetchAll();
+}
+
 /* ---- Load artists list (only when authed) ---- */
 $artists = [];
 if ($isAdmin) {
@@ -154,6 +165,10 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 .video-link{font-size:11px;font-weight:600;color:#0066ff;text-decoration:none;}
 .video-link:hover{text-decoration:underline;}
 .no-media{font-size:11px;color:rgba(0,0,0,0.35);font-style:italic;}
+.pill.role-artist{background:rgba(255,0,85,0.1);color:#ff0055;}
+.pill.role-collector{background:rgba(0,100,255,0.1);color:#0066ff;}
+.pill.role-admin{background:rgba(170,0,255,0.1);color:#aa00ff;}
+.status-pills{display:flex;gap:5px;flex-wrap:wrap;}
 </style>
 </head>
 <body>
@@ -271,6 +286,48 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
         <?php endforeach; ?>
         </tbody>
       </table>
+    <?php endif; ?>
+  </div>
+
+  <!-- ===== ALL MEMBERS ===== -->
+  <div class="card" id="members" style="margin-top:24px;">
+    <div class="sec-head">
+      <h2>Members <span class="count" style="background:#0066ff;"><?= count($members) ?></span></h2>
+      <div class="sub" style="margin:0;">Every registered user on Oweili.</div>
+    </div>
+    <?php if (!$members): ?>
+      <div class="empty">No members yet.</div>
+    <?php else: ?>
+      <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Registered</th></tr>
+        </thead>
+        <tbody>
+        <?php foreach ($members as $m): ?>
+          <tr>
+            <td>
+              <strong><?= e($m['full_name_en'] ?: '—') ?></strong>
+              <?php if (!empty($m['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($m['full_name_ar']) ?></div><?php endif; ?>
+            </td>
+            <td><?= e($m['email']) ?></td>
+            <td dir="ltr"><?= e($m['phone'] ?: '—') ?></td>
+            <td><span class="pill <?= $m['role'] === 'artist' ? 'role-artist' : ($m['role'] === 'admin' ? 'role-admin' : 'role-collector') ?>"><?= e(ucfirst((string)$m['role'])) ?></span></td>
+            <td>
+              <div class="status-pills">
+                <span class="pill <?= $m['is_verified'] ? 'on' : 'off' ?>" title="Email verified"><?= $m['is_verified'] ? 'Verified' : 'Unverified' ?></span>
+                <?php if ($m['role'] === 'artist'): ?>
+                  <span class="pill <?= $m['is_approved'] ? 'on' : 'off' ?>" title="Approved by admin"><?= $m['is_approved'] ? 'Approved' : 'Pending' ?></span>
+                <?php endif; ?>
+                <?php if ((int)$m['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php endif; ?>
+              </div>
+            </td>
+            <td><?= e(date('Y-m-d', strtotime((string)$m['created_at']))) ?></td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+      </div>
     <?php endif; ?>
   </div>
 

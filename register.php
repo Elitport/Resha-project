@@ -4,7 +4,7 @@ require_once 'config.php';
 /* ---- Handle submit (before any output) ---- */
 $errCode = '';
 $okCode  = '';
-$old = ['name_en' => '', 'name_ar' => '', 'artist_name' => '', 'email' => '', 'city' => '', 'role' => 'collector'];
+$old = ['name_en' => '', 'name_ar' => '', 'artist_name' => '', 'email' => '', 'phone' => '', 'city' => '', 'role' => 'collector'];
 
 /* Video upload limits (profile picture reuses config's 5 MB image validator). */
 const VIDEO_MAX_BYTES = 50 * 1024 * 1024; // 50 MB
@@ -14,6 +14,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $old['name_ar']     = sanitize($_POST['full_name_ar'] ?? '');
     $old['artist_name'] = sanitize($_POST['artist_name'] ?? '');
     $old['email']       = sanitize($_POST['email'] ?? '');
+    $old['phone']       = sanitize($_POST['phone'] ?? '');
     $old['city']        = sanitize($_POST['city'] ?? '');
     $role               = ($_POST['role'] ?? '') === 'artist' ? 'artist' : 'collector';
     $old['role']        = $role;
@@ -31,10 +32,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
     if (!verifyCsrf($_POST['csrf_token'] ?? null)) {
         $errCode = 'csrf';
-    } elseif ($old['name_en'] === '' || $old['email'] === '') {
+    } elseif ($old['name_en'] === '' || $old['email'] === '' || $old['phone'] === '') {
         $errCode = 'required';
     } elseif (!filter_var($old['email'], FILTER_VALIDATE_EMAIL)) {
         $errCode = 'email';
+    } elseif (!preg_match('/^[+0-9][0-9 \-()]{6,29}$/', $old['phone'])) {
+        $errCode = 'phone';
     } elseif (!$strong) {
         $errCode = 'weak';
     } elseif ($pass !== $confirm) {
@@ -80,11 +83,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $expires = date('Y-m-d H:i:s', time() + 24 * 60 * 60); // 24h
             $ins = getDB()->prepare(
                 'INSERT INTO users
-                   (email, password, full_name_en, full_name_ar, artist_name, role, city,
+                   (email, password, full_name_en, full_name_ar, artist_name, phone, role, city,
                     profile_picture, art_video,
                     is_verified, is_approved, verification_token, verification_expires)
                  VALUES
-                   (:email, :pass, :nen, :nar, :aname, :role, :city,
+                   (:email, :pass, :nen, :nar, :aname, :phone, :role, :city,
                     :pic, :vid, 0, 0, :tok, :exp)'
             );
             $ins->execute([
@@ -93,6 +96,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                 ':nen'   => $old['name_en'],
                 ':nar'   => $old['name_ar'],
                 ':aname' => $old['artist_name'],
+                ':phone' => $old['phone'],
                 ':role'  => $role,
                 ':city'  => $old['city'],
                 ':pic'   => $photoRel,
@@ -115,7 +119,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             }
 
             $okCode = 'check_email';
-            $old = ['name_en' => '', 'name_ar' => '', 'artist_name' => '', 'email' => '', 'city' => '', 'role' => 'collector'];
+            $old = ['name_en' => '', 'name_ar' => '', 'artist_name' => '', 'email' => '', 'phone' => '', 'city' => '', 'role' => 'collector'];
         }
     }
 }
@@ -147,6 +151,7 @@ $ERR = [
     'csrf'     => ['en' => 'Security check failed. Please try again.', 'ar' => 'فشل التحقق الأمني. حاول مرة أخرى.'],
     'required' => ['en' => 'Please fill in the required fields.', 'ar' => 'يرجى تعبئة الحقول المطلوبة.'],
     'email'    => ['en' => 'Please enter a valid email address.', 'ar' => 'يرجى إدخال بريد إلكتروني صالح.'],
+    'phone'    => ['en' => 'Please enter a valid phone number.', 'ar' => 'يرجى إدخال رقم هاتف صالح.'],
     'weak'     => ['en' => 'Password does not meet the requirements.', 'ar' => 'كلمة المرور لا تستوفي الشروط.'],
     'mismatch' => ['en' => 'Passwords do not match.', 'ar' => 'كلمتا المرور غير متطابقتين.'],
     'terms'    => ['en' => 'You must accept the terms and conditions.', 'ar' => 'يجب الموافقة على الشروط والأحكام.'],
@@ -285,6 +290,10 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
         <input type="email" id="email" name="email" required value="<?= e($old['email']) ?>">
       </div>
       <div class="field">
+        <label id="t-l-phone" for="phone">Phone number</label>
+        <input type="tel" id="phone" name="phone" required value="<?= e($old['phone']) ?>" placeholder="+966 5X XXX XXXX" dir="ltr">
+      </div>
+      <div class="field">
         <label id="t-l-photo" for="profile_picture">Profile picture (JPG/PNG, max 5MB)</label>
         <input type="file" id="profile_picture" name="profile_picture" accept="image/jpeg,image/png">
       </div>
@@ -341,7 +350,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 const T={
   en:{dir:'ltr',lb:'العربية',title:'Join Free',sub:'Create your Oweili account',
     nen:'Full name (English)',nar:'Full name (Arabic)',aname:'Public / artist name',anamePlace:'Shown publicly on your profile',
-    email:'Email',photo:'Profile picture (JPG/PNG, max 5MB)',
+    email:'Email',phone:'Phone number',photo:'Profile picture (JPG/PNG, max 5MB)',
     video:'Art video — proof you create art (MP4, max 50MB)',videoHint:'A short clip of you creating art. Required for artists — the admin reviews it before approval.',
     pass:'Password',confirm:'Confirm password',
     role:'I am a…',artist:'Artist',collector:'Collector',city:'City',
@@ -354,7 +363,7 @@ const T={
       sp1:'Contact Us',sp2:'How It Works',sp3:'Terms of Use',chat:'Artist Chat',login:'Sign In',reg:'Join Free'}},
   ar:{dir:'rtl',lb:'English',title:'انضم مجاناً',sub:'أنشئ حسابك في أويلي',
     nen:'الاسم الكامل بالإنجليزية',nar:'الاسم الكامل بالعربية',aname:'الاسم العام / اسم الفنان',anamePlace:'يظهر علناً في ملفك الشخصي',
-    email:'البريد الإلكتروني',photo:'الصورة الشخصية (JPG/PNG، بحد أقصى 5 ميجابايت)',
+    email:'البريد الإلكتروني',phone:'رقم الهاتف',photo:'الصورة الشخصية (JPG/PNG، بحد أقصى 5 ميجابايت)',
     video:'فيديو فني — إثبات أنك تبدع الفن (MP4، بحد أقصى 50 ميجابايت)',videoHint:'مقطع قصير أثناء إبداعك للفن. مطلوب للفنانين — يراجعه المشرف قبل الموافقة.',
     pass:'كلمة المرور',confirm:'تأكيد كلمة المرور',
     role:'أنا…',artist:'فنان',collector:'مقتني',city:'المدينة',
@@ -391,7 +400,7 @@ function apply(l){
   document.getElementById('topnav').setAttribute('dir',t.dir);
   document.getElementById('lb').textContent=t.lb;
   setTxt('t-title',t.title);setTxt('t-sub',t.sub);
-  setTxt('t-l-nen',t.nen);setTxt('t-l-nar',t.nar);setTxt('t-l-email',t.email);
+  setTxt('t-l-nen',t.nen);setTxt('t-l-nar',t.nar);setTxt('t-l-email',t.email);setTxt('t-l-phone',t.phone);
   setTxt('t-l-aname',t.aname);
   const an=document.getElementById('artist_name');if(an)an.placeholder=t.anamePlace;
   setTxt('t-l-photo',t.photo);setTxt('t-l-video',t.video);setTxt('t-video-hint',t.videoHint);
