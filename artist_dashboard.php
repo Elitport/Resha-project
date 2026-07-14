@@ -21,6 +21,13 @@ $ART_TYPES = require __DIR__ . '/art_types.php';
 $profileId = (isset($_GET['id']) && (int) $_GET['id'] > 0) ? (int) $_GET['id'] : $viewerId;
 $isOwner   = $viewerId === $profileId;
 
+/* A collector visiting their own dashboard belongs on the collector dashboard. */
+$viewer = currentUser();
+if ($isOwner && $viewer && ($viewer['role'] ?? '') === 'collector') {
+    header('Location: collector_dashboard.php');
+    exit;
+}
+
 $uploadError = '';   // shown to owner on a failed upload
 
 /* ---------------------------------------------------------------------

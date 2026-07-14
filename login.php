@@ -20,7 +20,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             loginUser((int) $u['id']);            // regenerates session + stores token + last_login_at
             $role = $u['role'];
             $dest = $role === 'admin' ? 'admin.php'
-                  : ($role === 'artist' ? 'artist_dashboard.php' : 'index.html');
+                  : ($role === 'artist' ? 'artist_dashboard.php' : 'collector_dashboard.php');
             header('Location: ' . $dest);
             exit;
         } else {

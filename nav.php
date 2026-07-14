@@ -54,7 +54,7 @@ $navId    = $navUser ? (int) $navUser['id'] : 0;
       <?php if ($navIsAdmin): ?>
       <a class="nav-btn" href="admin.php" id="n-admin"><span class="nav-i18n" data-en="Admin" data-ar="الإدارة">Admin</span></a>
       <?php endif; ?>
-      <a class="nav-btn" href="artist_dashboard.php?id=<?= $navId ?>" id="n-acct"><span><?= htmlspecialchars($navFirst, ENT_QUOTES) ?></span></a>
+      <a class="nav-btn" href="<?= e(dashboardUrl($navUser['role'] ?? '')) ?>" id="n-acct"><span><?= htmlspecialchars($navFirst, ENT_QUOTES) ?></span></a>
       <a class="nav-btn" href="logout.php" id="n-logout"><span class="nav-i18n" data-en="Sign Out" data-ar="تسجيل الخروج">Sign Out</span></a>
     <?php else: ?>
       <a class="nav-btn" href="login.php" id="n-login"><span id="n-login-t">Sign In</span></a>

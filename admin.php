@@ -179,13 +179,20 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 .tab-btn:not(.active) .count{background:#ff0055;color:#fff;}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
+.lang-btn{padding:9px 16px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:0.04em;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:#fff;color:rgba(0,0,0,0.7);transition:all 0.2s;}
+.lang-btn:hover{background:#111;color:#fff;}
+[dir="rtl"] body{direction:rtl;}
+[dir="rtl"] th,[dir="rtl"] td{text-align:right;}
+[dir="rtl"] .top,[dir="rtl"] .acts,[dir="rtl"] .tabs{flex-direction:row-reverse;}
+[dir="rtl"] .verify-cell{align-items:flex-end;}
 </style>
 </head>
 <body>
 <div class="wrap">
 <?php if (!$isAdmin): ?>
 
-  <form class="card login-card" method="post" action="admin.php">
+  <div style="max-width:380px;margin:6vh auto 0;text-align:right;"><button class="lang-btn" id="lb" onclick="tglLang()">العربية</button></div>
+  <form class="card login-card" method="post" action="admin.php" style="margin-top:12px;">
     <h1>Admin Login</h1>
     <?php if ($loginError): ?><div class="err"><?= e($loginError) ?></div><?php endif; ?>
     <?= csrfField() ?>
@@ -201,7 +208,8 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
       <h1>Admin Dashboard</h1>
       <div class="sub">Manage artists, collectors, and artwork approvals.</div>
     </div>
-    <div style="display:flex;gap:8px;">
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="lang-btn" id="lb" onclick="tglLang()">العربية</button>
       <a class="btn grey" href="admin_styles.php">Manage Styles</a>
       <a class="btn grey" href="admin.php?logout=1">Log out</a>
     </div>
@@ -373,5 +381,45 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 
 <?php endif; ?>
 </div>
+<script>
+/* Bilingual admin — swaps known EN strings to AR (and back) by walking text
+   nodes, so the whole panel translates without per-element markup. */
+const ADICT = {
+  "Admin Dashboard":"لوحة الإدارة",
+  "Manage artists, collectors, and artwork approvals.":"إدارة الفنانين والمقتنين واعتماد الأعمال.",
+  "Manage Styles":"إدارة الأساليب","Log out":"تسجيل الخروج",
+  "Admin Login":"دخول الإدارة","Password":"كلمة المرور","Sign In":"تسجيل الدخول","Incorrect password.":"كلمة مرور غير صحيحة.",
+  "Artists":"الفنانون","Collectors":"المقتنون","Pending Artworks":"الأعمال المعلّقة",
+  "Artist":"الفنان","Contact":"التواصل","City":"المدينة","Verification":"التحقق",
+  "Verified":"موثّق","Unverified":"غير موثّق","Approved":"معتمد","Pending":"معلّق","Status":"الحالة","Actions":"إجراءات",
+  "Name":"الاسم","Email":"البريد الإلكتروني","Phone":"الهاتف","Date":"التاريخ",
+  "No artist accounts yet.":"لا توجد حسابات فنانين بعد.","No collector accounts yet.":"لا يوجد مقتنون بعد.",
+  "Nothing pending — all caught up. 🎉":"لا يوجد معلّق — كل شيء محدّث. 🎉",
+  "New uploads waiting for approval before they appear in the marketplace.":"أعمال جديدة بانتظار الموافقة قبل ظهورها في السوق.",
+  "Approve":"موافقة","Unapprove":"إلغاء الموافقة","Ban":"حظر","Unban":"رفع الحظر","Reject":"رفض",
+  "Yes":"نعم","No":"لا","Banned":"محظور","Active":"نشط",
+  "No photo":"لا صورة","No video":"لا فيديو","Open video ↗":"فتح الفيديو ↗"
+};
+const AREV = {}; Object.keys(ADICT).forEach(k=>AREV[ADICT[k]]=k);
+let AL='en';
+function walkTranslate(root, toAr){
+  const map = toAr ? ADICT : AREV;
+  const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(n=>{
+    const key=n.nodeValue.trim();
+    if(key && map[key]!==undefined){ n.nodeValue=n.nodeValue.replace(key, map[key]); }
+  });
+}
+function applyLang(l){
+  const toAr = l==='ar';
+  document.documentElement.setAttribute('dir', toAr?'rtl':'ltr');
+  document.documentElement.lang=l;
+  if(l!==AL){ walkTranslate(document.querySelector('.wrap')||document.body, toAr); AL=l; }
+  const lb=document.getElementById('lb'); if(lb) lb.textContent = toAr ? 'English':'العربية';
+}
+function tglLang(){ const next=AL==='en'?'ar':'en'; try{localStorage.setItem('lang',next);}catch(e){} applyLang(next); }
+try{var _s=localStorage.getItem('lang'); if(_s==='ar') applyLang('ar');}catch(e){}
+</script>
 </body>
 </html>

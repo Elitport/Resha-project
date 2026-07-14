@@ -64,7 +64,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             ':id' => $uid,
         ]);
 
-        header('Location: artist_dashboard.php?id=' . $uid . '&saved=1');
+        $dash = dashboardUrl($u['role'] ?? '');
+        $sep  = strpos($dash, '?') !== false ? '&' : '?';
+        header('Location: ' . $dash . $sep . 'saved=1');
         exit;
     }
 }
@@ -197,7 +199,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 
       <div class="actions">
         <button type="submit" class="btn-submit" id="t-save">Save Changes</button>
-        <a class="btn-cancel" href="artist_dashboard.php?id=<?= $uid ?>" id="t-cancel">Cancel</a>
+        <a class="btn-cancel" href="<?= e(dashboardUrl($u['role'] ?? '')) ?>" id="t-cancel">Cancel</a>
       </div>
     </form>
   </div>
