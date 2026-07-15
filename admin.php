@@ -64,6 +64,36 @@ if ($isAdmin && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST
         exit;
     }
 
+    /* --- Art styles CRUD --- */
+    if ($action === 'style_add' || $action === 'style_edit' || $action === 'style_delete') {
+        $sid     = (int) ($_POST['id'] ?? 0);
+        $titleEn = sanitize($_POST['title_en'] ?? '');
+        $titleAr = sanitize($_POST['title_ar'] ?? '');
+        $descEn  = trim((string) ($_POST['description_en'] ?? ''));
+        $descAr  = trim((string) ($_POST['description_ar'] ?? ''));
+        $tag     = sanitize($_POST['tag'] ?? 'Traditional');
+        $simg    = sanitize($_POST['image_url'] ?? '');
+        try {
+            if ($action === 'style_add') {
+                getDB()->prepare(
+                    'INSERT INTO art_styles (title_en,title_ar,description_en,description_ar,tag,image_url,sort_order)
+                     VALUES (:te,:ta,:de,:da,:tag,:img,
+                        (SELECT COALESCE(MAX(sort_order),0)+1 FROM (SELECT * FROM art_styles) x))'
+                )->execute([':te'=>$titleEn, ':ta'=>$titleAr, ':de'=>$descEn, ':da'=>$descAr, ':tag'=>$tag, ':img'=>$simg]);
+            } elseif ($action === 'style_edit' && $sid > 0) {
+                getDB()->prepare(
+                    'UPDATE art_styles SET title_en=:te,title_ar=:ta,description_en=:de,description_ar=:da,tag=:tag,image_url=:img WHERE id=:id'
+                )->execute([':te'=>$titleEn, ':ta'=>$titleAr, ':de'=>$descEn, ':da'=>$descAr, ':tag'=>$tag, ':img'=>$simg, ':id'=>$sid]);
+            } elseif ($action === 'style_delete' && $sid > 0) {
+                getDB()->prepare('DELETE FROM art_styles WHERE id=:id')->execute([':id'=>$sid]);
+            }
+        } catch (\Throwable $e) {
+            error_log('admin styles: ' . $e->getMessage());
+        }
+        header('Location: admin.php?ok=1#styles');
+        exit;
+    }
+
     $map = [
         'approve'   => 'UPDATE users SET is_approved = 1 WHERE id = :id',
         'unapprove' => 'UPDATE users SET is_approved = 0 WHERE id = :id',
@@ -115,6 +145,18 @@ if ($isAdmin) {
          ORDER BY created_at DESC"
     )->fetchAll();
 }
+
+/* ---- Load art styles (only when authed) ---- */
+$styles = [];
+$stylesTableMissing = false;
+if ($isAdmin) {
+    try {
+        $styles = getDB()->query('SELECT * FROM art_styles ORDER BY sort_order ASC, id ASC')->fetchAll();
+    } catch (\Throwable $e) {
+        $stylesTableMissing = true;
+    }
+}
+$STYLE_TAGS = ['Traditional', 'Digital', 'Mixed Media'];
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -185,6 +227,22 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 [dir="rtl"] th,[dir="rtl"] td{text-align:right;}
 [dir="rtl"] .top,[dir="rtl"] .acts,[dir="rtl"] .tabs{flex-direction:row-reverse;}
 [dir="rtl"] .verify-cell{align-items:flex-end;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field{margin-bottom:14px;}
+.field label{margin-bottom:6px;}
+.field input,.field textarea,.field select{width:100%;padding:11px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.15);font-size:14px;font-family:inherit;background:#fff;}
+.field textarea{resize:vertical;min-height:60px;}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:#0066ff;box-shadow:0 0 0 3px rgba(0,100,255,0.12);}
+.style-item{display:flex;gap:16px;padding:14px;border:1px solid rgba(0,0,0,0.07);border-radius:14px;margin-bottom:12px;align-items:flex-start;}
+.style-thumb{width:80px;height:80px;border-radius:10px;background-size:cover;background-position:center;background-color:#eee;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;color:rgba(0,0,0,0.25);}
+.style-body{flex:1;min-width:0;}
+.style-body h3{font-size:15px;font-weight:700;margin-bottom:2px;}
+.style-desc{font-size:12px;color:rgba(0,0,0,0.6);line-height:1.6;margin:4px 0 6px;}
+.tag-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;background:rgba(0,100,255,0.1);color:#0066ff;}
+.edit-form{display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.06);}
+.edit-form.open{display:block;}
+[dir="rtl"] .style-item{flex-direction:row-reverse;}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}.style-item{flex-direction:column;}}
 </style>
 </head>
 <body>
@@ -210,7 +268,6 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <button class="lang-btn" id="lb" onclick="tglLang()">العربية</button>
-      <a class="btn grey" href="admin_styles.php">Manage Styles</a>
       <a class="btn grey" href="admin.php?logout=1">Log out</a>
     </div>
   </div>
@@ -220,6 +277,7 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     <button class="tab-btn active" data-tab="artists" onclick="showTab('artists',this)">Artists <span class="pill count"><?= count($artists) ?></span></button>
     <button class="tab-btn" data-tab="collectors" onclick="showTab('collectors',this)">Collectors <span class="pill count"><?= count($collectors) ?></span></button>
     <button class="tab-btn" data-tab="pending" onclick="showTab('pending',this)">Pending Artworks <span class="pill count"><?= count($pendingArt) ?></span></button>
+    <button class="tab-btn" data-tab="styles" onclick="showTab('styles',this)">Art Styles <span class="pill count"><?= count($styles) ?></span></button>
   </div>
 
   <!-- ===== TAB: ARTISTS ===== -->
@@ -361,7 +419,90 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
   </div>
   </div>
 
+  <!-- ===== TAB: ART STYLES ===== -->
+  <div class="tab-panel" id="tab-styles">
+    <?php if ($stylesTableMissing): ?>
+      <div class="card"><div class="empty">The <code>art_styles</code> table does not exist yet. Run <code>styles_setup.sql</code> in phpMyAdmin.</div></div>
+    <?php else: ?>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="sec-head"><h2>Add New Style</h2></div>
+      <form method="post" action="admin.php#styles">
+        <?= csrfField() ?>
+        <input type="hidden" name="action" value="style_add">
+        <div class="grid2">
+          <div class="field"><label>Title (English)</label><input type="text" name="title_en" required></div>
+          <div class="field"><label>Title (Arabic)</label><input type="text" name="title_ar" dir="rtl"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Description (English)</label><textarea name="description_en"></textarea></div>
+          <div class="field"><label>Description (Arabic)</label><textarea name="description_ar" dir="rtl"></textarea></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Tag</label>
+            <select name="tag"><?php foreach ($STYLE_TAGS as $t): ?><option value="<?= e($t) ?>"><?= e($t) ?></option><?php endforeach; ?></select>
+          </div>
+          <div class="field"><label>Image URL</label><input type="text" name="image_url" dir="ltr" placeholder="https://…"></div>
+        </div>
+        <button type="submit" class="btn green">Add Style</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><h2>Art Styles <span class="count" style="background:#0066ff;"><?= count($styles) ?></span></h2></div>
+      <?php if (!$styles): ?>
+        <div class="empty">No styles yet. Add your first one above.</div>
+      <?php else: ?>
+        <?php foreach ($styles as $s): ?>
+          <div class="style-item">
+            <div class="style-thumb" <?= $s['image_url'] ? 'style="background-image:url(\'' . e($s['image_url']) . '\');"' : '' ?>><?= $s['image_url'] ? '' : '🎨' ?></div>
+            <div class="style-body">
+              <h3><?= e($s['title_en'] ?: '—') ?></h3>
+              <?php if (!empty($s['title_ar'])): ?><div class="name-ar" dir="rtl"><?= e($s['title_ar']) ?></div><?php endif; ?>
+              <?php if (!empty($s['description_en'])): ?><p class="style-desc"><?= e($s['description_en']) ?></p><?php endif; ?>
+              <span class="tag-pill"><?= e($s['tag']) ?></span>
+
+              <div class="edit-form" id="style-edit-<?= (int)$s['id'] ?>">
+                <form method="post" action="admin.php#styles">
+                  <?= csrfField() ?>
+                  <input type="hidden" name="action" value="style_edit">
+                  <input type="hidden" name="id" value="<?= (int)$s['id'] ?>">
+                  <div class="grid2">
+                    <div class="field"><label>Title (English)</label><input type="text" name="title_en" value="<?= e($s['title_en']) ?>" required></div>
+                    <div class="field"><label>Title (Arabic)</label><input type="text" name="title_ar" dir="rtl" value="<?= e($s['title_ar']) ?>"></div>
+                  </div>
+                  <div class="grid2">
+                    <div class="field"><label>Description (English)</label><textarea name="description_en"><?= e($s['description_en']) ?></textarea></div>
+                    <div class="field"><label>Description (Arabic)</label><textarea name="description_ar" dir="rtl"><?= e($s['description_ar']) ?></textarea></div>
+                  </div>
+                  <div class="grid2">
+                    <div class="field"><label>Tag</label>
+                      <select name="tag"><?php foreach ($STYLE_TAGS as $t): ?><option value="<?= e($t) ?>" <?= $s['tag']===$t?'selected':'' ?>><?= e($t) ?></option><?php endforeach; ?></select>
+                    </div>
+                    <div class="field"><label>Image URL</label><input type="text" name="image_url" dir="ltr" value="<?= e($s['image_url']) ?>"></div>
+                  </div>
+                  <button type="submit" class="btn green sm">Save Changes</button>
+                  <button type="button" class="btn grey sm" onclick="toggleStyleEdit(<?= (int)$s['id'] ?>)">Cancel</button>
+                </form>
+              </div>
+            </div>
+            <div class="acts" style="flex-direction:column;">
+              <button type="button" class="btn grey sm" onclick="toggleStyleEdit(<?= (int)$s['id'] ?>)">Edit</button>
+              <form method="post" action="admin.php#styles" onsubmit="return confirm('Delete this style?');" style="margin:0;">
+                <?= csrfField() ?>
+                <input type="hidden" name="action" value="style_delete">
+                <input type="hidden" name="id" value="<?= (int)$s['id'] ?>">
+                <button type="submit" class="btn red sm">Delete</button>
+              </form>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+    <?php endif; ?>
+  </div>
+
   <script>
+  function toggleStyleEdit(id){ var el=document.getElementById('style-edit-'+id); if(el) el.classList.toggle('open'); }
   function showTab(name, btn){
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -372,7 +513,7 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
   // Restore the tab from the URL hash (e.g. after approving an artwork).
   (function(){
     var h=(location.hash||'').replace('#','');
-    if(h==='pending'||h==='collectors'||h==='artists'){
+    if(h==='pending'||h==='collectors'||h==='artists'||h==='styles'){
       var btn=document.querySelector('.tab-btn[data-tab="'+h+'"]');
       showTab(h,btn);
     }
@@ -387,9 +528,15 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 const ADICT = {
   "Admin Dashboard":"لوحة الإدارة",
   "Manage artists, collectors, and artwork approvals.":"إدارة الفنانين والمقتنين واعتماد الأعمال.",
-  "Manage Styles":"إدارة الأساليب","Log out":"تسجيل الخروج",
+  "Log out":"تسجيل الخروج",
   "Admin Login":"دخول الإدارة","Password":"كلمة المرور","Sign In":"تسجيل الدخول","Incorrect password.":"كلمة مرور غير صحيحة.",
-  "Artists":"الفنانون","Collectors":"المقتنون","Pending Artworks":"الأعمال المعلّقة",
+  "Artists":"الفنانون","Collectors":"المقتنون","Pending Artworks":"الأعمال المعلّقة","Art Styles":"أساليب الرسم",
+  "Add New Style":"إضافة أسلوب جديد","Add Style":"إضافة الأسلوب",
+  "Title (English)":"العنوان (بالإنجليزية)","Title (Arabic)":"العنوان (بالعربية)",
+  "Description (English)":"الوصف (بالإنجليزية)","Description (Arabic)":"الوصف (بالعربية)",
+  "Tag":"التصنيف","Image URL":"رابط الصورة","Save Changes":"حفظ التغييرات","Cancel":"إلغاء",
+  "No styles yet. Add your first one above.":"لا توجد أساليب بعد. أضف أول أسلوب بالأعلى.",
+  "Traditional":"تقليدي","Digital":"رقمي","Mixed Media":"وسائط مختلطة",
   "Artist":"الفنان","Contact":"التواصل","City":"المدينة","Verification":"التحقق",
   "Verified":"موثّق","Unverified":"غير موثّق","Approved":"معتمد","Pending":"معلّق","Status":"الحالة","Actions":"إجراءات",
   "Name":"الاسم","Email":"البريد الإلكتروني","Phone":"الهاتف","Date":"التاريخ",
