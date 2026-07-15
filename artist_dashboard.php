@@ -21,10 +21,12 @@ $ART_TYPES = require __DIR__ . '/art_types.php';
 $profileId = (isset($_GET['id']) && (int) $_GET['id'] > 0) ? (int) $_GET['id'] : $viewerId;
 $isOwner   = $viewerId === $profileId;
 
-/* A collector visiting their own dashboard belongs on the collector dashboard. */
+/* This is the artist dashboard. Any non-artist landing on their OWN dashboard
+   is redirected to the correct one for their role. (Viewing another artist's
+   public profile by ?id is still allowed — private data stays owner-only.) */
 $viewer = currentUser();
-if ($isOwner && $viewer && ($viewer['role'] ?? '') === 'collector') {
-    header('Location: collector_dashboard.php');
+if ($isOwner && $viewer && ($viewer['role'] ?? '') !== 'artist') {
+    header('Location: ' . dashboardUrl($viewer['role'] ?? ''));
     exit;
 }
 

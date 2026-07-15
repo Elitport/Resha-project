@@ -19,9 +19,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             recordLoginAttempt($email, true);
             loginUser((int) $u['id']);            // regenerates session + stores token + last_login_at
             $role = $u['role'];
-            $dest = $role === 'admin' ? 'admin.php'
-                  : ($role === 'artist' ? 'artist_dashboard.php' : 'collector_dashboard.php');
-            header('Location: ' . $dest);
+            header('Location: ' . dashboardUrl($role));
             exit;
         } else {
             recordLoginAttempt($email, false);
