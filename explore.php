@@ -4,14 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Explore Art Styles · Oweili</title>
+<title>The Human Hand · Oweili</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden;}
 .bg-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;}
 .bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 2s ease;z-index:2;}
 .bg-video.on{opacity:0.95;}
-.overlay{position:fixed;inset:0;z-index:3;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0) 50%,rgba(255,255,255,0.35) 100%);}
+.overlay{position:fixed;inset:0;z-index:3;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,0.2) 0%,rgba(255,255,255,0) 50%,rgba(255,255,255,0.4) 100%);}
 /* ── TOP NAV (shared brand navbar) ── */
 .topnav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,0,0,0.05);}
 [dir="rtl"] .nav-center{flex-direction:row-reverse;}
@@ -36,61 +36,39 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 .nav-btn{padding:5px 12px;border-radius:999px;font-size:10px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:all 0.22s;border:1px solid rgba(0,0,0,0.1);background:rgba(0,0,0,0.04);color:rgba(0,0,0,0.8);}
 .nav-btn:hover{background:rgba(0,0,0,0.08);color:#000;}
 .nav-btn.primary{background:rgba(0,100,255,0.1);border-color:rgba(0,100,255,0.2);color:#0066ff;}
-.nav-btn.primary:hover{background:rgba(0,100,255,0.18);}
 .lang-btn{padding:4px 10px;border-radius:999px;font-size:10px;font-weight:600;letter-spacing:0.04em;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:rgba(255,255,255,0.7);color:rgba(0,0,0,0.7);backdrop-filter:blur(8px);transition:all 0.22s;}
 .lang-btn:hover{background:#111111;color:#fff;}
 @media(max-width:1024px){.nav-center{display:none;}}
 
-.page{position:relative;z-index:10;width:100%;max-width:1200px;margin:0 auto;padding:100px 24px 56px;}
-.page-header{margin-bottom:26px;}
-.page-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:999px;margin-bottom:14px;background:rgba(170,0,255,0.06);border:1px solid rgba(170,0,255,0.15);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#aa00ff;}
+.page{position:relative;z-index:10;width:100%;max-width:1040px;margin:0 auto;padding:100px 24px 64px;}
+.page-header{margin-bottom:40px;text-align:center;}
+.page-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:999px;margin-bottom:16px;background:rgba(170,0,255,0.06);border:1px solid rgba(170,0,255,0.15);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#aa00ff;}
 .pulse-dot{width:6px;height:6px;border-radius:50%;background:#aa00ff;box-shadow:0 0 8px rgba(170,0,255,0.5);animation:pulse 2s infinite;}
-.page-header h1{font-size:clamp(28px,4vw,48px);font-weight:300;color:#111;margin-bottom:12px;letter-spacing:-0.02em;}
+.page-header h1{font-size:clamp(30px,5vw,52px);font-weight:300;color:#111;margin-bottom:14px;letter-spacing:-0.02em;}
 .page-header h1 em{font-style:normal;font-weight:700;background:linear-gradient(90deg,#ff0055,#0066ff,#aa00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.page-header p{font-size:15px;color:rgba(0,0,0,0.6);line-height:1.8;max-width:580px;}
-[dir="rtl"] .page-header p{text-align:right;}
+.page-header p{font-size:15px;color:rgba(0,0,0,0.62);line-height:1.9;max-width:660px;margin:0 auto;}
 
-.filter-bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px;}
-[dir="rtl"] .filter-bar{flex-direction:row-reverse;}
-.filter-btn{padding:8px 20px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;border:1px solid rgba(0,0,0,0.1);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);color:rgba(0,0,0,0.7);transition:all 0.22s;}
-.filter-btn:hover{background:rgba(255,255,255,0.9);color:#111;}
-.filter-btn.active{background:#111111;color:#fff;border-color:#111111;}
-
-.styles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;}
-.style-card{background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.07);border-radius:20px;overflow:hidden;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);cursor:pointer;transition:transform 0.3s ease,box-shadow 0.3s ease;display:flex;flex-direction:column;}
-.style-card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.08);}
-.style-img{height:190px;background-size:cover;background-position:center;transition:transform 0.5s ease;}
-.style-card:hover .style-img{transform:scale(1.05);}
-.style-body{padding:18px;display:flex;flex-direction:column;gap:5px;flex:1;}
-[dir="rtl"] .style-body{text-align:right;}
-.style-tag{display:inline-block;align-self:flex-start;padding:3px 10px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:rgba(0,100,255,0.08);color:#0066ff;border:1px solid rgba(0,100,255,0.15);margin-bottom:4px;}
-[dir="rtl"] .style-tag{align-self:flex-end;}
-.style-title{font-size:17px;font-weight:700;color:#111;}
-.style-sub{font-size:12px;color:rgba(0,0,0,0.55);}
-.style-desc{font-size:12px;color:rgba(0,0,0,0.6);line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.style-more{margin-top:12px;font-size:11px;font-weight:700;color:#ff0055;letter-spacing:0.06em;text-transform:uppercase;}
-
-.empty{padding:44px;text-align:center;color:rgba(0,0,0,0.5);background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.07);border-radius:20px;backdrop-filter:blur(16px);}
-
-/* MODAL */
-.modal-bg{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;}
-.modal-bg.open{display:flex;}
-.modal{background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);border:1px solid rgba(0,0,0,0.08);border-radius:20px;max-width:560px;width:100%;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;}
-.modal img{width:100%;height:260px;object-fit:cover;}
-.modal-body{padding:26px;}
-[dir="rtl"] .modal-body{text-align:right;}
-.modal-body .m-tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(170,0,255,0.08);color:#aa00ff;margin-bottom:10px;}
-.modal-body h2{font-size:22px;font-weight:700;color:#111;margin-bottom:2px;}
-.modal-body .m-sub{font-size:14px;color:rgba(0,0,0,0.55);margin-bottom:12px;}
-.modal-body p{font-size:13px;color:rgba(0,0,0,0.7);line-height:1.8;margin-bottom:16px;}
-.m-tools{display:flex;flex-wrap:wrap;gap:8px;}
-[dir="rtl"] .m-tools{flex-direction:row-reverse;}
-.m-tool{padding:5px 12px;border-radius:8px;background:rgba(0,0,0,0.05);border:1px solid rgba(0,0,0,0.07);font-size:11px;color:rgba(0,0,0,0.7);}
-.modal-close{float:right;background:none;border:none;font-size:24px;cursor:pointer;color:rgba(0,0,0,0.4);line-height:1;}
-[dir="rtl"] .modal-close{float:left;}
-
+.cats{display:flex;flex-direction:column;gap:30px;}
+.cat{background:rgba(255,255,255,0.62);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(0,0,0,0.07);border-radius:24px;padding:38px 34px;position:relative;overflow:hidden;}
+.cat::before{content:"";position:absolute;top:0;left:0;width:5px;height:100%;background:var(--accent);}
+[dir="rtl"] .cat::before{left:auto;right:0;}
+.cat-num{font-size:13px;font-weight:700;letter-spacing:0.2em;color:var(--accent);margin-bottom:10px;}
+.cat-tag{display:inline-block;padding:4px 12px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);margin-bottom:12px;}
+.cat-title{font-size:clamp(22px,3vw,30px);font-weight:700;color:#111;margin-bottom:22px;line-height:1.2;}
+.block{margin-bottom:22px;}
+.block:last-child{margin-bottom:0;}
+.block-label{font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.45);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.block-label::before{content:"";width:18px;height:2px;background:var(--accent);border-radius:2px;}
+.block p{font-size:14.5px;line-height:1.95;color:rgba(0,0,0,0.75);}
+.tech-chips{display:flex;flex-wrap:wrap;gap:9px;}
+.chip{padding:7px 15px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(0,0,0,0.045);border:1px solid rgba(0,0,0,0.08);color:#222;}
+.soul{background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:16px;padding:18px 20px;}
+.soul .soul-lead{font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:8px;}
+.soul p{font-size:14px;line-height:1.9;color:rgba(0,0,0,0.78);}
+.closing{margin-top:38px;text-align:center;font-size:14px;line-height:1.95;color:rgba(0,0,0,0.6);max-width:660px;margin-left:auto;margin-right:auto;}
+[dir="rtl"] .block p,[dir="rtl"] .soul p,[dir="rtl"] .cat-title{text-align:right;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-@media(max-width:768px){.topnav{padding:10px 14px;}.nav-logo span{display:none;}.page{padding:90px 16px 32px;}}
+@media(max-width:768px){.topnav{padding:10px 14px;}.nav-logo span{display:none;}.page{padding:90px 16px 40px;}.cat{padding:28px 22px;}}
 </style>
 </head>
 <body>
@@ -101,154 +79,112 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 
 <div class="page" id="pg">
   <div class="page-header">
-    <div class="page-badge"><div class="pulse-dot"></div><span id="t-badge">12 Art Styles</span></div>
-    <h1 id="t-h1">Explore <em>Art Styles</em></h1>
-    <p id="t-desc">Discover the twelve creative disciplines at the heart of Oweili — from timeless traditional media to cutting-edge digital forms.</p>
+    <div class="page-badge"><div class="pulse-dot"></div><span id="t-badge">A Tribute to the Human Hand</span></div>
+    <h1 id="t-h1">The <em>Human Hand</em></h1>
+    <p id="t-desc"></p>
   </div>
 
-  <div class="filter-bar" id="filterBar"></div>
-  <div class="styles-grid" id="stylesGrid"></div>
-  <div class="empty" id="emptyState" style="display:none;"></div>
+  <div class="cats" id="cats"></div>
+  <p class="closing" id="t-closing"></p>
 </div>
 
-<!-- DETAIL MODAL -->
-<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="modal-body">
-      <button class="modal-close" onclick="closeModal()">&times;</button>
-      <img id="m-img" src="" alt="">
-      <span class="m-tag" id="m-tag"></span>
-      <h2 id="m-title"></h2>
-      <div class="m-sub" id="m-sub"></div>
-      <p id="m-desc"></p>
-      <div class="m-tools" id="m-tools"></div>
-    </div>
-  </div>
-</div>
-
-<!-- Single source of truth for the 12 styles -->
-<script src="/art_styles.js"></script>
 <script>
-/* ---- Resolve the styles data exposed by art_styles.js (no duplication) ---- */
-function getStyleData(){
-  const cands = ['artStyles','ART_STYLES','STYLES','styles','artStylesData','art_styles','ARTSTYLES'];
-  for(const k of cands){ if(typeof window[k] !== 'undefined' && window[k]) return window[k]; }
-  return null;
-}
-/* Return the styles array for a given language, whatever shape the file uses. */
-function stylesFor(lang){
-  const d = getStyleData();
-  if(!d) return [];
-  if(Array.isArray(d)) return d;          // flat array
-  if(d[lang]) return d[lang];             // { en:[...], ar:[...] }
-  if(d.en)    return d.en;                // fallback
-  return [];
-}
+const ACCENTS = [
+  {a:'#c8992e', s:'rgba(200,153,46,0.09)', l:'rgba(200,153,46,0.25)'},
+  {a:'#ff0055', s:'rgba(255,0,85,0.07)',   l:'rgba(255,0,85,0.2)'},
+  {a:'#0066ff', s:'rgba(0,102,255,0.07)',  l:'rgba(0,102,255,0.2)'},
+  {a:'#aa00ff', s:'rgba(170,0,255,0.07)',  l:'rgba(170,0,255,0.2)'}
+];
 
-/* Bilingual labels for the 19 artwork types (mirrors art_types.php) plus the
-   legacy style tags, so a card's own category — whatever it uses — gets a label. */
-const TYPELABEL = <?php
-  $ART_TYPES = require __DIR__ . '/art_types.php';
-  $map = ['all' => ['en' => 'All', 'ar' => 'الكل']];
-  foreach ($ART_TYPES as $slug => $lbl) { $map[$slug] = ['en' => $lbl['en'], 'ar' => $lbl['ar']]; }
-  echo json_encode($map, JSON_UNESCAPED_UNICODE);
-?>;
-const TAGLABEL = {
-  en:Object.assign({Traditional:'Traditional', Digital:'Digital', 'Mixed Media':'Mixed Media'}, mapLang(TYPELABEL,'en')),
-  ar:Object.assign({Traditional:'تقليدي', Digital:'رقمي', 'Mixed Media':'وسائط مختلطة'}, mapLang(TYPELABEL,'ar'))
-};
-function mapLang(m, lang){ const o={}; for(const k in m) o[k]=m[k][lang]; return o; }
-/* The category a card filters by: an explicit artwork type if present, else its style tag. */
-function catOf(s){ return s.type || s.tag || ''; }
-const UI = {
-  en:{badge:'12 Art Styles', h1:'Explore <em>Art Styles</em>',
-      desc:'Discover the twelve creative disciplines at the heart of Oweili — from timeless traditional media to cutting-edge digital forms.',
-      more:'View details →', empty:'No styles found.', tools:'Tools & Materials'},
-  ar:{badge:'١٢ أسلوب فني', h1:'استكشف <em>أساليب الرسم</em>',
-      desc:'اكتشف الأساليب الإبداعية الاثني عشر في قلب أويلي — من الوسائط التقليدية الخالدة إلى الأشكال الرقمية الحديثة.',
-      more:'عرض التفاصيل ←', empty:'لم يتم العثور على أساليب.', tools:'الأدوات والخامات'}
-};
-
-let L = 'en';
-let curFilter = 'all';
-
-function tagLabel(tag){ return (TAGLABEL[L] && TAGLABEL[L][tag]) ? TAGLABEL[L][tag] : tag; }
-
-function buildFilters(){
-  const list = stylesFor(L);
-  // Only show a chip for a category that actually has cards, so no dead filters.
-  const cats = ['all', ...Array.from(new Set(list.map(catOf).filter(Boolean)))];
-  const bar = document.getElementById('filterBar');
-  bar.innerHTML = cats.map(t =>
-    '<button class="filter-btn'+(t===curFilter?' active':'')+'" data-tag="'+String(t).replace(/"/g,'')+'" '+
-    'onclick="setFilter(this.dataset.tag,this)">'+tagLabel(t)+'</button>'
-  ).join('');
-}
-
-function esc(s){ const d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
-
-function buildGrid(){
-  const list = stylesFor(L).filter(s => curFilter==='all' || catOf(s)===curFilter);
-  const grid = document.getElementById('stylesGrid');
-  const empty = document.getElementById('emptyState');
-  if(!list.length){
-    grid.innerHTML=''; empty.style.display='block'; empty.textContent = UI[L].empty;
-    return;
+const CONTENT = {
+  en:{
+    badge:'A Tribute to the Human Hand',
+    h1:'The <em>Human Hand</em>',
+    desc:'Oweili celebrates art made by people. Here we honor four great families of human creation, grouped by the physical bond between the artist and the medium, and we show you how to recognize the living touch behind every genuine work.',
+    labels:{story:'The Human Story', tech:'Key Techniques', soul:'The Soul Indicator'},
+    soulLead:'What a collector looks for to verify a 100% human hand:',
+    closing:'Every category here is a record of human labor, patience, and nerve. When you collect on Oweili, you are not buying an image. You are keeping the evidence of a person who stood before a surface and dared to leave a mark.',
+    cats:[
+      {tag:'Classical & Realism', title:'The Masters of Light & Form',
+       story:'Before the camera, humanity\'s deepest wish was to stop time and hold the truth of a face, a fold of cloth, a shaft of afternoon light. The classical masters spent years grinding pigments, stretching linen, and training the eye to read value before colour. The struggle was patience itself. A single portrait could take months of thin, drying layers, and each layer was a quiet act of devotion to the visible world.',
+       tech:['Chiaroscuro','Glazing','Sfumato','Underpainting','Verdaccio'],
+       soul:'Look closely at the transitions of light. A human master leaves the faint memory of the hand: the softened edge where a thumb blurred a shadow, the barely uneven film of a glaze, a highlight placed a fraction away from perfect. These gentle imperfections are the fingerprint of a living eye.'},
+      {tag:'Impressionism & Expressionism', title:'The Emotion of the Stroke',
+       story:'When artists walked out of the studio and into the changing daylight, they surrendered control. They could no longer polish a canvas for months, because the light itself was fleeting. So they let the hand move fast and honest, loading the brush and striking the canvas while the feeling was still hot. The physical struggle became speed and nerve: capturing a moment before it dissolved, trusting the wrist and the heartbeat.',
+       tech:['Alla prima','Impasto','Broken colour','Wet-on-wet','Gestural brushwork'],
+       soul:'Feel the pressure of the stroke. Real human paint has weight and direction: thick ridges of impasto that catch the light, brush hairs dragged into the pigment, colours left deliberately unblended so the eye mixes them. You can almost read the speed of the arm that made them.'},
+      {tag:'Cubism & Abstraction', title:'The Geometry of Thought',
+       story:'In a century that shattered old certainties, artists stopped copying the world and began to take it apart. They asked what a form truly is when seen from every side at once, and whether pure colour and gesture could carry meaning with no object at all. The struggle turned inward and intellectual: hours of deconstruction, of balancing tension against void, of deciding by instinct alone when a canvas was finished.',
+       tech:['Deconstruction','Action painting','Colour field','Collage','Faceting'],
+       soul:'Search for the trace of the decision. Even in the most abstract work, the human hand records hesitation and courage: a drip that followed gravity, a rhythm of marks that quickens then slows, an edge scraped back and reworked. No formula could invent that living inconsistency.'},
+      {tag:'Primitive & Surrealism', title:'The Raw & The Surreal',
+       story:'Some artists turned away from the academies to reclaim the first honest impulse to make a mark, the same impulse that once moved a hand across a cave wall. Others dove into dream and the subconscious, painting what reason cannot see. The struggle here was a courage of a different kind: to be direct, strange, and unguarded, to let the untrained gesture and the impossible image stand as truth.',
+       tech:['Direct mark-making','Frottage','Trompe l\'oeil','Grattage','Automatism'],
+       soul:'Notice the honesty of the surface. Human rawness shows in uneven textures rubbed up from the grain of wood or stone, in the slightly wrong proportion that somehow feels alive, in a rubbing (frottage) that no printer could ever fake. Even a flawless trompe l\'oeil hides tiny tremors of the hand that prove a person, not a machine, was here.'}
+    ]
+  },
+  ar:{
+    badge:'تحية لليد البشرية',
+    h1:'<em>اللمسة البشرية</em>',
+    desc:'يحتفي أويلي بالفن الذي يصنعه البشر. هنا نكرّم أربع عائلات كبرى من الإبداع الإنساني، مصنّفة وفق العلاقة الجسدية بين الفنان والخامة، ونوضّح لك كيف تتعرّف على اللمسة الحيّة خلف كل عمل أصيل.',
+    labels:{story:'الحكاية الإنسانية', tech:'التقنيات الأساسية', soul:'مؤشّر الروح'},
+    soulLead:'ما الذي يبحث عنه المقتني للتأكد من أن العمل بشري 100%:',
+    closing:'كل فئة هنا سجلٌّ للجهد الإنساني والصبر والجرأة. حين تقتني عبر أويلي فأنت لا تشتري صورة، بل تحتفظ بدليلٍ على إنسانٍ وقف أمام السطح وتجرّأ على ترك أثر.',
+    cats:[
+      {tag:'الكلاسيكية والواقعية', title:'أساتذة الضوء والشكل',
+       story:'قبل ظهور الكاميرا، كانت أعمق أمنية للإنسان أن يوقف الزمن ويمسك حقيقة وجهٍ، وطيّة قماش، وخيط ضوءٍ في العصر. أمضى الأساتذة الكلاسيكيون سنوات في طحن الأصباغ، وشدّ الكتان، وتدريب العين على قراءة القيمة الضوئية قبل اللون. كان الصراع هو الصبر نفسه. قد يستغرق البورتريه الواحد شهوراً من الطبقات الرقيقة المتتابعة، وكل طبقة فعل تفانٍ هادئ تجاه العالم المرئي.',
+       tech:['كياروسكورو (التباين الضوئي)','التزجيج','سفوماتو (التدرّج الضبابي)','الطبقة التحتية','فرداتشيو'],
+       soul:'تأمّل انتقالات الضوء عن قرب. يترك الأستاذ البشري ذكرى خفيفة لليد: الحافة الناعمة حيث موّه الإبهام الظل، وغشاء التزجيج غير المتساوي قليلاً، وبريقٌ وُضع على بُعد شعرةٍ من الكمال. هذه العيوب اللطيفة هي بصمة عينٍ حيّة.'},
+      {tag:'الانطباعية والتعبيرية', title:'انفعال اللمسة',
+       story:'حين خرج الفنانون من المرسم إلى ضوء النهار المتغيّر، تخلّوا عن السيطرة. لم يعد بوسعهم صقل اللوحة لشهور، لأن الضوء ذاته عابر. فتركوا اليد تتحرك بسرعةٍ وصدق، يحمّلون الفرشاة ويضربون القماش والشعور ما زال حارّاً. صار الصراع سرعةً وجرأة: التقاط اللحظة قبل أن تتلاشى، والثقة بالمعصم ونبض القلب.',
+       tech:['ألا بريما (الدفعة الواحدة)','إمباستو (الطلاء السميك)','اللون المكسور','الرطب على الرطب','ضربات إيمائية'],
+       soul:'تحسّس ضغط اللمسة. الطلاء البشري الحقيقي له ثِقلٌ واتجاه: نتوءات سميكة من الإمباستو تلتقط الضوء، وشعيرات فرشاة انجرّت داخل الصبغة، وألوان تُركت بلا مزجٍ ليمزجها البصر. تكاد تقرأ سرعة الذراع التي صنعتها.'},
+      {tag:'التكعيبية والتجريد', title:'هندسة الفكرة',
+       story:'في قرنٍ حطّم اليقين القديم، توقّف الفنانون عن نسخ العالم وبدأوا بتفكيكه. سألوا: ما هو الشكل حقاً حين يُرى من كل جانب دفعةً واحدة، وهل يستطيع اللون الخالص والإيماءة أن يحملا معنى دون أي موضوع؟ تحوّل الصراع إلى الداخل وإلى الفكر: ساعات من التفكيك، وموازنة التوتر مقابل الفراغ، والحسم بالغريزة وحدها متى اكتمل العمل.',
+       tech:['التفكيك','الرسم الحركي','حقل اللون','الكولاج','التقطيع السطحي'],
+       soul:'ابحث عن أثر القرار. حتى في أشد الأعمال تجريداً، تسجّل اليد البشرية التردّد والشجاعة: قطرة تبعت الجاذبية، وإيقاع علاماتٍ يتسارع ثم يتباطأ، وحافة كُشطت وأُعيد تشكيلها. لا صيغة يمكنها اختراع هذا التفاوت الحيّ.'},
+      {tag:'البدائية والسريالية', title:'الخام والسريالي',
+       story:'ابتعد بعض الفنانين عن الأكاديميات ليستعيدوا الدافع الأول الصادق لترك علامة، الدافع نفسه الذي حرّك يوماً يداً على جدار كهف. وغاص آخرون في الحلم واللاوعي، يرسمون ما لا يراه العقل. كان الصراع هنا شجاعةً من نوعٍ آخر: أن تكون مباشراً وغريباً ومكشوفاً، وأن تدع الإيماءة غير المدرّبة والصورة المستحيلة تقفان بوصفهما حقيقة.',
+       tech:['العلامة المباشرة','فروتاج (الفرك)','خداع البصر','غراتاج (الحفر)','الكتابة التلقائية'],
+       soul:'لاحظ صدق السطح. تظهر الخشونة البشرية في القوام غير المتساوي المفروك من حبيبات الخشب أو الحجر، وفي النسبة المائلة قليلاً التي تنبض بالحياة رغم ذلك، وفي الفرك (فروتاج) الذي لا تستطيع أي طابعة تزييفه. حتى خداع البصر المتقن يُخفي رعشاتٍ دقيقة لليد تثبت أن إنساناً، لا آلة، كان هنا.'}
+    ]
   }
-  empty.style.display='none';
-  grid.innerHTML = list.map((s, i) =>
-    '<div class="style-card" onclick="openModal('+i+')">'+
-      '<div class="style-img" style="background-image:url(\''+esc(s.img)+'\')"></div>'+
-      '<div class="style-body">'+
-        (catOf(s)?'<span class="style-tag">'+esc(tagLabel(catOf(s)))+'</span>':'')+
-        '<div class="style-title">'+esc(s.title)+'</div>'+
-        (s.sub?'<div class="style-sub">'+esc(s.sub)+'</div>':'')+
-        (s.desc?'<div class="style-desc">'+esc(s.desc)+'</div>':'')+
-        '<div class="style-more">'+UI[L].more+'</div>'+
-      '</div>'+
-    '</div>'
-  ).join('');
-  // stash current filtered list for the modal
-  window.__filtered = list;
-}
+};
 
-function setFilter(tag, btn){
-  curFilter = tag;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  buildGrid();
+function esc(s){const d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML;}
+function buildCats(l){
+  const c = CONTENT[l];
+  document.getElementById('cats').innerHTML = c.cats.map((cat, i) => {
+    const ac = ACCENTS[i % ACCENTS.length];
+    const chips = cat.tech.map(t => '<span class="chip">'+esc(t)+'</span>').join('');
+    const num = String(i+1).padStart(2,'0');
+    return '<section class="cat" style="--accent:'+ac.a+';--accent-soft:'+ac.s+';--accent-line:'+ac.l+';">'
+      + '<div class="cat-num">'+num+'</div>'
+      + '<span class="cat-tag">'+esc(cat.tag)+'</span>'
+      + '<h2 class="cat-title">'+esc(cat.title)+'</h2>'
+      + '<div class="block"><div class="block-label">'+esc(c.labels.story)+'</div><p>'+esc(cat.story)+'</p></div>'
+      + '<div class="block"><div class="block-label">'+esc(c.labels.tech)+'</div><div class="tech-chips">'+chips+'</div></div>'
+      + '<div class="block"><div class="block-label">'+esc(c.labels.soul)+'</div><div class="soul"><div class="soul-lead">'+esc(c.soulLead)+'</div><p>'+esc(cat.soul)+'</p></div></div>'
+      + '</section>';
+  }).join('');
 }
-
-function openModal(i){
-  const s = (window.__filtered||[])[i];
-  if(!s) return;
-  document.getElementById('m-img').src = s.img || '';
-  document.getElementById('m-tag').textContent = catOf(s) ? tagLabel(catOf(s)) : '';
-  document.getElementById('m-title').textContent = s.title || '';
-  document.getElementById('m-sub').textContent = s.sub || '';
-  document.getElementById('m-desc').textContent = s.desc || '';
-  const tools = Array.isArray(s.tools) ? s.tools : [];
-  document.getElementById('m-tools').innerHTML = tools.map(t=>'<span class="m-tool">'+esc(t)+'</span>').join('');
-  document.getElementById('modalBg').classList.add('open');
-}
-function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 
 /* ---- Bilingual nav + page labels ---- */
 const NAV={
   en:{lb:'العربية',studio:'The Studio',community:'Community',marketplace:'Marketplace',explore:'Explore Art Styles',support:'Support',
     s1:'Watercolor Workshop',s2:'Oil Painting Studio',s3:'Digital Art Lab',s4:'Charcoal & Ink',
-    c1:'Artist Chat Room',c2:'Meet Fellow Artists',c3:'Share Your Work',c4:'Learn Together',
+    c2:'Meet Fellow Artists',c3:'Share Your Work',c4:'Learn Together',
     sp1:'Contact Us',sp2:'How It Works',sp3:'Terms of Use',login:'Sign In',reg:'Join Free'},
   ar:{lb:'English',studio:'الاستوديو',community:'المجتمع',marketplace:'السوق',explore:'استكشف أساليب الرسم',support:'الدعم',
     s1:'ورشة الألوان المائية',s2:'استوديو الرسم الزيتي',s3:'مختبر الفن الرقمي',s4:'الفحم والحبر',
-    c1:'غرفة محادثة الفنانين',c2:'تعرّف على فنانين',c3:'شارك أعمالك',c4:'تعلّم معاً',
+    c2:'تعرّف على فنانين',c3:'شارك أعمالك',c4:'تعلّم معاً',
     sp1:'تواصل معنا',sp2:'كيف يعمل الموقع',sp3:'شروط الاستخدام',login:'تسجيل الدخول',reg:'انضم مجاناً'}
 };
+let L='en';
 function setTxt(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 function apply(l){
   L=l;
-  const n=NAV[l];
+  const n=NAV[l], c=CONTENT[l];
   document.getElementById('html').lang=l;
   document.getElementById('html').setAttribute('dir', l==='ar'?'rtl':'ltr');
   document.documentElement.setAttribute('dir', l==='ar'?'rtl':'ltr');
@@ -257,14 +193,14 @@ function apply(l){
   setTxt('nav-studio-label',n.studio);setTxt('nav-community-label',n.community);
   setTxt('nav-marketplace-label',n.marketplace);setTxt('nav-explore-label',n.explore);setTxt('nav-support-label',n.support);
   setTxt('dd-s1',n.s1);setTxt('dd-s2',n.s2);setTxt('dd-s3',n.s3);setTxt('dd-s4',n.s4);
-  setTxt('dd-c1',n.c1);setTxt('dd-c2',n.c2);setTxt('dd-c3',n.c3);setTxt('dd-c4',n.c4);
+  setTxt('dd-c2',n.c2);setTxt('dd-c3',n.c3);setTxt('dd-c4',n.c4);
   setTxt('dd-sp1',n.sp1);setTxt('dd-sp2',n.sp2);setTxt('dd-sp3',n.sp3);
   setTxt('n-login-t',n.login);setTxt('n-reg-t',n.reg);
-  document.getElementById('t-badge').textContent=UI[l].badge;
-  document.getElementById('t-h1').innerHTML=UI[l].h1;
-  document.getElementById('t-desc').textContent=UI[l].desc;
-  buildFilters();
-  buildGrid();
+  document.getElementById('t-badge').textContent=c.badge;
+  document.getElementById('t-h1').innerHTML=c.h1;
+  document.getElementById('t-desc').textContent=c.desc;
+  document.getElementById('t-closing').textContent=c.closing;
+  buildCats(l);
 }
 function tgl(){L=L==='en'?'ar':'en';apply(L);try{localStorage.setItem('lang',L);}catch(e){}}
 try{var _s=localStorage.getItem('lang');if(_s==='ar'||_s==='en')L=_s;}catch(e){}
