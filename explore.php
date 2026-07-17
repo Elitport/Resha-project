@@ -112,7 +112,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
     <div class="soon-emoji">✨</div>
     <h3 id="t-soon-title"></h3>
     <p id="t-soon-body"></p>
-    <a class="soon-cta" id="t-soon-cta" href="support.php"></a>
+    <a class="soon-cta" id="t-soon-cta" href="mailto:contact@oweili.com?subject=Art%20Style%20Suggestion"></a>
   </div>
 
   <p class="closing" id="t-closing"></p>
