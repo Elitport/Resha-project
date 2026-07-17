@@ -94,6 +94,16 @@ if ($isAdmin && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST
         exit;
     }
 
+    /* --- Change a user's role --- */
+    if ($action === 'set_role' && $uid > 0) {
+        $newRole = $_POST['role'] ?? '';
+        if (in_array($newRole, ['collector','artist','sub_admin','admin'], true)) {
+            getDB()->prepare('UPDATE users SET role = :r WHERE id = :id')->execute([':r'=>$newRole, ':id'=>$uid]);
+        }
+        header('Location: admin.php?ok=1');
+        exit;
+    }
+
     $map = [
         'approve'   => 'UPDATE users SET is_approved = 1 WHERE id = :id',
         'unapprove' => 'UPDATE users SET is_approved = 0 WHERE id = :id',
@@ -121,13 +131,31 @@ if ($isAdmin) {
     )->fetchAll();
 }
 
+/* Older schemas may lack last_active — detect once so queries don't fatal. */
+$hasLastActive = false;
+if ($isAdmin) {
+    try {
+        getDB()->query('SELECT last_active FROM users LIMIT 1');
+        $hasLastActive = true;
+    } catch (\Throwable $e) { $hasLastActive = false; }
+}
+$activeSel = $hasLastActive ? 'last_active' : 'NULL AS last_active';
+
+/* ---- Online now (active within 15 minutes) ---- */
+$onlineCount = 0;
+if ($isAdmin && $hasLastActive) {
+    $onlineCount = (int) getDB()->query(
+        "SELECT COUNT(*) FROM users WHERE last_active >= (NOW() - INTERVAL 15 MINUTE)"
+    )->fetchColumn();
+}
+
 /* ---- Load artists (only when authed) ---- */
 $artists = [];
 if ($isAdmin) {
     $artists = getDB()->query(
         "SELECT id, email, phone, full_name_en, full_name_ar, artist_name, city,
                 is_verified, is_approved, profile_picture, art_video,
-                COALESCE(is_banned,0) AS is_banned, created_at
+                COALESCE(is_banned,0) AS is_banned, created_at, last_login_at, role, $activeSel
          FROM users
          WHERE role = 'artist'
          ORDER BY is_approved ASC, created_at DESC"
@@ -139,11 +167,29 @@ $collectors = [];
 if ($isAdmin) {
     $collectors = getDB()->query(
         "SELECT id, email, phone, full_name_en, full_name_ar, city,
-                is_verified, COALESCE(is_banned,0) AS is_banned, created_at
+                is_verified, COALESCE(is_banned,0) AS is_banned, created_at, last_login_at, role, $activeSel
          FROM users
          WHERE role = 'collector'
          ORDER BY created_at DESC"
     )->fetchAll();
+}
+
+/* ---- Portfolio images per artist (id => [urls]) ---- */
+$portfolio = [];
+if ($isAdmin) {
+    try {
+        foreach (getDB()->query('SELECT artist_id, image_url FROM portfolio_images ORDER BY sort_order ASC') as $r) {
+            $portfolio[(int)$r['artist_id']][] = $r['image_url'];
+        }
+    } catch (\Throwable $e) { /* table may not exist yet */ }
+}
+
+/* Is a user online (active within 15 min)? */
+function isOnline(?string $lastActive): bool {
+    return $lastActive !== null && strtotime($lastActive) >= (time() - 15 * 60);
+}
+function fmtDateTime(?string $v): string {
+    return $v ? date('Y-m-d H:i', strtotime($v)) : '—';
 }
 
 /* ---- Load art styles (only when authed) ---- */
@@ -242,6 +288,15 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 .edit-form{display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.06);}
 .edit-form.open{display:block;}
 [dir="rtl"] .style-item{flex-direction:row-reverse;}
+.online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ccc;margin-inline-end:5px;vertical-align:middle;}
+.online-dot.on{background:#00c853;box-shadow:0 0 6px rgba(0,200,83,0.6);}
+.online-stat{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#00a050;background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.25);padding:6px 14px;border-radius:999px;}
+.port-thumbs{display:flex;gap:4px;flex-wrap:wrap;max-width:150px;}
+.port-thumbs a{display:block;}
+.port-thumbs img{width:34px;height:34px;border-radius:6px;object-fit:cover;border:1px solid rgba(0,0,0,0.1);}
+.role-select{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.15);font-size:11px;font-family:inherit;background:#fff;}
+.role-form{display:flex;gap:4px;align-items:center;margin-top:4px;}
+.mini{font-size:10px;color:rgba(0,0,0,0.4);}
 @media(max-width:640px){.grid2{grid-template-columns:1fr;}.style-item{flex-direction:column;}}
 </style>
 </head>
@@ -265,6 +320,7 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     <div>
       <h1>Admin Dashboard</h1>
       <div class="sub">Manage artists, collectors, and artwork approvals.</div>
+      <div class="online-stat"><span class="online-dot on"></span><?= $onlineCount ?>&nbsp;<span>Online Now</span></div>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
       <button class="lang-btn" id="lb" onclick="tglLang()">العربية</button>
@@ -289,13 +345,13 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
       <div style="overflow-x:auto;">
       <table>
         <thead>
-          <tr><th>Artist</th><th>Contact</th><th>City</th><th>Verification</th><th>Verified</th><th>Approved</th><th>Status</th><th>Actions</th></tr>
+          <tr><th>Artist</th><th>Contact</th><th>City</th><th>Verification</th><th>Portfolio</th><th>Dates</th><th>Verified</th><th>Approved</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
-        <?php foreach ($artists as $a): ?>
+        <?php foreach ($artists as $a): $on = isOnline($a['last_active'] ?? null); ?>
           <tr>
             <td>
-              <strong><?= e($a['full_name_en'] ?: '—') ?></strong>
+              <strong><span class="online-dot <?= $on ? 'on' : '' ?>" title="<?= $on ? 'Online' : 'Offline' ?>"></span><?= e($a['full_name_en'] ?: '—') ?></strong>
               <?php if (!empty($a['artist_name'])): ?><div class="name-ar"><?= e($a['artist_name']) ?></div><?php endif; ?>
               <?php if (!empty($a['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($a['full_name_ar']) ?></div><?php endif; ?>
             </td>
@@ -319,6 +375,18 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
                 <?php endif; ?>
               </div>
             </td>
+            <td>
+              <?php $pics = $portfolio[(int)$a['id']] ?? []; ?>
+              <?php if ($pics): ?>
+                <div class="port-thumbs">
+                  <?php foreach ($pics as $pu): ?><a href="<?= e($pu) ?>" target="_blank"><img src="<?= e($pu) ?>" alt=""></a><?php endforeach; ?>
+                </div>
+              <?php else: ?><span class="no-media">None</span><?php endif; ?>
+            </td>
+            <td>
+              <div class="mini">Reg: <?= e($a['created_at'] ? date('Y-m-d', strtotime($a['created_at'])) : '—') ?></div>
+              <div class="mini">Login: <?= e(fmtDateTime($a['last_login_at'] ?? null)) ?></div>
+            </td>
             <td><span class="pill <?= $a['is_verified'] ? 'on' : 'off' ?>"><?= $a['is_verified'] ? 'Yes' : 'No' ?></span></td>
             <td><span class="pill <?= $a['is_approved'] ? 'on' : 'off' ?>"><?= $a['is_approved'] ? 'Yes' : 'No' ?></span></td>
             <td><?php if ((int)$a['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php else: ?><span class="pill on">Active</span><?php endif; ?></td>
@@ -335,6 +403,12 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
                   <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm red" name="action" value="ban">Ban</button></form>
                 <?php endif; ?>
               </div>
+              <form method="post" action="admin.php" class="role-form"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>">
+                <select class="role-select" name="role">
+                  <?php foreach (['collector','artist','sub_admin','admin'] as $r): ?><option value="<?= $r ?>" <?= ($a['role']??'')===$r?'selected':'' ?>><?= ucfirst(str_replace('_',' ',$r)) ?></option><?php endforeach; ?>
+                </select>
+                <button class="btn sm grey" name="action" value="set_role">Set</button>
+              </form>
             </td>
           </tr>
         <?php endforeach; ?>
@@ -354,18 +428,22 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
       <div style="overflow-x:auto;">
       <table>
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Phone</th><th>City</th><th>Verified</th><th>Status</th><th>Actions</th></tr>
+          <tr><th>Name</th><th>Email</th><th>Phone</th><th>City</th><th>Dates</th><th>Verified</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
-        <?php foreach ($collectors as $c): ?>
+        <?php foreach ($collectors as $c): $on = isOnline($c['last_active'] ?? null); ?>
           <tr>
             <td>
-              <strong><?= e($c['full_name_en'] ?: '—') ?></strong>
+              <strong><span class="online-dot <?= $on ? 'on' : '' ?>" title="<?= $on ? 'Online' : 'Offline' ?>"></span><?= e($c['full_name_en'] ?: '—') ?></strong>
               <?php if (!empty($c['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($c['full_name_ar']) ?></div><?php endif; ?>
             </td>
             <td><?= e($c['email']) ?></td>
             <td dir="ltr"><?= e($c['phone'] ?: '—') ?></td>
             <td><?= e($c['city'] ?: '—') ?></td>
+            <td>
+              <div class="mini">Reg: <?= e($c['created_at'] ? date('Y-m-d', strtotime($c['created_at'])) : '—') ?></div>
+              <div class="mini">Login: <?= e(fmtDateTime($c['last_login_at'] ?? null)) ?></div>
+            </td>
             <td><span class="pill <?= $c['is_verified'] ? 'on' : 'off' ?>"><?= $c['is_verified'] ? 'Verified' : 'Unverified' ?></span></td>
             <td><?php if ((int)$c['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php else: ?><span class="pill on">Active</span><?php endif; ?></td>
             <td>
@@ -376,6 +454,12 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
                   <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$c['id'] ?>"><button class="btn sm red" name="action" value="ban">Ban</button></form>
                 <?php endif; ?>
               </div>
+              <form method="post" action="admin.php" class="role-form"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$c['id'] ?>">
+                <select class="role-select" name="role">
+                  <?php foreach (['collector','artist','sub_admin','admin'] as $r): ?><option value="<?= $r ?>" <?= ($c['role']??'')===$r?'selected':'' ?>><?= ucfirst(str_replace('_',' ',$r)) ?></option><?php endforeach; ?>
+                </select>
+                <button class="btn sm grey" name="action" value="set_role">Set</button>
+              </form>
             </td>
           </tr>
         <?php endforeach; ?>
@@ -531,6 +615,8 @@ const ADICT = {
   "Log out":"تسجيل الخروج",
   "Admin Login":"دخول الإدارة","Password":"كلمة المرور","Sign In":"تسجيل الدخول","Incorrect password.":"كلمة مرور غير صحيحة.",
   "Artists":"الفنانون","Collectors":"المقتنون","Pending Artworks":"الأعمال المعلّقة","Art Styles":"أساليب الرسم",
+  "Online Now":"متصل الآن","Portfolio":"معرض الأعمال","Dates":"التواريخ","None":"لا يوجد","Set":"تعيين",
+  "Collector":"مقتني","Sub admin":"مشرف فرعي","Admin":"مدير",
   "Add New Style":"إضافة أسلوب جديد","Add Style":"إضافة الأسلوب",
   "Title (English)":"العنوان (بالإنجليزية)","Title (Arabic)":"العنوان (بالعربية)",
   "Description (English)":"الوصف (بالإنجليزية)","Description (Arabic)":"الوصف (بالعربية)",
