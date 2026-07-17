@@ -137,7 +137,7 @@ if ($artist) {
     }
 }
 
-$memberSince = $artist && !empty($artist['created_at']) ? date('Y', strtotime($artist['created_at'])) : '—';
+$memberSince = $artist && !empty($artist['created_at']) ? date('Y', strtotime($artist['created_at'])) : 'N/A';
 $totalCount  = count($artworks);
 
 /* ---- Financial summary (owner's own figures) ---- */
@@ -158,7 +158,7 @@ foreach ($artworks as $a) {
             'title_en' => $a['title_en'],
             'title_ar' => $a['title_ar'],
             'price'    => $price,
-            'date'     => $when ? date('Y-m-d', strtotime($when)) : '—',
+            'date'     => $when ? date('Y-m-d', strtotime($when)) : 'N/A',
         ];
     }
 }
@@ -379,7 +379,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
         <tbody>
         <?php foreach ($soldList as $s): ?>
           <tr>
-            <td><?= e($s['title_en'] ?: ($s['title_ar'] ?: '—')) ?><?php if (!empty($s['title_ar'])): ?><div class="art-title-ar" dir="rtl"><?= e($s['title_ar']) ?></div><?php endif; ?></td>
+            <td><?= e($s['title_en'] ?: ($s['title_ar'] ?: 'N/A')) ?><?php if (!empty($s['title_ar'])): ?><div class="art-title-ar" dir="rtl"><?= e($s['title_ar']) ?></div><?php endif; ?></td>
             <td><?= e($s['date']) ?></td>
             <td class="price"><?= number_format($s['price']) ?> <span class="sar">SAR</span></td>
           </tr>

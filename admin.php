@@ -189,7 +189,7 @@ function isOnline(?string $lastActive): bool {
     return $lastActive !== null && strtotime($lastActive) >= (time() - 15 * 60);
 }
 function fmtDateTime(?string $v): string {
-    return $v ? date('Y-m-d H:i', strtotime($v)) : '—';
+    return $v ? date('Y-m-d H:i', strtotime($v)) : 'N/A';
 }
 
 /* ---- Load art styles (only when authed) ---- */
@@ -297,7 +297,21 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
 .role-select{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.15);font-size:11px;font-family:inherit;background:#fff;}
 .role-form{display:flex;gap:4px;align-items:center;margin-top:4px;}
 .mini{font-size:10px;color:rgba(0,0,0,0.4);}
-@media(max-width:640px){.grid2{grid-template-columns:1fr;}.style-item{flex-direction:column;}}
+/* Artist review cards */
+.acards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;}
+.acard{border:1px solid rgba(0,0,0,0.08);border-radius:16px;padding:18px;background:#fff;display:flex;flex-direction:column;gap:12px;}
+.acard-head{display:flex;gap:12px;align-items:center;}
+.acard-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;background-size:cover;background-position:center;background:linear-gradient(135deg,#ff0055,#0066ff,#aa00ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;flex-shrink:0;}
+.acard-id{flex:1;min-width:0;}
+.acard-id .nm{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.acard-id .an{font-size:12px;color:rgba(0,0,0,0.5);}
+.acard-badges{display:flex;gap:5px;flex-wrap:wrap;}
+.acard-info{font-size:12px;color:rgba(0,0,0,0.6);line-height:1.7;}
+.acard-info b{color:#111;font-weight:600;}
+.acard-media{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;}
+.acard-media video{width:100%;border-radius:10px;background:#000;}
+.acard-foot{display:flex;flex-direction:column;gap:8px;border-top:1px solid rgba(0,0,0,0.06);padding-top:12px;margin-top:auto;}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}.style-item{flex-direction:column;}.acards{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -342,78 +356,68 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     <?php if (!$artists): ?>
       <div class="empty">No artist accounts yet.</div>
     <?php else: ?>
-      <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr><th>Artist</th><th>Contact</th><th>City</th><th>Verification</th><th>Portfolio</th><th>Dates</th><th>Verified</th><th>Approved</th><th>Status</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-        <?php foreach ($artists as $a): $on = isOnline($a['last_active'] ?? null); ?>
-          <tr>
-            <td>
-              <strong><span class="online-dot <?= $on ? 'on' : '' ?>" title="<?= $on ? 'Online' : 'Offline' ?>"></span><?= e($a['full_name_en'] ?: '—') ?></strong>
-              <?php if (!empty($a['artist_name'])): ?><div class="name-ar"><?= e($a['artist_name']) ?></div><?php endif; ?>
-              <?php if (!empty($a['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($a['full_name_ar']) ?></div><?php endif; ?>
-            </td>
-            <td>
-              <div><?= e($a['email']) ?></div>
-              <div class="name-ar" dir="ltr"><?= e($a['phone'] ?: '—') ?></div>
-            </td>
-            <td><?= e($a['city'] ?: '—') ?></td>
-            <td>
-              <div class="verify-cell">
-                <?php if (!empty($a['profile_picture'])): ?>
-                  <a href="<?= e($a['profile_picture']) ?>" target="_blank" title="Open full photo"><img class="verify-photo" src="<?= e($a['profile_picture']) ?>" alt="photo"></a>
-                <?php else: ?>
-                  <span class="no-media">No photo</span>
-                <?php endif; ?>
-                <?php if (!empty($a['art_video'])): ?>
-                  <video class="verify-video" src="<?= e($a['art_video']) ?>" controls preload="metadata"></video>
-                  <a class="video-link" href="<?= e($a['art_video']) ?>" target="_blank">Open video ↗</a>
-                <?php else: ?>
-                  <span class="no-media">No video</span>
-                <?php endif; ?>
+      <div class="acards">
+      <?php foreach ($artists as $a): $on = isOnline($a['last_active'] ?? null); $pics = $portfolio[(int)$a['id']] ?? []; ?>
+        <div class="acard">
+          <div class="acard-head">
+            <?php if (!empty($a['profile_picture'])): ?>
+              <a href="<?= e($a['profile_picture']) ?>" target="_blank"><span class="acard-photo" style="background-image:url('<?= e($a['profile_picture']) ?>');"></span></a>
+            <?php else: ?>
+              <span class="acard-photo"><?= e(mb_strtoupper(mb_substr($a['full_name_en'] ?: 'A',0,1))) ?></span>
+            <?php endif; ?>
+            <div class="acard-id">
+              <div class="nm"><span class="online-dot <?= $on ? 'on' : '' ?>" title="<?= $on ? 'Online' : 'Offline' ?>"></span><?= e($a['full_name_en'] ?: 'N/A') ?></div>
+              <?php if (!empty($a['artist_name'])): ?><div class="an"><?= e($a['artist_name']) ?></div><?php endif; ?>
+              <?php if (!empty($a['full_name_ar'])): ?><div class="an" dir="rtl"><?= e($a['full_name_ar']) ?></div><?php endif; ?>
+            </div>
+          </div>
+
+          <div class="acard-badges">
+            <span class="pill <?= $a['is_verified'] ? 'on' : 'off' ?>"><?= $a['is_verified'] ? 'Verified' : 'Unverified' ?></span>
+            <span class="pill <?= $a['is_approved'] ? 'on' : 'off' ?>"><?= $a['is_approved'] ? 'Approved' : 'Pending' ?></span>
+            <?php if ((int)$a['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php else: ?><span class="pill on">Active</span><?php endif; ?>
+          </div>
+
+          <div class="acard-info">
+            <div>✉️ <?= e($a['email']) ?></div>
+            <div dir="ltr">📞 <?= e($a['phone'] ?: 'N/A') ?></div>
+            <div>📍 <?= e($a['city'] ?: 'N/A') ?></div>
+            <div><b>Reg:</b> <?= e($a['created_at'] ? date('Y-m-d', strtotime($a['created_at'])) : 'N/A') ?> · <b>Login:</b> <?= e(fmtDateTime($a['last_login_at'] ?? null)) ?></div>
+          </div>
+
+          <div class="acard-media">
+            <?php if ($pics): ?>
+              <div class="port-thumbs" style="max-width:none;">
+                <?php foreach ($pics as $pu): ?><a href="<?= e($pu) ?>" target="_blank"><img src="<?= e($pu) ?>" alt=""></a><?php endforeach; ?>
               </div>
-            </td>
-            <td>
-              <?php $pics = $portfolio[(int)$a['id']] ?? []; ?>
-              <?php if ($pics): ?>
-                <div class="port-thumbs">
-                  <?php foreach ($pics as $pu): ?><a href="<?= e($pu) ?>" target="_blank"><img src="<?= e($pu) ?>" alt=""></a><?php endforeach; ?>
-                </div>
-              <?php else: ?><span class="no-media">None</span><?php endif; ?>
-            </td>
-            <td>
-              <div class="mini">Reg: <?= e($a['created_at'] ? date('Y-m-d', strtotime($a['created_at'])) : '—') ?></div>
-              <div class="mini">Login: <?= e(fmtDateTime($a['last_login_at'] ?? null)) ?></div>
-            </td>
-            <td><span class="pill <?= $a['is_verified'] ? 'on' : 'off' ?>"><?= $a['is_verified'] ? 'Yes' : 'No' ?></span></td>
-            <td><span class="pill <?= $a['is_approved'] ? 'on' : 'off' ?>"><?= $a['is_approved'] ? 'Yes' : 'No' ?></span></td>
-            <td><?php if ((int)$a['is_banned'] === 1): ?><span class="pill ban">Banned</span><?php else: ?><span class="pill on">Active</span><?php endif; ?></td>
-            <td>
-              <div class="acts">
-                <?php if (!$a['is_approved']): ?>
-                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm green" name="action" value="approve">Approve</button></form>
-                <?php else: ?>
-                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm grey" name="action" value="unapprove">Unapprove</button></form>
-                <?php endif; ?>
-                <?php if ((int)$a['is_banned'] === 1): ?>
-                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm grey" name="action" value="unban">Unban</button></form>
-                <?php else: ?>
-                  <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm red" name="action" value="ban">Ban</button></form>
-                <?php endif; ?>
-              </div>
-              <form method="post" action="admin.php" class="role-form"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>">
-                <select class="role-select" name="role">
-                  <?php foreach (['collector','artist','sub_admin','admin'] as $r): ?><option value="<?= $r ?>" <?= ($a['role']??'')===$r?'selected':'' ?>><?= ucfirst(str_replace('_',' ',$r)) ?></option><?php endforeach; ?>
-                </select>
-                <button class="btn sm grey" name="action" value="set_role">Set</button>
-              </form>
-            </td>
-          </tr>
-        <?php endforeach; ?>
-        </tbody>
-      </table>
+            <?php else: ?><span class="no-media">No portfolio</span><?php endif; ?>
+          </div>
+          <?php if (!empty($a['art_video'])): ?>
+            <video src="<?= e($a['art_video']) ?>" controls preload="metadata"></video>
+          <?php else: ?><span class="no-media">No video</span><?php endif; ?>
+
+          <div class="acard-foot">
+            <div class="acts">
+              <?php if (!$a['is_approved']): ?>
+                <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm green" name="action" value="approve">Approve</button></form>
+              <?php else: ?>
+                <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm grey" name="action" value="unapprove">Unapprove</button></form>
+              <?php endif; ?>
+              <?php if ((int)$a['is_banned'] === 1): ?>
+                <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm grey" name="action" value="unban">Unban</button></form>
+              <?php else: ?>
+                <form method="post" action="admin.php"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>"><button class="btn sm red" name="action" value="ban">Ban</button></form>
+              <?php endif; ?>
+            </div>
+            <form method="post" action="admin.php" class="role-form"><?= csrfField() ?><input type="hidden" name="user_id" value="<?= (int)$a['id'] ?>">
+              <select class="role-select" name="role">
+                <?php foreach (['collector','artist','sub_admin','admin'] as $r): ?><option value="<?= $r ?>" <?= ($a['role']??'')===$r?'selected':'' ?>><?= ucfirst(str_replace('_',' ',$r)) ?></option><?php endforeach; ?>
+              </select>
+              <button class="btn sm grey" name="action" value="set_role">Set Role</button>
+            </form>
+          </div>
+        </div>
+      <?php endforeach; ?>
       </div>
     <?php endif; ?>
   </div>
@@ -434,14 +438,14 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
         <?php foreach ($collectors as $c): $on = isOnline($c['last_active'] ?? null); ?>
           <tr>
             <td>
-              <strong><span class="online-dot <?= $on ? 'on' : '' ?>" title="<?= $on ? 'Online' : 'Offline' ?>"></span><?= e($c['full_name_en'] ?: '—') ?></strong>
+              <strong><span class="online-dot <?= $on ? 'on' : '' ?>" title="<?= $on ? 'Online' : 'Offline' ?>"></span><?= e($c['full_name_en'] ?: 'N/A') ?></strong>
               <?php if (!empty($c['full_name_ar'])): ?><div class="name-ar" dir="rtl"><?= e($c['full_name_ar']) ?></div><?php endif; ?>
             </td>
             <td><?= e($c['email']) ?></td>
-            <td dir="ltr"><?= e($c['phone'] ?: '—') ?></td>
-            <td><?= e($c['city'] ?: '—') ?></td>
+            <td dir="ltr"><?= e($c['phone'] ?: 'N/A') ?></td>
+            <td><?= e($c['city'] ?: 'N/A') ?></td>
             <td>
-              <div class="mini">Reg: <?= e($c['created_at'] ? date('Y-m-d', strtotime($c['created_at'])) : '—') ?></div>
+              <div class="mini">Reg: <?= e($c['created_at'] ? date('Y-m-d', strtotime($c['created_at'])) : 'N/A') ?></div>
               <div class="mini">Login: <?= e(fmtDateTime($c['last_login_at'] ?? null)) ?></div>
             </td>
             <td><span class="pill <?= $c['is_verified'] ? 'on' : 'off' ?>"><?= $c['is_verified'] ? 'Verified' : 'Unverified' ?></span></td>
@@ -489,7 +493,7 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
             <div class="art-info">
               <?= e($art['artist_name'] ?: 'Unknown artist') ?> ·
               <?= e(ucfirst((string)$art['type'])) ?> ·
-              <?= $art['price'] !== null ? e(number_format((float)$art['price'])) . ' SAR' : '—' ?>
+              <?= $art['price'] !== null ? e(number_format((float)$art['price'])) . ' SAR' : 'N/A' ?>
             </div>
           </div>
           <div class="acts">
@@ -540,7 +544,7 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
           <div class="style-item">
             <div class="style-thumb" <?= $s['image_url'] ? 'style="background-image:url(\'' . e($s['image_url']) . '\');"' : '' ?>><?= $s['image_url'] ? '' : '🎨' ?></div>
             <div class="style-body">
-              <h3><?= e($s['title_en'] ?: '—') ?></h3>
+              <h3><?= e($s['title_en'] ?: 'N/A') ?></h3>
               <?php if (!empty($s['title_ar'])): ?><div class="name-ar" dir="rtl"><?= e($s['title_ar']) ?></div><?php endif; ?>
               <?php if (!empty($s['description_en'])): ?><p class="style-desc"><?= e($s['description_en']) ?></p><?php endif; ?>
               <span class="tag-pill"><?= e($s['tag']) ?></span>
@@ -615,7 +619,8 @@ const ADICT = {
   "Log out":"تسجيل الخروج",
   "Admin Login":"دخول الإدارة","Password":"كلمة المرور","Sign In":"تسجيل الدخول","Incorrect password.":"كلمة مرور غير صحيحة.",
   "Artists":"الفنانون","Collectors":"المقتنون","Pending Artworks":"الأعمال المعلّقة","Art Styles":"أساليب الرسم",
-  "Online Now":"متصل الآن","Portfolio":"معرض الأعمال","Dates":"التواريخ","None":"لا يوجد","Set":"تعيين",
+  "Online Now":"متصل الآن","Portfolio":"معرض الأعمال","Dates":"التواريخ","None":"لا يوجد","Set":"تعيين","Set Role":"تعيين الدور",
+  "No portfolio":"لا يوجد معرض","No video":"لا يوجد فيديو","No photo":"لا توجد صورة",
   "Collector":"مقتني","Sub admin":"مشرف فرعي","Admin":"مدير",
   "Add New Style":"إضافة أسلوب جديد","Add Style":"إضافة الأسلوب",
   "Title (English)":"العنوان (بالإنجليزية)","Title (Arabic)":"العنوان (بالعربية)",

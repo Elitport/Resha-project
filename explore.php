@@ -131,7 +131,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 <script>
 /* ---- Resolve the styles data exposed by art_styles.js (no duplication) ---- */
 function getStyleData(){
-  const cands = ['artStyles','ART_STYLES','STYLES','styles','artStylesData','RESHA_STYLES','art_styles','ARTSTYLES'];
+  const cands = ['artStyles','ART_STYLES','STYLES','styles','artStylesData','art_styles','ARTSTYLES'];
   for(const k of cands){ if(typeof window[k] !== 'undefined' && window[k]) return window[k]; }
   return null;
 }

@@ -96,7 +96,7 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
   <div class="page-header">
     <div class="page-badge"><div class="pulse-dot"></div><span id="t-badge">We're Here to Help</span></div>
     <h1 id="t-h1">Artist <em>Support Center</em></h1>
-    <p id="t-desc">Have a question or need help? We're here for every artist in the Resha community. Find answers, get in touch, and access our resources below.</p>
+    <p id="t-desc">Have a question or need help? We're here for every artist in the Oweili community. Find answers, get in touch, and access our resources below.</p>
   </div>
 
   <p class="section-title" id="t-ct-title">GET IN TOUCH</p>
@@ -162,7 +162,7 @@ const FAQS={
 };
 const T={
   en:{dir:'ltr',lb:'العربية',studio:'The Studio',explore:'Explore',community:'Community',support:'Support',login:'Sign In',
-    badge:"We're Here to Help",h1:'Artist <em>Support Center</em>',desc:"Have a question or need help? We're here for every artist in the Resha community.",
+    badge:"We're Here to Help",h1:'Artist <em>Support Center</em>',desc:"Have a question or need help? We're here for every artist in the Oweili community.",
     ctTitle:'GET IN TOUCH',c1:'Contact the Gallery',c1d:'Send us a message and our team will get back to you within 24 hours.',c2:'Artist Chat Room',c2d:'Ask the community directly — artists helping artists, in real time.',c2l:'Open Chat →',c3:'Join the Community',c3d:'Create a free account to access all features, workshops, and the artist network.',c3l:'Join Free →',
     faqTitle:'FREQUENTLY ASKED QUESTIONS',legalTitle:'LEGAL & POLICIES',
     l1:'Artwork Rights Policy',l1d:'All artwork shared on Oweili remains the intellectual property of the original creator.',

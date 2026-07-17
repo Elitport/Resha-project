@@ -109,8 +109,8 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
   </div>
 
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-num" id="s-artists">—</div><div class="stat-label" id="t-s1">Registered Artists</div></div>
-    <div class="stat-card"><div class="stat-num" id="s-msgs">—</div><div class="stat-label" id="t-s2">Messages Shared</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-artists">N/A</div><div class="stat-label" id="t-s1">Registered Artists</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-msgs">N/A</div><div class="stat-label" id="t-s2">Messages Shared</div></div>
     <div class="stat-card"><div class="stat-num">12</div><div class="stat-label" id="t-s3">Art Styles</div></div>
     <div class="stat-card"><div class="stat-num">🇸🇦</div><div class="stat-label" id="t-s4">Saudi Community</div></div>
   </div>

@@ -119,7 +119,7 @@ h1{font-size:24px;font-weight:700;margin-bottom:4px;}
             <div class="art-info">
               <?= e($art['artist_name'] ?: 'Unknown artist') ?> ·
               <?= e(ucfirst((string)$art['type'])) ?> ·
-              <?= $art['price'] !== null ? e(number_format((float)$art['price'])) . ' SAR' : '—' ?>
+              <?= $art['price'] !== null ? e(number_format((float)$art['price'])) . ' SAR' : 'N/A' ?>
             </div>
           </div>
           <div class="acts">
