@@ -74,13 +74,13 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
     <a class="choice artist" href="register_artist.php">
       <div class="icon">🎨</div>
       <h2 id="t-a-title">I am an Artist</h2>
-      <p id="t-a-desc">Showcase and sell your work. Requires a profile picture, portfolio, and a short video — reviewed by our team.</p>
+      <p id="t-a-desc">Showcase and sell your work. Requires a profile picture, portfolio, and a short video, all reviewed by our team.</p>
       <span class="go" id="t-a-go">Register as Artist</span>
     </a>
     <a class="choice collector" href="register_collector.php">
       <div class="icon">🖼️</div>
       <h2 id="t-c-title">I am a Collector</h2>
-      <p id="t-c-desc">Discover and collect original art. Quick sign-up — just your details and you're in.</p>
+      <p id="t-c-desc">Discover and collect original art. Quick sign-up: just your details and you're in.</p>
       <span class="go" id="t-c-go">Register as Collector</span>
     </a>
   </div>
@@ -92,16 +92,16 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 <script>
 const T={
   en:{dir:'ltr',lb:'العربية',h1:'Join <em>Oweili</em>',sub:'Choose the account that fits you.',
-    aTitle:'I am an Artist',aDesc:'Showcase and sell your work. Requires a profile picture, portfolio, and a short video — reviewed by our team.',aGo:'Register as Artist',
-    cTitle:'I am a Collector',cDesc:"Discover and collect original art. Quick sign-up — just your details and you're in.",cGo:'Register as Collector',
+    aTitle:'I am an Artist',aDesc:'Showcase and sell your work. Requires a profile picture, portfolio, and a short video, all reviewed by our team.',aGo:'Register as Artist',
+    cTitle:'I am a Collector',cDesc:"Discover and collect original art. Quick sign-up: just your details and you're in.",cGo:'Register as Collector',
     have:'Already have an account?',login:'Sign In',
     nav:{studio:'The Studio',community:'Community',marketplace:'Marketplace',explore:'Explore Art Styles',support:'Support',
       s1:'Watercolor Workshop',s2:'Oil Painting Studio',s3:'Digital Art Lab',s4:'Charcoal & Ink',
       c2:'Meet Fellow Artists',c3:'Share Your Work',c4:'Learn Together',
       sp1:'Contact Us',sp2:'How It Works',sp3:'Terms of Use',login:'Sign In',reg:'Join Free'}},
   ar:{dir:'rtl',lb:'English',h1:'انضم إلى <em>أويلي</em>',sub:'اختر نوع الحساب المناسب لك.',
-    aTitle:'أنا فنان',aDesc:'اعرض أعمالك وبِعها. يتطلب صورة شخصية وأعمالاً وفيديو قصير — تتم مراجعتها من فريقنا.',aGo:'التسجيل كفنان',
-    cTitle:'أنا مقتني',cDesc:'اكتشف واقتنِ الفن الأصلي. تسجيل سريع — فقط بياناتك وتنضم فوراً.',cGo:'التسجيل كمقتني',
+    aTitle:'أنا فنان',aDesc:'اعرض أعمالك وبِعها. يتطلب صورة شخصية وأعمالاً وفيديو قصير، تتم مراجعتها جميعاً من فريقنا.',aGo:'التسجيل كفنان',
+    cTitle:'أنا مقتني',cDesc:'اكتشف واقتنِ الفن الأصلي. تسجيل سريع، فقط بياناتك وتنضم فوراً.',cGo:'التسجيل كمقتني',
     have:'لديك حساب بالفعل؟',login:'تسجيل الدخول',
     nav:{studio:'الاستوديو',community:'المجتمع',marketplace:'السوق',explore:'استكشف أساليب الرسم',support:'الدعم',
       s1:'ورشة الألوان المائية',s2:'استوديو الرسم الزيتي',s3:'مختبر الفن الرقمي',s4:'الفحم والحبر',

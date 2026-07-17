@@ -67,6 +67,24 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
 .soul p{font-size:14px;line-height:1.9;color:rgba(0,0,0,0.78);}
 .closing{margin-top:38px;text-align:center;font-size:14px;line-height:1.95;color:rgba(0,0,0,0.6);max-width:660px;margin-left:auto;margin-right:auto;}
 [dir="rtl"] .block p,[dir="rtl"] .soul p,[dir="rtl"] .cat-title{text-align:right;}
+.sec-h{margin-top:52px;text-align:center;font-size:clamp(24px,3.4vw,34px);font-weight:300;color:#111;letter-spacing:-0.02em;}
+.sec-h em{font-style:normal;font-weight:700;background:linear-gradient(90deg,#0066ff,#aa00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sec-sub{text-align:center;font-size:14px;color:rgba(0,0,0,0.6);line-height:1.85;max-width:640px;margin:12px auto 30px;}
+.mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;}
+.mod{background:rgba(255,255,255,0.62);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(0,0,0,0.07);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:10px;transition:transform 0.3s ease,box-shadow 0.3s ease;}
+.mod:hover{transform:translateY(-4px);box-shadow:0 18px 38px rgba(0,0,0,0.08);}
+.mod .mod-ic{font-size:26px;}
+.mod h3{font-size:18px;font-weight:700;color:#111;}
+.mod p{font-size:13px;line-height:1.8;color:rgba(0,0,0,0.68);}
+[dir="rtl"] .mod{text-align:right;}
+.mod .tech-chips{margin-top:auto;padding-top:6px;}
+.mod .chip{font-size:11.5px;padding:5px 11px;}
+.soon-card{margin-top:34px;text-align:center;background:linear-gradient(135deg,rgba(255,0,85,0.06),rgba(0,102,255,0.06),rgba(170,0,255,0.06));border:1px dashed rgba(0,0,0,0.15);border-radius:24px;padding:44px 32px;}
+.soon-emoji{font-size:40px;margin-bottom:14px;}
+.soon-card h3{font-size:22px;font-weight:700;color:#111;margin-bottom:10px;}
+.soon-card p{font-size:14px;line-height:1.9;color:rgba(0,0,0,0.65);max-width:560px;margin:0 auto 20px;}
+.soon-cta{display:inline-block;padding:12px 28px;border-radius:999px;background:#111;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;transition:all 0.25s;}
+.soon-cta:hover{background:#ff0055;transform:translateY(-2px);}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 @media(max-width:768px){.topnav{padding:10px 14px;}.nav-logo span{display:none;}.page{padding:90px 16px 40px;}.cat{padding:28px 22px;}}
 </style>
@@ -85,6 +103,18 @@ html,body{width:100%;min-height:100vh;background:#fff;font-family:"Helvetica Neu
   </div>
 
   <div class="cats" id="cats"></div>
+
+  <h2 class="sec-h" id="t-modern-title"></h2>
+  <p class="sec-sub" id="t-modern-sub"></p>
+  <div class="mods" id="mods"></div>
+
+  <div class="soon-card">
+    <div class="soon-emoji">✨</div>
+    <h3 id="t-soon-title"></h3>
+    <p id="t-soon-body"></p>
+    <a class="soon-cta" id="t-soon-cta" href="support.php"></a>
+  </div>
+
   <p class="closing" id="t-closing"></p>
 </div>
 
@@ -104,6 +134,23 @@ const CONTENT = {
     labels:{story:'The Human Story', tech:'Key Techniques', soul:'The Soul Indicator'},
     soulLead:'What a collector looks for to verify a 100% human hand:',
     closing:'Every category here is a record of human labor, patience, and nerve. When you collect on Oweili, you are not buying an image. You are keeping the evidence of a person who stood before a surface and dared to leave a mark.',
+    modernTitle:'Modern & <em>Contemporary</em> Styles',
+    modernSub:'The living languages of today\'s working artists, from spray cans to reed pens.',
+    soon:{title:'More Coming Soon', body:'New art styles are added to Oweili regularly as our community grows. Do you practise a discipline you do not see here? Tell us about it and we will feature it.', cta:'Suggest a Style'},
+    modern:[
+      {ic:'🧱',title:'Street Art & Urban Art',desc:'Public work made on walls and city surfaces, bold, fast, and meant for everyone who passes by.',tech:['Spray paint','Stencilling','Wheatpaste','Muralism']},
+      {ic:'🔍',title:'Hyperrealism',desc:'Painting and drawing pushed to a detail sharper than a photograph, built from thousands of patient marks.',tech:['Layered glazing','Airbrushing','Fine detailing','Value mapping']},
+      {ic:'⬜',title:'Minimalism',desc:'The art of less, where empty space, a single form, and a quiet palette carry the whole meaning.',tech:['Reduction','Negative space','Flat planes','Hard edge']},
+      {ic:'🎯',title:'Pop Art',desc:'Bright, graphic work that borrows from advertising and everyday culture with confidence and wit.',tech:['Screen printing','Ben-Day dots','Bold flat colour','Repetition']},
+      {ic:'🌀',title:'Contemporary Abstract',desc:'Non-representational work that speaks through gesture, layering, and raw texture rather than any subject.',tech:['Layering','Gestural marks','Texture building','Colour blocking']},
+      {ic:'✂️',title:'Mixed Media & Collage',desc:'Art assembled from many materials at once: paper, fabric, paint, and found objects joined into one surface.',tech:['Assemblage','Layering','Found materials','Decoupage']},
+      {ic:'🌿',title:'Botanical & Nature Art',desc:'Careful, loving studies of plants and living things, rooted in scientific observation and delicate line.',tech:['Botanical illustration','Watercolour washes','Fine linework','Stippling']},
+      {ic:'👤',title:'Portrait & Figure Art',desc:'The timeless study of the human face and body, capturing likeness, weight, and character.',tech:['Life drawing','Proportion','Chiaroscuro','Gesture drawing']},
+      {ic:'✒️',title:'Arabic Calligraphy Art',desc:'The revered art of beautiful Arabic script, where every letter is measured, rhythmic, and alive.',tech:['Thuluth','Diwani','Naskh','Reed pen (qalam)']},
+      {ic:'❋',title:'Islamic Geometric Art',desc:'Infinite patterns built from circle and line, a meditation on order, symmetry, and the eternal.',tech:['Girih','Tessellation','Compass and straightedge','Arabesque']},
+      {ic:'🏞️',title:'Landscape & Seascape',desc:'The land, sky, and sea rendered with atmosphere and light, often painted outdoors in a single sitting.',tech:['Plein air','Atmospheric perspective','Wet-on-wet','Glazing skies']},
+      {ic:'📷',title:'Photography as Art',desc:'The camera used as a brush, where framing, light, and timing turn a fleeting moment into a lasting image.',tech:['Composition','Long exposure','Darkroom printing','Fine art print']}
+    ],
     cats:[
       {tag:'Classical & Realism', title:'The Masters of Light & Form',
        story:'Before the camera, humanity\'s deepest wish was to stop time and hold the truth of a face, a fold of cloth, a shaft of afternoon light. The classical masters spent years grinding pigments, stretching linen, and training the eye to read value before colour. The struggle was patience itself. A single portrait could take months of thin, drying layers, and each layer was a quiet act of devotion to the visible world.',
@@ -130,6 +177,23 @@ const CONTENT = {
     labels:{story:'الحكاية الإنسانية', tech:'التقنيات الأساسية', soul:'مؤشّر الروح'},
     soulLead:'ما الذي يبحث عنه المقتني للتأكد من أن العمل بشري 100%:',
     closing:'كل فئة هنا سجلٌّ للجهد الإنساني والصبر والجرأة. حين تقتني عبر أويلي فأنت لا تشتري صورة، بل تحتفظ بدليلٍ على إنسانٍ وقف أمام السطح وتجرّأ على ترك أثر.',
+    modernTitle:'أساليب <em>حديثة ومعاصرة</em>',
+    modernSub:'اللغات الحيّة لفناني اليوم، من علب الرذاذ إلى أقلام القصب.',
+    soon:{title:'المزيد قريباً', body:'نضيف أساليب فنية جديدة إلى أويلي باستمرار مع نمو مجتمعنا. هل تمارس أسلوباً لا تجده هنا؟ أخبرنا عنه وسنُبرزه.', cta:'اقترح أسلوباً'},
+    modern:[
+      {ic:'🧱',title:'فن الشارع والفن الحضري',desc:'أعمال عامة تُنفّذ على الجدران وأسطح المدينة، جريئة وسريعة وموجّهة لكل عابر سبيل.',tech:['رذاذ الطلاء','الاستنسل','لصق الورق','الجداريات']},
+      {ic:'🔍',title:'الواقعية المفرطة',desc:'رسم يتجاوز حدّة الصورة الفوتوغرافية، مبنيّ من آلاف اللمسات الصبورة.',tech:['التزجيج المتعدد','الرذاذ الهوائي','التفصيل الدقيق','خريطة القيم الضوئية']},
+      {ic:'⬜',title:'التبسيط (مينيمال)',desc:'فن الاقتصاد، حيث يحمل الفراغ وشكلٌ واحد ولوحة ألوان هادئة كامل المعنى.',tech:['الاختزال','الفراغ السالب','المساحات المسطحة','الحواف الحادة']},
+      {ic:'🎯',title:'فن البوب',desc:'أعمال جرافيكية زاهية تستلهم الإعلان والثقافة اليومية بثقة وذكاء.',tech:['الطباعة الشبكية','نقاط بن-داي','ألوان مسطحة جريئة','التكرار']},
+      {ic:'🌀',title:'التجريد المعاصر',desc:'أعمال غير تمثيلية تتحدث عبر الإيماءة والطبقات والملمس الخام بدل أي موضوع.',tech:['الطبقات','لمسات إيمائية','بناء الملمس','كتل اللون']},
+      {ic:'✂️',title:'الوسائط المختلطة والكولاج',desc:'فن يُجمع من خامات متعددة معاً: ورق وقماش وطلاء ومواد موجودة في سطح واحد.',tech:['التجميع','الطبقات','مواد موجودة','ديكوباج']},
+      {ic:'🌿',title:'فن النبات والطبيعة',desc:'دراسات دقيقة ومحبّة للنباتات والكائنات الحية، متجذّرة في الملاحظة العلمية والخط الرقيق.',tech:['الرسم النباتي','مسحات مائية','خطوط دقيقة','التنقيط']},
+      {ic:'👤',title:'فن البورتريه والشخوص',desc:'الدراسة الخالدة لوجه الإنسان وجسده، بالتقاط الشبه والثِقل والشخصية.',tech:['الرسم من الطبيعة','التناسب','التباين الضوئي','رسم الإيماءة']},
+      {ic:'✒️',title:'فن الخط العربي',desc:'الفن الموقّر للخط العربي الجميل، حيث كل حرف موزون وإيقاعي ونابض بالحياة.',tech:['الثلث','الديواني','النسخ','قلم القصب']},
+      {ic:'❋',title:'الفن الهندسي الإسلامي',desc:'أنماط لا نهائية تُبنى من الدائرة والخط، تأمّل في النظام والتناظر والخلود.',tech:['التعقيد (گِره)','التبليط','الفرجار والمسطرة','الأرابيسك']},
+      {ic:'🏞️',title:'المناظر الطبيعية والبحرية',desc:'الأرض والسماء والبحر بأجوائها وضوئها، تُرسم غالباً في الهواء الطلق بجلسة واحدة.',tech:['الرسم في الهواء الطلق','المنظور الجوي','الرطب على الرطب','تزجيج السماء']},
+      {ic:'📷',title:'التصوير الفوتوغرافي كفن',desc:'الكاميرا كفرشاة، حيث يحوّل التأطير والضوء والتوقيت اللحظة العابرة إلى صورة باقية.',tech:['التكوين','التعريض الطويل','الطباعة في غرفة التحميض','طباعة فنية']}
+    ],
     cats:[
       {tag:'الكلاسيكية والواقعية', title:'أساتذة الضوء والشكل',
        story:'قبل ظهور الكاميرا، كانت أعمق أمنية للإنسان أن يوقف الزمن ويمسك حقيقة وجهٍ، وطيّة قماش، وخيط ضوءٍ في العصر. أمضى الأساتذة الكلاسيكيون سنوات في طحن الأصباغ، وشدّ الكتان، وتدريب العين على قراءة القيمة الضوئية قبل اللون. كان الصراع هو الصبر نفسه. قد يستغرق البورتريه الواحد شهوراً من الطبقات الرقيقة المتتابعة، وكل طبقة فعل تفانٍ هادئ تجاه العالم المرئي.',
@@ -152,6 +216,15 @@ const CONTENT = {
 };
 
 function esc(s){const d=document.createElement('div');d.textContent=String(s==null?'':s);return d.innerHTML;}
+function buildMods(l){
+  const c = CONTENT[l];
+  document.getElementById('mods').innerHTML = c.modern.map(m => {
+    const chips = m.tech.map(t => '<span class="chip">'+esc(t)+'</span>').join('');
+    return '<div class="mod"><div class="mod-ic">'+esc(m.ic)+'</div>'
+      + '<h3>'+esc(m.title)+'</h3><p>'+esc(m.desc)+'</p>'
+      + '<div class="tech-chips">'+chips+'</div></div>';
+  }).join('');
+}
 function buildCats(l){
   const c = CONTENT[l];
   document.getElementById('cats').innerHTML = c.cats.map((cat, i) => {
@@ -200,7 +273,13 @@ function apply(l){
   document.getElementById('t-h1').innerHTML=c.h1;
   document.getElementById('t-desc').textContent=c.desc;
   document.getElementById('t-closing').textContent=c.closing;
+  document.getElementById('t-modern-title').innerHTML=c.modernTitle;
+  document.getElementById('t-modern-sub').textContent=c.modernSub;
+  document.getElementById('t-soon-title').textContent=c.soon.title;
+  document.getElementById('t-soon-body').textContent=c.soon.body;
+  document.getElementById('t-soon-cta').textContent=c.soon.cta;
   buildCats(l);
+  buildMods(l);
 }
 function tgl(){L=L==='en'?'ar':'en';apply(L);try{localStorage.setItem('lang',L);}catch(e){}}
 try{var _s=localStorage.getItem('lang');if(_s==='ar'||_s==='en')L=_s;}catch(e){}
