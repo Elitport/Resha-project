@@ -158,6 +158,24 @@ foreach ($artworks as $aw) {
     /* EMPTY STATE */
     .empty-state{display:none;padding:48px;text-align:center;font-size:15px;color:rgba(0,0,0,0.5);background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.07);border-radius:20px;backdrop-filter:blur(16px);margin-top:8px;}
 
+    /* HUMAN-ONLY BANNER */
+    .human-banner{display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;margin:0 0 24px;padding:15px 22px;border-radius:16px;font-size:14.5px;font-weight:600;color:#111;background:linear-gradient(90deg,rgba(255,0,85,0.08),rgba(255,215,0,0.08),rgba(0,102,255,0.08),rgba(170,0,255,0.08));border:1px solid rgba(0,0,0,0.06);letter-spacing:0.01em;}
+    .human-banner .hb-icon{font-size:18px;flex-shrink:0;}
+    [dir="rtl"] .human-banner{flex-direction:row-reverse;}
+
+    /* FIRST-STROKE (no approved artworks) */
+    .gallery-empty{text-align:center;padding:64px 30px;background:rgba(255,255,255,0.6);border:1px dashed rgba(0,0,0,0.15);border-radius:24px;backdrop-filter:blur(16px);margin-top:10px;}
+    .gallery-empty .ge-emoji{font-size:46px;margin-bottom:16px;}
+    .gallery-empty h2{font-size:clamp(20px,3vw,28px);font-weight:700;color:#111;margin-bottom:12px;}
+    .gallery-empty p{font-size:15px;color:rgba(0,0,0,0.62);line-height:1.8;max-width:460px;margin:0 auto 24px;}
+    .gallery-empty .ge-btn{display:inline-block;padding:13px 32px;border-radius:999px;background:#ff0055;color:#fff;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;transition:all 0.25s;}
+    .gallery-empty .ge-btn:hover{background:#111;transform:translateY(-2px);}
+
+    /* ARTIST NAME emphasis */
+    .card-artist{font-size:12.5px;color:rgba(0,0,0,0.6);margin:2px 0 6px;}
+    .card-artist a{color:#0066ff;font-weight:700;text-decoration:none;}
+    .card-artist a:hover{text-decoration:underline;}
+
     /* PAGINATION */
     .pagination{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:36px;}
     .page-btn{padding:10px 22px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(0,0,0,0.12);background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);color:#111111;transition:all 0.22s;}
@@ -192,8 +210,8 @@ foreach ($artworks as $aw) {
 
 <nav class="topnav">
   <a class="nav-logo" href="index.html">
-    <svg width="18" height="18" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="navLogoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0055"/><stop offset="50%" stop-color="#0066ff"/><stop offset="100%" stop-color="#aa00ff"/></linearGradient></defs><path fill="url(#navLogoGrad)" d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/></svg>
-    <span style="display:inline-block;background:linear-gradient(90deg,#ff0055,#0066ff,#aa00ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;">OWEILI</span>
+    <svg width="18" height="18" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="navLogoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0055"/><stop offset="25%" stop-color="#ff6b35"/><stop offset="50%" stop-color="#ffd700"/><stop offset="75%" stop-color="#0066ff"/><stop offset="100%" stop-color="#aa00ff"/></linearGradient></defs><path fill="url(#navLogoGrad)" d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/></svg>
+    <span style="display:inline-block;background:linear-gradient(135deg,#ff0055,#ff6b35,#ffd700,#0066ff,#aa00ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:800;font-size:20px;letter-spacing:0.08em;">OWEILI</span>
   </a>
   <div class="nav-center">
     <div class="nav-item">
@@ -240,6 +258,13 @@ foreach ($artworks as $aw) {
         : 'Discover and collect original artworks from talented Saudi artists. Every piece is one of a kind.' ?></p>
   </div>
 
+  <!-- HUMAN-ONLY BANNER -->
+  <div class="human-banner">
+    <span class="hb-icon">✋</span>
+    <?= $ar ? 'كل عمل فني هنا صنعته يد إنسان' : 'Every artwork here was created by a human hand' ?>
+  </div>
+
+  <?php if ($total > 0): ?>
   <input type="search" class="search-box" id="searchBox"
          placeholder="<?= $ar ? 'ابحث عن عمل فني…' : 'Search artworks by title…' ?>"
          oninput="onSearch(this.value)">
@@ -260,6 +285,7 @@ foreach ($artworks as $aw) {
     <button class="filter-btn" data-status="available" onclick="setStatus('available',this)"><?= $ar?'متاح':'Available' ?></button>
     <button class="filter-btn" data-status="auction" onclick="setStatus('auction',this)"><?= $ar?'مزاد':'Auction' ?></button>
   </div>
+  <?php endif; ?>
 
   <div class="art-grid" id="artGrid">
     <?php foreach ($artworks as $aw):
@@ -296,7 +322,12 @@ foreach ($artworks as $aw) {
     <?php endif; ?>
   </div>
   <?php if ($total === 0): ?>
-    <script>document.getElementById('emptyState').style.display='block';</script>
+    <div class="gallery-empty">
+      <div class="ge-emoji">🎨</div>
+      <h2><?= $ar ? 'المعرض ينتظر أول لمسة إنسانية' : 'The gallery awaits its first human stroke' ?></h2>
+      <p><?= $ar ? 'هل أنت فنان؟ شارك عملك مع العالم.' : 'Are you an artist? Share your work with the world.' ?></p>
+      <a class="ge-btn" href="register_artist.php"><?= $ar ? 'انضم كفنان' : 'Join as an Artist' ?></a>
+    </div>
   <?php endif; ?>
 
   <!-- PAGINATION -->
