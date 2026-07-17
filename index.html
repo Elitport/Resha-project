@@ -143,9 +143,51 @@ html,body{width:100%;min-height:100vh;background:#ffffff;font-family:"Helvetica 
 @media(max-width:1024px){.nav-center{display:none;}}
 @media(max-width:768px){.gallery-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:560px){.gallery-grid{grid-template-columns:1fr 1fr;}.page{padding:75px 16px 24px;}.topnav{padding:0 14px;}.nav-logo span{display:none;}}
+
+/* ── WELCOME SPLASH ── */
+#splash{position:fixed;inset:0;z-index:9999;background:#ffffff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;opacity:0;transition:opacity 0.8s ease;}
+#splash.show{opacity:1;}
+#splash.hide{opacity:0;pointer-events:none;}
+#splash .sp-logo{width:96px;height:96px;transform:scale(0.8);opacity:0;transition:transform 1s cubic-bezier(0.22,1,0.36,1),opacity 1s ease;}
+#splash.show .sp-logo{transform:scale(1);opacity:1;}
+#splash .sp-word{font-size:24px;font-weight:700;letter-spacing:0.32em;text-transform:uppercase;padding-inline-start:0.32em;background:linear-gradient(90deg,#ff0055,#0066ff,#aa00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;transition:opacity 1s ease 0.15s;}
+#splash.show .sp-word{opacity:1;}
+#splash .sp-welcome{font-size:14px;letter-spacing:0.05em;color:rgba(0,0,0,0.55);opacity:0;transition:opacity 1s ease 0.3s;}
+#splash.show .sp-welcome{opacity:1;}
 </style>
 </head>
 <body>
+
+<!-- WELCOME SPLASH (once per session) -->
+<div id="splash" aria-hidden="true">
+  <svg class="sp-logo" viewBox="0 0 256 256">
+    <defs><linearGradient id="spGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff0055"/><stop offset="50%" stop-color="#0066ff"/><stop offset="100%" stop-color="#aa00ff"/>
+    </linearGradient></defs>
+    <path fill="url(#spGrad)" d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/>
+  </svg>
+  <div class="sp-word">OWEILI</div>
+  <div class="sp-welcome" id="sp-welcome">Welcome to Oweili</div>
+</div>
+<script>
+/* Luxury welcome splash: once per browser session, bilingual, gentle scale + fade. */
+(function(){
+  var sp=document.getElementById('splash');
+  if(!sp) return;
+  var seen=null; try{seen=sessionStorage.getItem('oweili_splash');}catch(e){}
+  if(seen){ if(sp.parentNode) sp.parentNode.removeChild(sp); return; }
+  try{sessionStorage.setItem('oweili_splash','1');}catch(e){}
+  var ar=false; try{ar=localStorage.getItem('lang')==='ar';}catch(e){}
+  var w=document.getElementById('sp-welcome');
+  if(ar){ w.textContent='أهلاً بك في أويلي'; sp.setAttribute('dir','rtl'); }
+  else { w.textContent='Welcome to Oweili'; }
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ sp.classList.add('show'); }); });
+  setTimeout(function(){
+    sp.classList.remove('show'); sp.classList.add('hide');
+    setTimeout(function(){ if(sp.parentNode) sp.parentNode.removeChild(sp); }, 900);
+  }, 3000);
+})();
+</script>
 
 <div class="bg-wrap">
   <video class="bg-video" id="vid" autoplay loop muted playsinline src="bg.mp4"></video>
