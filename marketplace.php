@@ -144,7 +144,11 @@ foreach ($artworks as $aw) {
     .status-sold { background:rgba(120,120,120,0.15); color:#666; border:1px solid rgba(120,120,120,0.3); }
     .status-auction { background:rgba(255,140,0,0.15); color:#ff8c00; border:1px solid rgba(255,140,0,0.35); }
     .card-body { padding:18px; display:flex; flex-direction:column; gap:4px; flex:1; }
-    [dir="rtl"] .card-body { text-align:right; }
+    [dir="rtl"] .card-body,
+    [dir="rtl"] .card-title,
+    [dir="rtl"] .card-title-ar,
+    [dir="rtl"] .card-artist,
+    [dir="rtl"] .card-price { text-align:right; direction:rtl; }
     .card-title { font-size:16px; font-weight:700; color:#111111; }
     .card-title-ar { font-size:13px; font-weight:600; color:rgba(0,0,0,0.55); }
     .card-artist { font-size:12px; color:rgba(0,0,0,0.6); margin-top:6px; }
@@ -211,7 +215,7 @@ foreach ($artworks as $aw) {
 <nav class="topnav">
   <a class="nav-logo" href="index.html">
     <svg width="18" height="18" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="navLogoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0055"/><stop offset="25%" stop-color="#ff6b35"/><stop offset="50%" stop-color="#ffd700"/><stop offset="75%" stop-color="#0066ff"/><stop offset="100%" stop-color="#aa00ff"/></linearGradient></defs><path fill="url(#navLogoGrad)" d="M4.688 136C68.373 136 120 187.627 120 251.312C120 252.883 119.967 254.445 119.905 256L0 256L0 136.096C1.555 136.034 3.117 136 4.688 136ZM251.312 136C252.883 136 254.445 136.034 256 136.096L256 256L136.095 256C136.032 254.438 136.001 252.875 136 251.312C136 187.627 187.627 136 251.312 136ZM119.905 0C119.967 1.555 120 3.117 120 4.688C120 68.373 68.373 120 4.687 120C3.117 120 1.555 119.967 0 119.905L0 0ZM256 119.905C254.445 119.967 252.883 120 251.312 120C187.627 120 136 68.373 136 4.687C136 3.117 136.033 1.555 136.095 0L256 0Z"/></svg>
-    <span style="display:inline-block;background:linear-gradient(135deg,#ff0055,#ff6b35,#ffd700,#0066ff,#aa00ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:800;font-size:20px;letter-spacing:0.08em;">OWEILI</span>
+    <span style="display:inline-block;background:linear-gradient(135deg,#ff0055,#ff6b35,#ffd700,#0066ff,#aa00ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;">OWEILI</span>
   </a>
   <div class="nav-center">
     <div class="nav-item">
@@ -299,9 +303,14 @@ foreach ($artworks as $aw) {
           <img class="card-img" src="<?= e($aw['image_url']) ?>" alt="<?= e($ar ? $aw['title_ar'] : $aw['title_en']) ?>">
           <span class="status-badge <?= $badge ?>"><?= e($badgeLabel) ?></span>
         </div>
-        <div class="card-body">
-          <div class="card-title"><?= e($aw['title_en']) ?></div>
-          <div class="card-title-ar" dir="rtl"><?= e($aw['title_ar']) ?></div>
+        <div class="card-body"<?= $ar ? ' dir="rtl"' : '' ?>>
+          <?php if ($ar): ?>
+            <div class="card-title" dir="rtl"><?= e($aw['title_ar'] ?: $aw['title_en']) ?></div>
+            <?php if (!empty($aw['title_en'])): ?><div class="card-title-ar" dir="ltr" style="text-align:right;"><?= e($aw['title_en']) ?></div><?php endif; ?>
+          <?php else: ?>
+            <div class="card-title"><?= e($aw['title_en']) ?></div>
+            <div class="card-title-ar" dir="rtl"><?= e($aw['title_ar']) ?></div>
+          <?php endif; ?>
           <div class="card-artist"><?= $ar?'بواسطة':'by' ?>
             <a href="artist_dashboard.php?id=<?= (int) $aw['artist_id'] ?>&lang=<?= $lang ?>"><?= e($ar ? $aw['artist_ar'] : $aw['artist_en']) ?></a>
           </div>
