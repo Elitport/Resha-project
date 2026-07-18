@@ -144,11 +144,14 @@ foreach ($artworks as $aw) {
     .status-sold { background:rgba(120,120,120,0.15); color:#666; border:1px solid rgba(120,120,120,0.3); }
     .status-auction { background:rgba(255,140,0,0.15); color:#ff8c00; border:1px solid rgba(255,140,0,0.35); }
     .card-body { padding:18px; display:flex; flex-direction:column; gap:4px; flex:1; }
+    .card-type{font-size:11px;color:#aa00ff;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-top:4px;}
     [dir="rtl"] .card-body,
     [dir="rtl"] .card-title,
     [dir="rtl"] .card-title-ar,
+    [dir="rtl"] .card-type,
     [dir="rtl"] .card-artist,
     [dir="rtl"] .card-price { text-align:right; direction:rtl; }
+    [dir="rtl"] .card-btn{align-self:flex-end;}
     .card-title { font-size:16px; font-weight:700; color:#111111; }
     .card-title-ar { font-size:13px; font-weight:600; color:rgba(0,0,0,0.55); }
     .card-artist { font-size:12px; color:rgba(0,0,0,0.6); margin-top:6px; }
@@ -214,8 +217,8 @@ foreach ($artworks as $aw) {
 
 <nav class="topnav">
   <a class="nav-logo" href="index.html">
-    <span style="display:inline-block;background:linear-gradient(90deg,#ff0055,#aa00ff,#0066ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:800;font-size:15px;letter-spacing:0.14em;">OWEILI</span>
-    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="navLogoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0055"/><stop offset="55%" stop-color="#aa00ff"/><stop offset="100%" stop-color="#0066ff"/></linearGradient></defs><path fill="url(#navLogoGrad)" d="M12 0C12 6 18 12 24 12C18 12 12 18 12 24C12 18 6 12 0 12C6 12 12 6 12 0Z"/></svg>
+    <span style="display:inline-block;background:linear-gradient(135deg,#ff0055,#ff6b35,#ffd700,#0066ff,#aa00ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:800;font-size:15px;letter-spacing:0.14em;">OWEILI</span>
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="navLogoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0055"/><stop offset="25%" stop-color="#ff6b35"/><stop offset="50%" stop-color="#ffd700"/><stop offset="75%" stop-color="#0066ff"/><stop offset="100%" stop-color="#aa00ff"/></linearGradient></defs><path fill="url(#navLogoGrad)" d="M12 0C12 6 18 12 24 12C18 12 12 18 12 24C12 18 6 12 0 12C6 12 12 6 12 0Z"/></svg>
   </a>
   <div class="nav-center">
     <div class="nav-item">
@@ -311,6 +314,8 @@ foreach ($artworks as $aw) {
             <div class="card-title"><?= e($aw['title_en']) ?></div>
             <div class="card-title-ar" dir="rtl"><?= e($aw['title_ar']) ?></div>
           <?php endif; ?>
+          <?php $tlbl = $ART_TYPES[$aw['type']] ?? null; ?>
+          <?php if ($tlbl): ?><div class="card-type"><?= e($ar ? $tlbl['ar'] : $tlbl['en']) ?></div><?php endif; ?>
           <div class="card-artist"><?= $ar?'بواسطة':'by' ?>
             <a href="artist_dashboard.php?id=<?= (int) $aw['artist_id'] ?>&lang=<?= $lang ?>"><?= e($ar ? $aw['artist_ar'] : $aw['artist_en']) ?></a>
           </div>

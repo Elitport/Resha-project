@@ -16,8 +16,8 @@ $navId    = $navUser ? (int) $navUser['id'] : 0;
 </script>
 <nav class="topnav" id="topnav">
   <a class="nav-logo" href="index.html">
-    <span style="display:inline-block;background:linear-gradient(90deg,#ff0055,#aa00ff,#0066ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:800;font-size:15px;letter-spacing:0.14em;">OWEILI</span>
-    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="navLogoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0055"/><stop offset="55%" stop-color="#aa00ff"/><stop offset="100%" stop-color="#0066ff"/></linearGradient></defs><path fill="url(#navLogoGrad)" d="M12 0C12 6 18 12 24 12C18 12 12 18 12 24C12 18 6 12 0 12C6 12 12 6 12 0Z"/></svg>
+    <span style="display:inline-block;background:linear-gradient(135deg,#ff0055,#ff6b35,#ffd700,#0066ff,#aa00ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:800;font-size:15px;letter-spacing:0.14em;">OWEILI</span>
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="navLogoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff0055"/><stop offset="25%" stop-color="#ff6b35"/><stop offset="50%" stop-color="#ffd700"/><stop offset="75%" stop-color="#0066ff"/><stop offset="100%" stop-color="#aa00ff"/></linearGradient></defs><path fill="url(#navLogoGrad)" d="M12 0C12 6 18 12 24 12C18 12 12 18 12 24C12 18 6 12 0 12C6 12 12 6 12 0Z"/></svg>
   </a>
   <div class="nav-center" id="nav-center">
     <div class="nav-item">
@@ -39,6 +39,13 @@ $navId    = $navUser ? (int) $navUser['id'] : 0;
     </div>
     <div class="nav-item"><a href="marketplace.php" id="nav-marketplace-link"><span id="nav-marketplace-label">Marketplace</span></a></div>
     <div class="nav-item"><a href="explore.php" id="nav-explore-link"><span id="nav-explore-label">Explore Art Styles</span></a></div>
+    <div class="nav-item">
+      <a href="events.php"><span class="nav-i18n" data-en="Discover" data-ar="اكتشف">Discover</span><svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg></a>
+      <div class="dropdown" id="dd-discover">
+        <a href="events.php"><svg class="d-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="nav-i18n" data-en="Art Events" data-ar="أحداث فنية">Art Events</span></a>
+        <a href="training.php"><svg class="d-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"/></svg><span class="nav-i18n" data-en="Training Institutes" data-ar="معاهد تدريب">Training Institutes</span></a>
+      </div>
+    </div>
     <div class="nav-item">
       <a href="support.php" id="nav-support-link"><span id="nav-support-label">Support</span><svg class="chevron" viewBox="0 0 10 6"><polyline points="1,1 5,5 9,1"/></svg></a>
       <div class="dropdown" id="dd-support">

@@ -94,6 +94,58 @@ if ($isAdmin && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST
         exit;
     }
 
+    /* --- Events CRUD --- */
+    if ($action === 'event_add' || $action === 'event_delete') {
+        $eid = (int) ($_POST['id'] ?? 0);
+        try {
+            if ($action === 'event_add') {
+                getDB()->prepare(
+                    'INSERT INTO events (title_en,title_ar,description_en,description_ar,city,event_date,is_free,image_url,contact_link)
+                     VALUES (:te,:ta,:de,:da,:city,:dt,:free,:img,:link)'
+                )->execute([
+                    ':te'=>sanitize($_POST['title_en'] ?? ''), ':ta'=>sanitize($_POST['title_ar'] ?? ''),
+                    ':de'=>trim((string)($_POST['description_en'] ?? '')), ':da'=>trim((string)($_POST['description_ar'] ?? '')),
+                    ':city'=>sanitize($_POST['city'] ?? ''),
+                    ':dt'=>($_POST['event_date'] ?? '') !== '' ? $_POST['event_date'] : null,
+                    ':free'=>(int)($_POST['is_free'] ?? 1) === 1 ? 1 : 0,
+                    ':img'=>sanitize($_POST['image_url'] ?? ''), ':link'=>sanitize($_POST['contact_link'] ?? ''),
+                ]);
+            } elseif ($action === 'event_delete' && $eid > 0) {
+                getDB()->prepare('DELETE FROM events WHERE id=:id')->execute([':id'=>$eid]);
+            }
+        } catch (\Throwable $e) {
+            error_log('admin events: ' . $e->getMessage());
+        }
+        header('Location: admin.php?ok=1#events');
+        exit;
+    }
+
+    /* --- Training CRUD --- */
+    if ($action === 'training_add' || $action === 'training_delete') {
+        $tid = (int) ($_POST['id'] ?? 0);
+        try {
+            if ($action === 'training_add') {
+                getDB()->prepare(
+                    'INSERT INTO training (title_en,title_ar,description_en,description_ar,city,price,course_date,image_url,contact_link)
+                     VALUES (:te,:ta,:de,:da,:city,:price,:dt,:img,:link)'
+                )->execute([
+                    ':te'=>sanitize($_POST['title_en'] ?? ''), ':ta'=>sanitize($_POST['title_ar'] ?? ''),
+                    ':de'=>trim((string)($_POST['description_en'] ?? '')), ':da'=>trim((string)($_POST['description_ar'] ?? '')),
+                    ':city'=>sanitize($_POST['city'] ?? ''),
+                    ':price'=>(float)($_POST['price'] ?? 0),
+                    ':dt'=>($_POST['course_date'] ?? '') !== '' ? $_POST['course_date'] : null,
+                    ':img'=>sanitize($_POST['image_url'] ?? ''), ':link'=>sanitize($_POST['contact_link'] ?? ''),
+                ]);
+            } elseif ($action === 'training_delete' && $tid > 0) {
+                getDB()->prepare('DELETE FROM training WHERE id=:id')->execute([':id'=>$tid]);
+            }
+        } catch (\Throwable $e) {
+            error_log('admin training: ' . $e->getMessage());
+        }
+        header('Location: admin.php?ok=1#training');
+        exit;
+    }
+
     /* --- Change a user's role --- */
     if ($action === 'set_role' && $uid > 0) {
         $newRole = $_POST['role'] ?? '';
@@ -200,6 +252,28 @@ if ($isAdmin) {
         $styles = getDB()->query('SELECT * FROM art_styles ORDER BY sort_order ASC, id ASC')->fetchAll();
     } catch (\Throwable $e) {
         $stylesTableMissing = true;
+    }
+}
+
+/* ---- Load events (only when authed) ---- */
+$events = [];
+$eventsTableMissing = false;
+if ($isAdmin) {
+    try {
+        $events = getDB()->query('SELECT * FROM events ORDER BY (event_date IS NULL), event_date ASC, id DESC')->fetchAll();
+    } catch (\Throwable $e) {
+        $eventsTableMissing = true;
+    }
+}
+
+/* ---- Load training (only when authed) ---- */
+$training = [];
+$trainingTableMissing = false;
+if ($isAdmin) {
+    try {
+        $training = getDB()->query('SELECT * FROM training ORDER BY (course_date IS NULL), course_date ASC, id DESC')->fetchAll();
+    } catch (\Throwable $e) {
+        $trainingTableMissing = true;
     }
 }
 $STYLE_TAGS = ['Traditional', 'Digital', 'Mixed Media'];
@@ -348,6 +422,8 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     <button class="tab-btn" data-tab="collectors" onclick="showTab('collectors',this)">Collectors <span class="pill count"><?= count($collectors) ?></span></button>
     <button class="tab-btn" data-tab="pending" onclick="showTab('pending',this)">Pending Artworks <span class="pill count"><?= count($pendingArt) ?></span></button>
     <button class="tab-btn" data-tab="styles" onclick="showTab('styles',this)">Art Styles <span class="pill count"><?= count($styles) ?></span></button>
+    <button class="tab-btn" data-tab="events" onclick="showTab('events',this)">Events <span class="pill count"><?= count($events) ?></span></button>
+    <button class="tab-btn" data-tab="training" onclick="showTab('training',this)">Training <span class="pill count"><?= count($training) ?></span></button>
   </div>
 
   <!-- ===== TAB: ARTISTS ===== -->
@@ -589,6 +665,132 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
     <?php endif; ?>
   </div>
 
+  <!-- ===== TAB: EVENTS ===== -->
+  <div class="tab-panel" id="tab-events">
+    <?php if ($eventsTableMissing): ?>
+      <div class="card"><div class="empty">The <code>events</code> table does not exist yet. Run <code>discover_setup.sql</code> in phpMyAdmin.</div></div>
+    <?php else: ?>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="sec-head"><h2>Add New Event</h2></div>
+      <form method="post" action="admin.php#events">
+        <?= csrfField() ?>
+        <input type="hidden" name="action" value="event_add">
+        <div class="grid2">
+          <div class="field"><label>Title (English)</label><input type="text" name="title_en" required></div>
+          <div class="field"><label>Title (Arabic)</label><input type="text" name="title_ar" dir="rtl"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Description (English)</label><textarea name="description_en"></textarea></div>
+          <div class="field"><label>Description (Arabic)</label><textarea name="description_ar" dir="rtl"></textarea></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>City</label><input type="text" name="city" placeholder="Riyadh"></div>
+          <div class="field"><label>Date</label><input type="date" name="event_date"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Entry</label>
+            <select name="is_free"><option value="1">Free</option><option value="0">Paid</option></select>
+          </div>
+          <div class="field"><label>Image URL</label><input type="text" name="image_url" dir="ltr" placeholder="https://…"></div>
+        </div>
+        <div class="field"><label>Contact / Details Link</label><input type="text" name="contact_link" dir="ltr" placeholder="https://… or mailto:…"></div>
+        <button type="submit" class="btn green">Add Event</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><h2>Events <span class="count" style="background:#0066ff;"><?= count($events) ?></span></h2></div>
+      <?php if (!$events): ?>
+        <div class="empty">No events yet. Add your first one above.</div>
+      <?php else: ?>
+        <?php foreach ($events as $ev): ?>
+          <div class="style-item">
+            <div class="style-thumb" <?= $ev['image_url'] ? 'style="background-image:url(\'' . e($ev['image_url']) . '\');"' : '' ?>><?= $ev['image_url'] ? '' : '📅' ?></div>
+            <div class="style-body">
+              <h3><?= e($ev['title_en'] ?: 'N/A') ?></h3>
+              <?php if (!empty($ev['title_ar'])): ?><div class="name-ar" dir="rtl"><?= e($ev['title_ar']) ?></div><?php endif; ?>
+              <?php if (!empty($ev['description_en'])): ?><p class="style-desc"><?= e($ev['description_en']) ?></p><?php endif; ?>
+              <span class="tag-pill"><?= e($ev['city'] ?: '—') ?></span>
+              <?php if (!empty($ev['event_date'])): ?><span class="tag-pill"><?= e(date('Y-m-d', strtotime($ev['event_date']))) ?></span><?php endif; ?>
+              <span class="tag-pill"><?= ((int)$ev['is_free'] === 1) ? 'Free' : 'Paid' ?></span>
+            </div>
+            <div class="acts" style="flex-direction:column;">
+              <form method="post" action="admin.php#events" onsubmit="return confirm('Delete this event?');" style="margin:0;">
+                <?= csrfField() ?>
+                <input type="hidden" name="action" value="event_delete">
+                <input type="hidden" name="id" value="<?= (int)$ev['id'] ?>">
+                <button type="submit" class="btn red sm">Delete</button>
+              </form>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+    <?php endif; ?>
+  </div>
+
+  <!-- ===== TAB: TRAINING ===== -->
+  <div class="tab-panel" id="tab-training">
+    <?php if ($trainingTableMissing): ?>
+      <div class="card"><div class="empty">The <code>training</code> table does not exist yet. Run <code>discover_setup.sql</code> in phpMyAdmin.</div></div>
+    <?php else: ?>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="sec-head"><h2>Add New Training</h2></div>
+      <form method="post" action="admin.php#training">
+        <?= csrfField() ?>
+        <input type="hidden" name="action" value="training_add">
+        <div class="grid2">
+          <div class="field"><label>Title (English)</label><input type="text" name="title_en" required></div>
+          <div class="field"><label>Title (Arabic)</label><input type="text" name="title_ar" dir="rtl"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Description (English)</label><textarea name="description_en"></textarea></div>
+          <div class="field"><label>Description (Arabic)</label><textarea name="description_ar" dir="rtl"></textarea></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>City</label><input type="text" name="city" placeholder="Riyadh"></div>
+          <div class="field"><label>Price (SAR)</label><input type="number" name="price" min="0" step="0.01" value="0"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Date</label><input type="date" name="course_date"></div>
+          <div class="field"><label>Image URL</label><input type="text" name="image_url" dir="ltr" placeholder="https://…"></div>
+        </div>
+        <div class="field"><label>Contact / Details Link</label><input type="text" name="contact_link" dir="ltr" placeholder="https://… or mailto:…"></div>
+        <button type="submit" class="btn green">Add Training</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><h2>Training <span class="count" style="background:#0066ff;"><?= count($training) ?></span></h2></div>
+      <?php if (!$training): ?>
+        <div class="empty">No training listed yet. Add your first one above.</div>
+      <?php else: ?>
+        <?php foreach ($training as $tr): ?>
+          <div class="style-item">
+            <div class="style-thumb" <?= $tr['image_url'] ? 'style="background-image:url(\'' . e($tr['image_url']) . '\');"' : '' ?>><?= $tr['image_url'] ? '' : '🎓' ?></div>
+            <div class="style-body">
+              <h3><?= e($tr['title_en'] ?: 'N/A') ?></h3>
+              <?php if (!empty($tr['title_ar'])): ?><div class="name-ar" dir="rtl"><?= e($tr['title_ar']) ?></div><?php endif; ?>
+              <?php if (!empty($tr['description_en'])): ?><p class="style-desc"><?= e($tr['description_en']) ?></p><?php endif; ?>
+              <span class="tag-pill"><?= e($tr['city'] ?: '—') ?></span>
+              <?php if (!empty($tr['course_date'])): ?><span class="tag-pill"><?= e(date('Y-m-d', strtotime($tr['course_date']))) ?></span><?php endif; ?>
+              <span class="tag-pill"><?= ((float)$tr['price'] > 0) ? ('SAR ' . rtrim(rtrim(number_format((float)$tr['price'], 2), '0'), '.')) : 'Free' ?></span>
+            </div>
+            <div class="acts" style="flex-direction:column;">
+              <form method="post" action="admin.php#training" onsubmit="return confirm('Delete this training?');" style="margin:0;">
+                <?= csrfField() ?>
+                <input type="hidden" name="action" value="training_delete">
+                <input type="hidden" name="id" value="<?= (int)$tr['id'] ?>">
+                <button type="submit" class="btn red sm">Delete</button>
+              </form>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+    <?php endif; ?>
+  </div>
+
   <script>
   function toggleStyleEdit(id){ var el=document.getElementById('style-edit-'+id); if(el) el.classList.toggle('open'); }
   function showTab(name, btn){
@@ -601,7 +803,7 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
   // Restore the tab from the URL hash (e.g. after approving an artwork).
   (function(){
     var h=(location.hash||'').replace('#','');
-    if(h==='pending'||h==='collectors'||h==='artists'||h==='styles'){
+    if(h==='pending'||h==='collectors'||h==='artists'||h==='styles'||h==='events'||h==='training'){
       var btn=document.querySelector('.tab-btn[data-tab="'+h+'"]');
       showTab(h,btn);
     }
@@ -619,6 +821,14 @@ const ADICT = {
   "Log out":"تسجيل الخروج",
   "Admin Login":"دخول الإدارة","Password":"كلمة المرور","Sign In":"تسجيل الدخول","Incorrect password.":"كلمة مرور غير صحيحة.",
   "Artists":"الفنانون","Collectors":"المقتنون","Pending Artworks":"الأعمال المعلّقة","Art Styles":"أساليب الرسم",
+  "Events":"الأحداث","Training":"التدريب",
+  "Add New Event":"إضافة حدث جديد","Add Event":"إضافة الحدث",
+  "Add New Training":"إضافة تدريب جديد","Add Training":"إضافة التدريب",
+  "Entry":"الدخول","Free":"مجاني","Paid":"مدفوع","Price (SAR)":"السعر (ريال)",
+  "Contact / Details Link":"رابط التواصل / التفاصيل",
+  "No events yet. Add your first one above.":"لا توجد أحداث بعد. أضف أول حدث بالأعلى.",
+  "No training listed yet. Add your first one above.":"لا توجد دورات بعد. أضف أول دورة بالأعلى.",
+  "Delete":"حذف",
   "Online Now":"متصل الآن","Portfolio":"معرض الأعمال","Dates":"التواريخ","None":"لا يوجد","Set":"تعيين","Set Role":"تعيين الدور",
   "No portfolio":"لا يوجد معرض","No video":"لا يوجد فيديو","No photo":"لا توجد صورة",
   "Collector":"مقتني","Sub admin":"مشرف فرعي","Admin":"مدير",
