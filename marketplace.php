@@ -300,7 +300,7 @@ foreach ($artworks as $aw) {
       $badge = $st === 'auction' ? 'status-auction' : ($st === 'sold' ? 'status-sold' : 'status-available');
       $badgeLabel = $st === 'auction' ? ($ar?'مزاد':'Auction') : ($st === 'sold' ? ($ar?'مباع':'Sold') : ($ar?'متاح':'Available'));
     ?>
-      <div class="card" data-type="<?= e($aw['type']) ?>" data-status="<?= e($st) ?>"
+      <div class="card" data-type="<?= e($aw['type']) ?>" data-status="<?= e($st) ?>"<?= $ar ? ' dir="rtl"' : '' ?>
            data-title-en="<?= e($aw['title_en']) ?>" data-title-ar="<?= e($aw['title_ar']) ?>">
         <div class="card-img-wrap">
           <img class="card-img" src="<?= e($aw['image_url']) ?>" alt="<?= e($ar ? $aw['title_ar'] : $aw['title_en']) ?>">

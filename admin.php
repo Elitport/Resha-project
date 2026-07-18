@@ -115,6 +115,9 @@ if ($isAdmin && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST
             }
         } catch (\Throwable $e) {
             error_log('admin events: ' . $e->getMessage());
+            $_SESSION['admin_err'] = 'Events error: ' . $e->getMessage();
+            header('Location: admin.php?err=1#events');
+            exit;
         }
         header('Location: admin.php?ok=1#events');
         exit;
@@ -141,6 +144,9 @@ if ($isAdmin && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST
             }
         } catch (\Throwable $e) {
             error_log('admin training: ' . $e->getMessage());
+            $_SESSION['admin_err'] = 'Training error: ' . $e->getMessage();
+            header('Location: admin.php?err=1#training');
+            exit;
         }
         header('Location: admin.php?ok=1#training');
         exit;
@@ -415,6 +421,16 @@ th{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,
       <a class="btn grey" href="admin.php?logout=1">Log out</a>
     </div>
   </div>
+
+  <?php if (!empty($_SESSION['admin_err'])): ?>
+    <div class="card" style="border:1px solid #ffb3c1;background:#fff0f3;color:#c9184a;margin-bottom:16px;">
+      <strong>⚠ Could not save.</strong> <?= e($_SESSION['admin_err']) ?>
+      <div class="mini" style="margin-top:6px;color:#c9184a;">If this mentions a missing table, run <code>discover_setup.sql</code> in phpMyAdmin.</div>
+    </div>
+    <?php unset($_SESSION['admin_err']); ?>
+  <?php elseif (isset($_GET['ok'])): ?>
+    <div class="card" style="border:1px solid #b7e4c7;background:#f0fff4;color:#1b7a43;margin-bottom:16px;"><strong>✓ Saved.</strong></div>
+  <?php endif; ?>
 
   <!-- TABS -->
   <div class="tabs">
