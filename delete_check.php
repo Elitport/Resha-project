@@ -27,6 +27,18 @@ foreach (['artwork_stages','artwork_colors','favorites','artwork_inquiries','pur
   try { $c = $t === 'pending_changes' ? "target_type='artwork'" : '1=1'; $col = $t === 'pending_changes' ? 'target_id' : 'artwork_id';
         echo $t, ': ', json_encode($db->query("SELECT $col AS aid, COUNT(*) n FROM $t WHERE $c GROUP BY $col")->fetchAll()), "\n"; } catch (Throwable $e) { echo $t, ': (', substr($e->getMessage(), 0, 80), ")\n"; }
 }
+echo "== user 1 sign-in ==\n";
+try { echo json_encode($db->query("SELECT id, role, last_login_at, updated_at FROM users WHERE id = 1")->fetch()), "\n"; } catch (Throwable $e) { echo substr($e->getMessage(),0,120), "\n"; }
+echo "== sessions (times only) ==\n";
+try { $cols = $db->query("SHOW COLUMNS FROM sessions")->fetchAll(PDO::FETCH_COLUMN); echo "columns: ", implode(',', $cols), "\n";
+      $keep = array_values(array_intersect($cols, ['user_id','created_at','expires_at','last_seen','last_activity','updated_at']));
+      if ($keep) foreach ($db->query('SELECT ' . implode(',', $keep) . ' FROM sessions ORDER BY 1') as $r) echo json_encode($r), "\n"; } catch (Throwable $e) { echo substr($e->getMessage(),0,120), "\n"; }
+echo "== login_attempts (times only) ==\n";
+try { $cols = $db->query("SHOW COLUMNS FROM login_attempts")->fetchAll(PDO::FETCH_COLUMN); echo "columns: ", implode(',', $cols), "\n";
+      $keep = array_values(array_intersect($cols, ['attempted_at','created_at','success','was_successful']));
+      if ($keep) foreach ($db->query('SELECT ' . implode(',', $keep) . ' FROM login_attempts ORDER BY 1 DESC LIMIT 15') as $r) echo json_encode($r), "\n"; } catch (Throwable $e) { echo substr($e->getMessage(),0,120), "\n"; }
+echo "error log size: ", @filesize(__DIR__ . '/.logs/php-errors.log'), " modified: ", gmdate('Y-m-d H:i:s', (int) @filemtime(__DIR__ . '/.logs/php-errors.log')), "\n";
+echo "PHP error_log setting: ", ini_get('error_log') ? basename(ini_get('error_log')) : '(default)', "\n";
 echo "== error log (newest 40 lines) ==\n";
 $f = __DIR__ . '/.logs/php-errors.log';
-if (is_file($f)) { $l = file($f); echo implode('', array_slice($l, -40)); } else echo "(no log)\n";
+if (is_file($f)) { $l = file($f); echo implode('', array_slice($l, -8)); } else echo "(no log)\n";
