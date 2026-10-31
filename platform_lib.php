@@ -126,6 +126,7 @@ const OW_ACTION_WORDS = [
     'artwork_submit'  => ['Sent an artwork for review', 'أرسل عملاً للمراجعة'],
     'artwork_edit'    => ['Edited an artwork', 'عدّل عملاً'],
     'artwork_delete'  => ['Deleted an artwork', 'حذف عملاً'],
+    'artwork_delete_fail' => ['Tried to delete an artwork (not deleted)', 'حاول حذف عمل (لم يُحذف)'],
     'artwork_approve' => ['Approved an artwork', 'وافق على عمل'],
     'artwork_reject'  => ['Did not approve an artwork', 'لم يوافق على عمل'],
     'artwork_sold'    => ['Marked an artwork as sold', 'علّم عملاً كمباع'],

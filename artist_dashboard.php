@@ -38,31 +38,50 @@ if ($isOwner && $viewer && ($viewer['role'] ?? '') !== 'artist') {
  *  POST handlers (owner-only, CSRF-protected). PRG pattern.
  * ------------------------------------------------------------------- */
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-    if (!isLoggedIn()) { header('Location: login.php'); exit; }
-    if (!verifyCsrf($_POST['csrf_token'] ?? null)) { http_response_code(403); exit('Invalid CSRF token.'); }
-
-    $action = $_POST['action'] ?? '';
+    $action = (string) ($_POST['action'] ?? '');
+    $artId  = (int) ($_POST['artwork_id'] ?? 0);
+    /* Signed out in the meantime: sign in again, then come back here */
+    if (!isLoggedIn()) { header('Location: login.php?next=' . rawurlencode('artist_dashboard.php')); exit; }
+    /* An old or expired form: say so clearly (and keep a record) instead of a bare error page */
+    if (!verifyCsrf($_POST['csrf_token'] ?? null)) {
+        owLog('artwork_delete_fail', 'artwork', $artId ?: null, 'expired form', ['type' => 'artist', 'id' => $viewerId]);
+        $_SESSION['dash_msg'] = 'expired';
+        header('Location: artist_dashboard.php');
+        exit;
+    }
 
     /* ---- Delete an artwork (must own it — verified on backend) ---- */
     if ($action === 'delete') {
-        $artId = (int) ($_POST['artwork_id'] ?? 0);
-        $stmt = getDB()->prepare('SELECT image_url FROM artworks WHERE id = :id AND artist_id = :uid LIMIT 1');
+        $stmt = getDB()->prepare('SELECT image_url, title_en FROM artworks WHERE id = :id AND artist_id = :uid LIMIT 1');
         $stmt->execute([':id' => $artId, ':uid' => $viewerId]);
         $row = $stmt->fetch();
+        $done = false;
+        $stageFiles = $row ? array_map(fn($st) => (string) $st['photo_path'], owGetStages($artId)) : [];
         if ($row) {
-            owDeleteAllStageFiles($artId);
-            getDB()->prepare('DELETE FROM artworks WHERE id = :id AND artist_id = :uid')
-                ->execute([':id' => $artId, ':uid' => $viewerId]);
-            owLog('artwork_delete', 'artwork', $artId, '', ['type' => 'artist', 'id' => $viewerId]);
-            // best-effort remove the file
-            $path = __DIR__ . '/' . ltrim((string) $row['image_url'], '/');
-            if ($row['image_url'] && strpos($row['image_url'], 'uploads/artworks/') === 0 && is_file($path)) {
-                @unlink($path);
-            }
+            $del = getDB()->prepare('DELETE FROM artworks WHERE id = :id AND artist_id = :uid');
+            $del->execute([':id' => $artId, ':uid' => $viewerId]);
+            $done = $del->rowCount() === 1;
         }
-        header('Location: artist_dashboard.php?id=' . $viewerId);
+        if ($done) {
+            /* gone from the Gallery, the profile and the admin counts; tidy what pointed at it */
+            foreach ($stageFiles as $sf) owDeleteStageFile($sf);   // the stage rows went with the artwork
+            try { getDB()->prepare('DELETE FROM artwork_stages WHERE artwork_id = :id')->execute([':id' => $artId]); } catch (Throwable $e) {}
+            try { getDB()->prepare('DELETE FROM favorites WHERE artwork_id = :id')->execute([':id' => $artId]); } catch (Throwable $e) {}
+            try { getDB()->prepare("UPDATE pending_changes SET status = 'replaced', decided_at = NOW() WHERE target_type = 'artwork' AND target_id = :id AND status = 'pending'")
+                       ->execute([':id' => $artId]); } catch (Throwable $e) {}
+            owLog('artwork_delete', 'artwork', $artId, (string) $row['title_en'], ['type' => 'artist', 'id' => $viewerId]);
+            $path = __DIR__ . '/' . ltrim((string) $row['image_url'], '/');
+            if ($row['image_url'] && strpos($row['image_url'], 'uploads/artworks/') === 0 && is_file($path)) @unlink($path);
+            $_SESSION['dash_msg'] = 'deleted';
+        } else {
+            owLog('artwork_delete_fail', 'artwork', $artId ?: null, $row ? 'not removed' : 'not found or not yours', ['type' => 'artist', 'id' => $viewerId]);
+            $_SESSION['dash_msg'] = 'not_deleted';
+        }
+        header('Location: artist_dashboard.php');
         exit;
     }
+    header('Location: artist_dashboard.php');
+    exit;
 }
 
 /* ---------------------------------------------------------------------
@@ -284,6 +303,13 @@ owSeo($artist ? ['en' => $artist['artist_en'] . ', artist on Oweili', 'ar' => $a
     </div>
   </div>
 
+  <?php $dashMsg = $isOwner ? (string) ($_SESSION['dash_msg'] ?? '') : ''; unset($_SESSION['dash_msg']);
+  $DASH_MSG = ['deleted' => ['ok-box', 'The artwork is deleted. It is gone from your profile and the Gallery.', 'تم حذف العمل. لم يعد في ملفك ولا في المعرض.'],
+               'not_deleted' => ['err-box', 'We could not delete that artwork. Please try again, or write to contact@elitport.com.', 'لم نتمكن من حذف هذا العمل. حاول مرة أخرى، أو راسلنا على contact@elitport.com.'],
+               'expired' => ['err-box', 'This page was open for a long time, so nothing was changed. Please press Delete again.', 'كانت هذه الصفحة مفتوحة لوقت طويل، لذلك لم يتغير شيء. اضغط «حذف» مرة أخرى.']];
+  if (isset($DASH_MSG[$dashMsg])): ?>
+    <div class="<?= $DASH_MSG[$dashMsg][0] ?>" role="status" style="margin-top:var(--space-sm);"><?= owBi($DASH_MSG[$dashMsg][1], $DASH_MSG[$dashMsg][2]) ?></div>
+  <?php endif; ?>
   <?php if ($isOwner && isset($_GET['saved'])): ?>
     <div class="ok-box" id="t-saved" style="margin-top:var(--space-sm);">Profile updated successfully.</div>
   <?php endif; ?>
@@ -361,7 +387,7 @@ owSeo($artist ? ['en' => $artist['artist_en'] . ', artist on Oweili', 'ar' => $a
           <div class="art-actions">
             <a class="btn btn-ghost btn-sm" href="edit_artwork.php?id=<?= (int) $aw['id'] ?>" data-t="edit">Edit</a>
             <form method="post" action="artist_dashboard.php?id=<?= (int) $profileId ?>"
-                  onsubmit="return confirm('Delete this artwork?');">
+                  onsubmit="return confirm(document.documentElement.dir === 'rtl' ? 'حذف هذا العمل؟ لا يمكن التراجع.' : 'Delete this artwork? This cannot be undone.');">
               <?= csrfField() ?>
               <input type="hidden" name="action" value="delete">
               <input type="hidden" name="artwork_id" value="<?= (int) $aw['id'] ?>">
