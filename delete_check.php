@@ -28,7 +28,7 @@ foreach (['artwork_stages','artwork_colors','favorites','artwork_inquiries','pur
         echo $t, ': ', json_encode($db->query("SELECT $col AS aid, COUNT(*) n FROM $t WHERE $c GROUP BY $col")->fetchAll()), "\n"; } catch (Throwable $e) { echo $t, ': (', substr($e->getMessage(), 0, 80), ")\n"; }
 }
 echo "== user 1 sign-in ==\n";
-try { echo json_encode($db->query("SELECT id, role, last_login_at, updated_at FROM users WHERE id = 1")->fetch()), "\n"; } catch (Throwable $e) { echo substr($e->getMessage(),0,120), "\n"; }
+try { echo json_encode($db->query("SELECT id, role, last_login_at, last_active, updated_at, NOW() AS db_now FROM users WHERE id = 1")->fetch()), "\n"; } catch (Throwable $e) { echo substr($e->getMessage(),0,120), "\n"; }
 echo "== sessions (times only) ==\n";
 try { $cols = $db->query("SHOW COLUMNS FROM sessions")->fetchAll(PDO::FETCH_COLUMN); echo "columns: ", implode(',', $cols), "\n";
       $keep = array_values(array_intersect($cols, ['user_id','created_at','expires_at','last_seen','last_activity','updated_at']));
