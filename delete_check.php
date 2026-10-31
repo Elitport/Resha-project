@@ -42,3 +42,12 @@ echo "PHP error_log setting: ", ini_get('error_log') ? basename(ini_get('error_l
 echo "== error log (newest 40 lines) ==\n";
 $f = __DIR__ . '/.logs/php-errors.log';
 if (is_file($f)) { $l = file($f); echo implode('', array_slice($l, -8)); } else echo "(no log)\n";
+
+echo "== server visit logs: requests to the artist pages today (no addresses shown) ==\n";
+$dirs = [dirname(__DIR__) . '/logs', dirname(__DIR__, 2) . '/logs', dirname(__DIR__, 3) . '/logs', dirname(__DIR__, 3) . '/.logs'];
+foreach ($dirs as $d) { if (!is_dir($d)) continue; echo "folder: ", str_replace(dirname(__DIR__, 3), '~', $d), "\n";
+  foreach (scandir($d) as $f) { if ($f[0] === '.') continue; $fp = "$d/$f"; echo "  $f ", @filesize($fp), " ", gmdate('Y-m-d H:i', (int) @filemtime($fp)), "\n";
+    if (is_file($fp) && preg_match('/access|log/i', $f) && filemtime($fp) > time() - 86400) {
+      $txt = substr(preg_match('/\.gz$/', $f) ? (string) @gzdecode((string) file_get_contents($fp)) : (string) file_get_contents($fp), -3000000);
+      foreach (explode("\n", $txt) as $line) if (preg_match('#(artist_dashboard|edit_artwork|artist_studio)#', $line) && strpos($line, '31/Oct/2026') !== false)
+        echo "   ", preg_replace('/^\S+/', '(ip)', substr($line, 0, 260)), "\n"; } } }
